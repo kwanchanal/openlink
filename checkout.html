@@ -4,6 +4,7 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Payment Link Generator</title>
+    <link rel="icon" type="image/png" href="asset/favicon/checkout.png" />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
@@ -20,7 +21,10 @@
         <header class="sidebar__header">
           <div class="sidebar__logo">wm</div>
           <div>
-            <h1>Payment Link Generator</h1>
+            <h1>
+              Payment Link Generator
+              <span class="hint-bubble">Build Your Own Link</span>
+            </h1>
             <p class="muted">By wemint</p>
           </div>
         </header>
@@ -36,7 +40,7 @@
               </div>
               <label class="field">
                 <span>Wallet Address</span>
-                <input id="wallet" type="text" placeholder="0x2F3A...9b1C" />
+                <input id="wallet" type="text" placeholder="0x0df214be853caE6f646c9929EAfF857cb3452EFd" />
               </label>
               <label class="upload-card upload-card--input">
                 <input id="qr-upload" type="file" accept="image/*" />
@@ -75,29 +79,32 @@
               </label>
               <label class="field">
                 <span>Name</span>
-                <input id="name" type="text" placeholder="Your display name" />
+                <input id="name" type="text" placeholder="Kwanchanal Geographic" />
               </label>
               <label class="field">
                 <span>Bio</span>
-                <textarea id="bio" rows="3" placeholder="Short description or tagline"></textarea>
+                <textarea
+                  id="bio"
+                  rows="3"
+                  placeholder="Scuba Diving School and Recreation located in Koh Tao, Thailand"
+                ></textarea>
               </label>
               <label class="field">
                 <span>Message</span>
-                <textarea id="message" rows="2" placeholder="What's this payment for?"></textarea>
+                <textarea id="message" rows="2" placeholder="It's Kwan! Thank You For Support 🙏🏻"></textarea>
               </label>
             </section>
           </div>
 
           <div class="sidebar__section is-hidden" data-step="review">
             <section class="block">
-              <div class="block__head">
+              <div class="block__head block__head--review">
                 <div>
-                  <h2>Review & Share</h2>
+                  <h2>Your Link is Here</h2>
                   <p class="muted">Copy or share your payment link.</p>
                 </div>
               </div>
               <label class="field">
-                <span>Share link</span>
                 <input id="share-link" type="text" readonly value="wemint.link/kwanchanal" />
               </label>
               <div class="share-actions">
@@ -109,27 +116,29 @@
                   <span class="material-symbols-outlined">share</span>
                   Share link
                 </button>
-                <button class="share-btn ghost" id="download-btn" type="button">
+                <button class="share-btn share-btn--primary" id="download-btn" type="button">
                   <span class="material-symbols-outlined">download</span>
                   Download image
                 </button>
               </div>
-              <p class="muted share-note">Share to recipient transfer for easy payment.</p>
             </section>
           </div>
         </div>
 
         <div class="sidebar__footer">
-          <button class="nav-btn" id="btn-back" type="button">
-            <span class="material-symbols-outlined">chevron_left</span>
-            Back
+          <button class="nav-btn nav-btn--stack nav-btn--left is-hidden" id="btn-back" type="button">
+            <span class="nav-btn__top">
+              <span class="material-symbols-outlined">chevron_left</span>
+              Back
+            </span>
+            <span class="nav-btn__sub">Create New</span>
           </button>
-          <button class="nav-btn nav-btn--stack" id="btn-next" type="button">
+          <button class="nav-btn nav-btn--stack nav-btn--right" id="btn-next" type="button">
             <span class="nav-btn__top">
               Next
               <span class="material-symbols-outlined">chevron_right</span>
             </span>
-            <span class="nav-btn__sub">Review & Share</span>
+            <span class="nav-btn__sub">Review & download</span>
           </button>
         </div>
       </aside>
@@ -164,7 +173,14 @@
                 <p class="preview-copy-title">Copy Account Detail To Use</p>
                 <div class="preview-pill">
                   <span id="preview-wallet">0x0df..................52EFd</span>
-                  <span class="material-symbols-outlined preview-copy-icon" aria-hidden="true">content_copy</span>
+                  <button
+                    class="material-symbols-outlined preview-copy-icon"
+                    type="button"
+                    data-copy="#preview-wallet"
+                    aria-label="Copy wallet address"
+                  >
+                    content_copy
+                  </button>
                 </div>
                 <p class="preview-note">
                   To avoid mistakes, Please check recipient account details are correct before proceeding with transfer

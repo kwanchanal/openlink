@@ -1,4 +1,4 @@
-@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500&display=swap");
 
 :root {
   color-scheme: light;
@@ -79,11 +79,60 @@ body {
   margin: 0;
   font-size: 24px;
   font-weight: 600;
+  position: relative;
 }
 
 .sidebar__header p {
   margin: 0;
   font-size: 14px;
+}
+
+.hint-bubble {
+  position: absolute;
+  right: auto;
+  left: 40%;
+  top: 100%;
+  margin-top: 10px;
+  background: #f1f2f4;
+  color: #1c1f24;
+  border-radius: 999px;
+  padding: 8px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 6px 16px rgba(18, 20, 24, 0.08);
+  border: 1px solid rgba(0, 0, 0, 0.04);
+  animation: bubblePop 1.4s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+  white-space: nowrap;
+}
+
+.hint-bubble::after {
+  content: "";
+  position: absolute;
+  top: -6px;
+  right: 20px;
+  width: 10px;
+  height: 10px;
+  background: #f1f2f4;
+  border-left: 1px solid rgba(0, 0, 0, 0.04);
+  border-top: 1px solid rgba(0, 0, 0, 0.04);
+  transform: rotate(45deg);
+}
+
+@keyframes bubblePop {
+  0%,
+  55%,
+  100% {
+    transform: translateY(0) scale(1);
+    opacity: 1;
+  }
+  65% {
+    transform: translateY(-3px) scale(1.01);
+    opacity: 0.98;
+  }
+  78% {
+    transform: translateY(0) scale(0.998);
+    opacity: 1;
+  }
 }
 
 .muted {
@@ -225,15 +274,20 @@ body {
 .share-actions {
   display: grid;
   gap: 12px;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+}
+
+.share-actions .share-btn--primary {
+  grid-column: 1 / -1;
 }
 
 .share-btn {
   border: 0;
-  background: #1c1f24;
-  color: #fff;
+  background: #f3f4f6;
+  color: var(--text);
   border-radius: 999px;
-  padding: 12px 16px;
-  font-size: 14px;
+  padding: 8px 12px;
+  font-size: 20px;
   display: inline-flex;
   align-items: center;
   gap: 8px;
@@ -246,8 +300,18 @@ body {
   color: var(--text);
 }
 
+.share-btn--primary {
+  background: linear-gradient(180deg, #44474d 0%, #1d1f23 100%);
+  color: #fff;
+  box-shadow: 0 2px 6px rgba(18, 20, 24, 0.18), inset 0 1px 0 rgba(255, 255, 255, 0.12);
+}
+
+.share-btn--primary .material-symbols-outlined {
+  font-size: 30px;
+}
+
 .share-note {
-  font-size: 12px;
+  font-size: 18px;
   margin: 0;
 }
 
@@ -281,13 +345,21 @@ body {
 
 .block__head h2 {
   margin: 0 0 4px;
-  font-size: 16px;
+  font-size: 18px;
   font-weight: 600;
 }
 
 .block__head p {
   margin: 0;
-  font-size: 13px;
+  font-size: 15px;
+}
+
+.block__head--review h2 {
+  font-size: 50px;
+}
+
+.block__head--review p {
+  font-size: 18px;
 }
 
 .link-btn {
@@ -342,9 +414,19 @@ body {
   font-weight: 400;
 }
 
+#share-link {
+  padding: 10px 14px;
+  font-size: 18px;
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
+  color: #1c1f24;
+}
+
 .field input::placeholder,
 .field textarea::placeholder {
   color: var(--muted);
+  font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New",
+    monospace;
 }
 
 .field input:focus,
@@ -382,6 +464,21 @@ body {
   text-align: right;
 }
 
+.nav-btn--left {
+  align-items: flex-start;
+  text-align: left;
+}
+
+.nav-btn--right {
+  align-items: flex-end;
+  text-align: right;
+}
+
+.nav-btn.is-hidden {
+  visibility: hidden;
+  pointer-events: none;
+}
+
 .nav-btn__top {
   display: inline-flex;
   align-items: center;
@@ -389,8 +486,8 @@ body {
 }
 
 .nav-btn__sub {
-  font-size: 12px;
-  color: var(--text);
+  font-size: 16px;
+  color: #111;
   font-weight: 600;
 }
 
@@ -446,6 +543,62 @@ body {
 .phone {
   position: relative;
   width: min(420px, 100%);
+}
+
+.phone::before,
+.phone::after,
+.preview-card::before,
+.preview-card::after {
+  content: "";
+  position: absolute;
+  width: 22px;
+  height: 22px;
+  border: 2px solid #3b82f6;
+  opacity: 0.8;
+  animation: framePulse 2.4s ease-in-out infinite;
+}
+
+.phone::before {
+  top: -6px;
+  left: -6px;
+  border-right: 0;
+  border-bottom: 0;
+}
+
+.phone::after {
+  top: -6px;
+  right: -6px;
+  border-left: 0;
+  border-bottom: 0;
+  animation-delay: 0.2s;
+}
+
+.preview-card::before {
+  bottom: -6px;
+  left: -6px;
+  border-right: 0;
+  border-top: 0;
+  animation-delay: 0.4s;
+}
+
+.preview-card::after {
+  bottom: -6px;
+  right: -6px;
+  border-left: 0;
+  border-top: 0;
+  animation-delay: 0.6s;
+}
+
+@keyframes framePulse {
+  0%,
+  100% {
+    transform: scale(0.92);
+    opacity: 0.4;
+  }
+  50% {
+    transform: scale(1.18);
+    opacity: 1;
+  }
 }
 
 .preview-card {
@@ -607,11 +760,14 @@ body {
 .preview-pill span {
   text-align: center;
   line-height: normal;
+  font-size: 0.65em;
+  white-space: nowrap;
+  padding-right: 1.6em;
 }
 
 .preview-pill .preview-copy-icon {
   position: absolute;
-  right: 0.9em;
+  right: 0.6em;
 }
 
 .preview-copy-icon {
@@ -620,6 +776,10 @@ body {
   flex-shrink: 0;
   font-size: 1.1em;
   color: #7b8090;
+  background: transparent;
+  border: 0;
+  cursor: pointer;
+  padding: 0;
 }
 
 .preview-note {
@@ -738,12 +898,72 @@ body {
 }
 
 @media (max-width: 1000px) {
+  body {
+    overflow: auto;
+    height: auto;
+  }
+
   .app {
     grid-template-columns: 1fr;
+    height: auto;
   }
 
   .sidebar {
     border-right: 0;
     border-bottom: 1px solid var(--border);
+    height: auto;
+    position: static;
+  }
+
+  .canvas {
+    height: auto;
+    overflow: visible;
+  }
+}
+
+@media (max-width: 900px) {
+  .canvas {
+    padding: 24px 16px 32px;
+  }
+
+  .phone {
+    width: min(360px, 100%);
+  }
+
+  .preview-card {
+    aspect-ratio: 360 / 660;
+  }
+}
+
+@media (max-width: 600px) {
+  .sidebar__header {
+    padding: 22px 16px 18px;
+  }
+
+  .sidebar__body {
+    padding: 18px 16px 22px;
+  }
+
+  .sidebar__footer {
+    padding: 12px 16px 18px;
+  }
+
+  .share-actions {
+    grid-template-columns: 1fr;
+  }
+
+  .phone {
+    width: min(320px, 100%);
+  }
+
+  .preview-card {
+    aspect-ratio: 320 / 600;
+  }
+
+  .phone::before,
+  .phone::after,
+  .preview-card::before,
+  .preview-card::after {
+    display: none;
   }
 }

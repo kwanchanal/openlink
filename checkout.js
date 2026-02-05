@@ -27,7 +27,7 @@ const previewCard = document.querySelector('.preview-card');
 const defaultName = 'Kwanchanal Geographic';
 const defaultDetail = 'Scuba Diving School and Recreation\nlocated in Koh Tao, Thailand';
 const defaultMessage = "It's Kwan! Thank You For Support 🙏🏻";
-const defaultWallet = '0x0df..................52EFd';
+const defaultWallet = '0x0df214be853caE6f646c9929EAfF857cb3452EFd';
 const defaultAvatar = 'asset/phone-profile.png';
 const defaultQr = 'asset/phone-qr.png';
 const bioWrap = 35;
@@ -230,6 +230,12 @@ function showReview(show) {
   if (!formSection || !reviewSection) return;
   formSection.classList.toggle('is-hidden', show);
   reviewSection.classList.toggle('is-hidden', !show);
+  if (backButton) {
+    backButton.classList.toggle('is-hidden', !show);
+  }
+  if (nextButton) {
+    nextButton.classList.toggle('is-hidden', show);
+  }
 }
 
 if (nextButton) {
@@ -254,7 +260,8 @@ copyButtons.forEach((btn) => {
     if (!target) return;
 
     try {
-      await navigator.clipboard.writeText(target.value);
+      const value = 'value' in target ? target.value : target.textContent;
+      await navigator.clipboard.writeText(value.trim());
       btn.classList.add('copied');
       setTimeout(() => btn.classList.remove('copied'), 1200);
     } catch (err) {
