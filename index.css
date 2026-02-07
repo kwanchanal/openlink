@@ -108,6 +108,15 @@ img {
   font-family: "Google Sans", "Product Sans", "Segoe UI", system-ui, sans-serif;
 }
 
+.nav__links a.nav__cta,
+.nav__links a.nav__cta:visited,
+.nav__links a.nav__cta:hover,
+.nav__links a.nav__cta:active,
+.nav__links a.nav__cta:focus-visible {
+  color: #fff;
+  text-decoration: none;
+}
+
 .nav__links--right {
   gap: 12px;
 }
@@ -229,6 +238,15 @@ main {
 .btn.dark {
   background: var(--ink);
   color: #fff;
+}
+
+.btn,
+.btn:visited,
+.btn:hover,
+.btn:active,
+.btn:focus-visible {
+  color: #fff;
+  text-decoration: none;
 }
 
 .btn-hero {

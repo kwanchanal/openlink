@@ -1035,6 +1035,12 @@ body {
   }
 }
 
+@media (min-width: 901px) {
+  .sheet-toggle {
+    display: none;
+  }
+}
+
 @media (max-width: 900px) {
   .canvas {
     padding: 24px 16px 32px;
