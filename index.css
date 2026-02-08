@@ -383,6 +383,48 @@ main {
   margin-right: auto;
 }
 
+.link-types__intro {
+  display: grid;
+  gap: 8px;
+  text-align: center;
+  position: relative;
+  padding-top: 12px;
+}
+
+.link-types__currency {
+  font-size: clamp(2.6rem, 6vw, 3.4rem);
+  font-weight: 700;
+  letter-spacing: 0.01em;
+}
+
+.link-types__line {
+  margin: 0;
+  font-size: clamp(1rem, 2.2vw, 1.25rem);
+  font-weight: 500;
+  color: var(--text);
+}
+
+.link-types__line strong {
+  font-weight: 700;
+}
+
+.link-types__sticker {
+  position: absolute;
+  right: 20%;
+  top: -90px;
+  width: clamp(120px, 16vw, 180px);
+  transform: rotate(-2deg);
+  box-shadow: none;
+}
+
+@media (max-width: 720px) {
+  .link-types__sticker {
+    position: static;
+    margin: 0 auto 6px;
+    transform: rotate(-1deg);
+  }
+}
+
 .link-grid {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(240px, 1fr));
