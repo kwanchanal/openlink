@@ -111,11 +111,25 @@ const elements = {
   buttonFontColorPicker: document.getElementById("buttonFontColorPicker"),
   resetDesignBtn: document.getElementById("resetDesignBtn"),
   footerUpgradeTip: document.getElementById("footerUpgradeTip"),
+  cropModal: document.getElementById("cropModal"),
+  cropImage: document.getElementById("cropImage"),
+  cropTitle: document.getElementById("cropTitle"),
+  closeCropBtn: document.getElementById("closeCropBtn"),
+  cropCancelBtn: document.getElementById("cropCancelBtn"),
+  cropSaveBtn: document.getElementById("cropSaveBtn"),
 };
 
 let editingId = null;
 let openLayoutId = null;
 let draggingLinkId = null;
+let cropper = null;
+let cropCallback = null;
+
+const CROP_RATIOS = {
+  profile: 1,
+  thumbnail: 16 / 9,
+  background: 1 / 2,
+};
 
 function saveAll() {
   storage.set("wemint_profile", profile);
@@ -202,6 +216,50 @@ function readImageFile(file, onLoad) {
   const reader = new FileReader();
   reader.onload = () => onLoad(reader.result);
   reader.readAsDataURL(file);
+}
+
+function closeCropModal() {
+  if (cropper) {
+    cropper.destroy();
+    cropper = null;
+  }
+  cropCallback = null;
+  elements.cropModal.classList.remove("is-open");
+  elements.cropModal.setAttribute("aria-hidden", "true");
+}
+
+function openCropModal({ file, title, aspectRatio, onSave }) {
+  if (!file || !elements.cropImage) return;
+  cropCallback = onSave;
+  elements.cropTitle.textContent = title || "Crop image";
+  readImageFile(file, (dataUrl) => {
+    elements.cropImage.src = dataUrl;
+    if (cropper) cropper.destroy();
+    cropper = new Cropper(elements.cropImage, {
+      aspectRatio,
+      viewMode: 1,
+      autoCropArea: 1,
+      background: false,
+      responsive: true,
+      movable: true,
+      zoomable: true,
+      scalable: false,
+      rotatable: false,
+      zoomOnWheel: true,
+    });
+    elements.cropModal.classList.add("is-open");
+    elements.cropModal.setAttribute("aria-hidden", "false");
+  });
+}
+
+function saveCrop() {
+  if (!cropper || !cropCallback) return;
+  const canvas = cropper.getCroppedCanvas({
+    imageSmoothingQuality: "high",
+  });
+  const dataUrl = canvas.toDataURL("image/png");
+  cropCallback(dataUrl);
+  closeCropModal();
 }
 
 function openDesignModal() {
@@ -417,14 +475,17 @@ function createLayoutPanel(link) {
     thumbInput.addEventListener("change", () => {
       const file = thumbInput.files?.[0];
       if (!file) return;
-      const reader = new FileReader();
-      reader.onload = () => {
-        link.thumbnail = reader.result;
-        saveAll();
-        renderPreview();
-        renderLinks();
-      };
-      reader.readAsDataURL(file);
+      openCropModal({
+        file,
+        title: "Crop thumbnail",
+        aspectRatio: CROP_RATIOS.thumbnail,
+        onSave: (dataUrl) => {
+          link.thumbnail = dataUrl;
+          saveAll();
+          renderPreview();
+          renderLinks();
+        },
+      });
     });
 
     thumbButton.addEventListener("click", (event) => {
@@ -809,6 +870,12 @@ function initEvents() {
   elements.designModal.addEventListener("click", (event) => {
     if (event.target === elements.designModal) closeDesignModal();
   });
+  elements.cropModal.addEventListener("click", (event) => {
+    if (event.target === elements.cropModal) closeCropModal();
+  });
+  elements.closeCropBtn.addEventListener("click", closeCropModal);
+  elements.cropCancelBtn.addEventListener("click", closeCropModal);
+  elements.cropSaveBtn.addEventListener("click", saveCrop);
 
   elements.designForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -849,13 +916,18 @@ function initEvents() {
     elements.profileImageFile.addEventListener("change", () => {
       const file = elements.profileImageFile.files?.[0];
       if (!file) return;
-      readImageFile(file, (dataUrl) => {
-        appearance.profileImageUrl = dataUrl;
-        saveAll();
-        applyAppearance();
-        elements.profileImageUrl.value = "";
-        elements.profileImageUrl.dataset.dirty = "false";
-        setImageHint(elements.profileImageHint, "Using local file (stored in browser).");
+      openCropModal({
+        file,
+        title: "Crop profile image",
+        aspectRatio: CROP_RATIOS.profile,
+        onSave: (dataUrl) => {
+          appearance.profileImageUrl = dataUrl;
+          saveAll();
+          applyAppearance();
+          elements.profileImageUrl.value = "";
+          elements.profileImageUrl.dataset.dirty = "false";
+          setImageHint(elements.profileImageHint, "Using local file (stored in browser).");
+        },
       });
     });
   }
@@ -864,13 +936,18 @@ function initEvents() {
     elements.backgroundImageFile.addEventListener("change", () => {
       const file = elements.backgroundImageFile.files?.[0];
       if (!file) return;
-      readImageFile(file, (dataUrl) => {
-        appearance.backgroundImageUrl = dataUrl;
-        saveAll();
-        applyAppearance();
-        elements.backgroundImageUrl.value = "";
-        elements.backgroundImageUrl.dataset.dirty = "false";
-        setImageHint(elements.backgroundImageHint, "Using local file (stored in browser).");
+      openCropModal({
+        file,
+        title: "Crop background image",
+        aspectRatio: CROP_RATIOS.background,
+        onSave: (dataUrl) => {
+          appearance.backgroundImageUrl = dataUrl;
+          saveAll();
+          applyAppearance();
+          elements.backgroundImageUrl.value = "";
+          elements.backgroundImageUrl.dataset.dirty = "false";
+          setImageHint(elements.backgroundImageHint, "Using local file (stored in browser).");
+        },
       });
     });
   }
@@ -912,7 +989,6 @@ function initBannerCycle() {
     "Bespoke Design for Brand - Contact Us",
     "Your Brand in One-Page",
     "Build For Global Economy",
-    "Web3 Friendly  - Web2 Mazimize",
   ];
   let index = 0;
   elements.bannerText.textContent = messages[index];

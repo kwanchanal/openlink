@@ -13,6 +13,10 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/icon?family=Material+Icons"
     />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
     <style>
       .material-symbols-outlined {
         font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
@@ -30,15 +34,9 @@
 
     <div class="app-shell">
       <aside class="sidebar">
-        <div class="sidebar-brand">
-          <div class="brand-chip">
-            <span class="material-symbols-outlined">workspace_premium</span>
-          </div>
-          <div class="brand-name">wemint.link</div>
-        </div>
         <nav class="nav">
           <div class="nav-section">
-            <button class="nav-title" type="button">Creator</button>
+            <button class="nav-title" type="button">Your Link</button>
             <div class="nav-items">
               <button class="nav-link" id="sidebarAddBtn">
                 <span class="material-symbols-outlined nav-icon">badge</span>
@@ -47,51 +45,31 @@
             </div>
           </div>
           <div class="nav-section">
-            <button class="nav-title" type="button">Monetize</button>
             <div class="nav-items">
-              <button class="nav-link is-locked">
-                <span class="material-symbols-outlined nav-icon">payments</span>
-                Earn
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
-              </button>
-            </div>
-          </div>
-          <div class="nav-section">
-            <button class="nav-title" type="button">Interactive</button>
-            <div class="nav-items">
-              <button class="nav-link is-locked">
+              <button class="nav-link">
                 <span class="material-symbols-outlined nav-icon">chat</span>
-                Messages
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
-              </button>
-              <button class="nav-link is-locked">
-                <span class="material-symbols-outlined nav-icon">workspace_premium</span>
-                Exclusive Content
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
-              </button>
-              <button class="nav-link is-locked">
-                <span class="material-symbols-outlined nav-icon">cookie</span>
-                Fortune Cookies
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
+                Add Inbox
               </button>
             </div>
           </div>
           <div class="nav-section">
-            <button class="nav-title" type="button">DApp</button>
-            <div class="nav-items">
-              <button class="nav-link is-locked">
-                <span class="material-symbols-outlined nav-icon">token</span>
-                Fans Token
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
-              </button>
-            </div>
-          </div>
-          <div class="nav-section">
-            <button class="nav-title" type="button">Appearance</button>
             <div class="nav-items">
               <button class="nav-link" id="openDesignBtn">
                 <span class="material-symbols-outlined nav-icon">palette</span>
                 Design
+              </button>
+            </div>
+          </div>
+          <div class="nav-section">
+            <button class="nav-title" type="button">Tools</button>
+            <div class="nav-items">
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">request_quote</span>
+                Send Invoice
+              </button>
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">insights</span>
+                Insights
               </button>
             </div>
           </div>
@@ -186,11 +164,10 @@
               <div class="footer-title">wemint.link footer</div>
             </div>
             <div class="footer-actions">
-              <span class="footer-brand-mark"><span class="material-symbols-outlined">star_shine</span></span>
-              <label class="switch">
-                <input type="checkbox" id="footerSwitch" checked />
-                <span class="slider"></span>
-              </label>
+            <label class="switch">
+              <input type="checkbox" id="footerSwitch" checked />
+              <span class="slider"></span>
+            </label>
               <div class="upgrade-tooltip" id="footerUpgradeTip">Upgrade to Unlock</div>
             </div>
           </section>
@@ -210,7 +187,6 @@
           </div>
         </div>
         <div class="phone">
-          <div class="phone-brand-icon"><span class="material-symbols-outlined">star_shine</span></div>
           <div class="phone-scroll">
             <div class="phone-header">
               <div class="phone-avatar">
@@ -374,6 +350,25 @@
       </div>
     </div>
 
+    <div class="modal" id="cropModal" aria-hidden="true">
+      <div class="modal-card crop-modal-card">
+        <div class="modal-header">
+          <h3 id="cropTitle">Crop image</h3>
+          <button class="icon-btn" id="closeCropBtn" aria-label="Close crop">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="crop-body">
+          <img id="cropImage" alt="Crop preview" />
+        </div>
+        <div class="modal-actions">
+          <button class="ghost" id="cropCancelBtn" type="button">Cancel</button>
+          <button class="primary" id="cropSaveBtn" type="button">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
     <script src="app.js"></script>
   </body>
 </html>

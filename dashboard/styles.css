@@ -142,7 +142,7 @@ textarea {
   background: transparent;
   color: var(--sidebar-foreground);
   border-radius: 0;
-  padding: 20px 14px 24px;
+  padding: 12px 14px 24px;
   border: none;
   box-shadow: none;
   display: flex;
@@ -266,7 +266,15 @@ textarea {
 }
 
 .nav-title {
-  display: none;
+  display: flex;
+  align-items: center;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--muted-foreground);
+  background: transparent;
+  border: none;
+  cursor: pointer;
 }
 
 .nav-title .material-symbols-outlined {
@@ -278,8 +286,8 @@ textarea {
   border: 1px solid transparent;
   background: transparent;
   text-align: left;
-  padding: 6px 12px 6px 4px;
-  border-radius: 999px;
+  padding: 8px 12px;
+  border-radius: 8px;
   font-weight: 500;
   font-size: 14px;
   cursor: pointer;
@@ -290,12 +298,16 @@ textarea {
   transition: background 0.2s ease, border-color 0.2s ease, color 0.2s ease;
 }
 
+.nav-link:hover {
+  background: #e2e2e2;
+  color: var(--sidebar-foreground);
+}
+
 .nav-icon {
   font-size: 16px;
   color: currentColor;
 }
 
-.nav-link:hover,
 .nav-link.is-active {
   background: var(--primary);
   border-color: var(--primary);
@@ -1515,6 +1527,27 @@ textarea {
   border: 1px solid var(--border);
   box-shadow: var(--shadow-lg);
   animation: rise 0.25s ease;
+}
+
+.crop-modal-card {
+  width: min(620px, 92vw);
+}
+
+.crop-body {
+  width: 100%;
+  max-height: 60vh;
+  overflow: hidden;
+  border-radius: calc(var(--radius) - 2px);
+  border: 1px solid var(--border);
+  background: var(--secondary);
+  display: grid;
+  place-items: center;
+  margin-bottom: 16px;
+}
+
+#cropImage {
+  max-width: 100%;
+  display: block;
 }
 
 #designModal .modal-card {
