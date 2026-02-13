@@ -16,6 +16,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initNavMenu();
   initScrollReveal();
   initFlashCard();
+  initFlashOverlayTyping();
 });
 
 function initScrollReveal() {
@@ -105,6 +106,78 @@ function initFlashCard() {
 
   setImage(index);
   setInterval(advance, 2800);
+}
+
+function initFlashOverlayTyping() {
+  const textNode = document.querySelector(".flash-card__overlay-text");
+  if (!textNode) {
+    return;
+  }
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  if (reduceMotion.matches) {
+    textNode.textContent = "Get In Touch";
+    return;
+  }
+
+  const phases = [
+    { action: "type", text: ">_", speed: 130 },
+    { action: "pause", duration: 680 },
+    { action: "delete", count: 2, speed: 90 },
+    { action: "pause", duration: 260 },
+    { action: "type", text: "Get In Touch", speed: 90 },
+    { action: "pause", duration: 1450 },
+    { action: "delete", count: 12, speed: 58 },
+    { action: "pause", duration: 420 },
+  ];
+
+  let value = "";
+
+  const runPhase = (index) => {
+    const phase = phases[index];
+    if (!phase) {
+      runPhase(0);
+      return;
+    }
+
+    if (phase.action === "pause") {
+      setTimeout(() => runPhase((index + 1) % phases.length), phase.duration);
+      return;
+    }
+
+    if (phase.action === "type") {
+      let charIndex = 0;
+      const typeNext = () => {
+        if (charIndex >= phase.text.length) {
+          runPhase((index + 1) % phases.length);
+          return;
+        }
+        value += phase.text[charIndex];
+        textNode.textContent = value;
+        charIndex += 1;
+        setTimeout(typeNext, phase.speed);
+      };
+      typeNext();
+      return;
+    }
+
+    if (phase.action === "delete") {
+      let remaining = Math.min(phase.count, value.length);
+      const deleteNext = () => {
+        if (remaining <= 0) {
+          runPhase((index + 1) % phases.length);
+          return;
+        }
+        value = value.slice(0, -1);
+        textNode.textContent = value;
+        remaining -= 1;
+        setTimeout(deleteNext, phase.speed);
+      };
+      deleteNext();
+    }
+  };
+
+  runPhase(0);
 }
 
 function initGlobe() {

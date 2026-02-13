@@ -736,6 +736,7 @@ main {
 }
 
 .flash-card {
+  position: relative;
   width: 100%;
   height: 100%;
   display: grid;
@@ -755,6 +756,51 @@ main {
 
 .flash-card__image.is-fading {
   opacity: 0;
+}
+
+.flash-card__overlay-btn {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 3;
+  width: min(92%, 640px);
+  border: 1px solid hsl(0 0% 10%);
+  background: linear-gradient(180deg, hsl(0 0% 20%) 0%, hsl(0 0% 6%) 100%);
+  color: #fff;
+  border-radius: 999px;
+  min-height: clamp(42px, 4.4vw, 60px);
+  padding: 10px 22px;
+  box-shadow: 0 6px 14px hsl(0 0% 0% / 0.22), inset 0 1px 0 hsl(0 0% 100% / 0.08);
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+  font-size: clamp(1rem, 1.8vw, 1.65rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  pointer-events: none;
+}
+
+.flash-card__overlay-text {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+}
+
+.flash-card__cursor {
+  font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;
+  font-weight: 700;
+  animation: terminal-caret 0.9s steps(1, end) infinite;
+}
+
+@keyframes terminal-caret {
+  0%,
+  49% {
+    opacity: 1;
+  }
+  50%,
+  100% {
+    opacity: 0;
+  }
 }
 
 .pricing {
@@ -992,6 +1038,13 @@ body.is-ready section {
   .blank-panel__box {
     width: min(92vw, 380px);
     aspect-ratio: 9 / 16;
+  }
+
+  .flash-card__overlay-btn {
+    width: min(90%, 320px);
+    min-height: 42px;
+    font-size: clamp(0.92rem, 4vw, 1.15rem);
+    padding: 8px 16px;
   }
 }
 
