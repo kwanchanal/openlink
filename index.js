@@ -15,6 +15,7 @@ document.addEventListener("DOMContentLoaded", () => {
   initContactTyping();
   initNavMenu();
   initScrollReveal();
+  initFlashCard();
 });
 
 function initScrollReveal() {
@@ -50,6 +51,60 @@ function initScrollReveal() {
   );
 
   targets.forEach((el) => observer.observe(el));
+}
+
+function initFlashCard() {
+  const image = document.querySelector(".flash-card__image");
+  if (!image) {
+    return;
+  }
+
+  const files = [
+    "Desktop - 3.png",
+    "Desktop - 3 (1).png",
+    "Desktop - 3 (2).png",
+    "Desktop - 3 (3).png",
+    "Desktop - 3 (4).png",
+    "Desktop - 3 (5).png",
+  ];
+
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let index = 0;
+  let isSwitching = false;
+
+  const setImage = (nextIndex) => {
+    const nextSrc = encodeURI(`flash/${files[nextIndex]}`);
+    image.src = nextSrc;
+  };
+
+  const advance = () => {
+    if (isSwitching) return;
+    isSwitching = true;
+    index = (index + 1) % files.length;
+
+    if (reduceMotion.matches) {
+      setImage(index);
+      isSwitching = false;
+      return;
+    }
+
+    image.classList.add("is-fading");
+    setTimeout(() => {
+      setImage(index);
+      if (image.complete) {
+        image.classList.remove("is-fading");
+        isSwitching = false;
+      } else {
+        image.onload = () => {
+          image.classList.remove("is-fading");
+          isSwitching = false;
+        };
+      }
+    }, 300);
+  };
+
+  setImage(index);
+  setInterval(advance, 2800);
 }
 
 function initGlobe() {

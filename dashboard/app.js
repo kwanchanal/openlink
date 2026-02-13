@@ -42,6 +42,18 @@ const FORCE_APPEARANCE_MOCK = true;
 const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : storage.get("wemint_profile", defaultProfile);
 const links = storage.get("wemint_links", defaultLinks);
 const socialLinks = storage.get("wemint_social_links", {});
+let inboxName = storage.get("wemint_inbox_name", "Get in touch");
+let inboxPosition = storage.get("wemint_inbox_position", 0);
+let inboxLayout = storage.get("wemint_inbox_layout", {
+  type: "banner",
+  thumbnail: "",
+});
+if (typeof inboxLayout.featured === "boolean") {
+  inboxLayout = {
+    type: inboxLayout.featured ? "banner" : "classic",
+    thumbnail: inboxLayout.thumbnail || "",
+  };
+}
 const defaultAppearance = {
   profileImageUrl: "",
   backgroundImageUrl: "",
@@ -57,6 +69,7 @@ const visibility = storage.get("wemint_visibility", {
   showProfileImage: true,
   showDisplayName: true,
   showBio: true,
+  showSocialIcons: true,
 });
 
 function escapeHTML(str) {
@@ -72,6 +85,8 @@ const elements = {
   profileName: document.getElementById("profileName"),
   profileMeta: document.getElementById("profileMeta"),
   previewBio: document.getElementById("previewBio"),
+  profileSocialIcons: document.getElementById("profileSocialIcons"),
+  previewSocialIcons: document.getElementById("previewSocialIcons"),
   previewLinkbarUser: document.getElementById("previewUsername"),
   downloadPreviewBtn: document.getElementById("downloadPreviewBtn"),
   linkModal: document.getElementById("linkModal"),
@@ -82,6 +97,19 @@ const elements = {
   closeModalBtn: document.getElementById("closeModalBtn"),
   modalTitle: document.getElementById("modalTitle"),
   footerSwitch: document.getElementById("footerSwitch"),
+  inboxSection: document.getElementById("inboxSection"),
+  inboxLayoutBtn: document.getElementById("inboxLayoutBtn"),
+  inboxPanel: document.getElementById("inboxPanel"),
+  inboxCloseBtn: document.getElementById("inboxCloseBtn"),
+  inboxSwitch: document.getElementById("inboxSwitch"),
+  inboxTitle: document.getElementById("inboxTitle"),
+  inboxEditBtn: document.getElementById("inboxEditBtn"),
+  inboxLayoutBody: document.getElementById("inboxLayoutBody"),
+  previewInboxBanner: document.getElementById("previewInboxBanner"),
+  previewInboxSheet: document.getElementById("previewInboxSheet"),
+  previewInboxSheetBackdrop: document.getElementById("previewInboxSheetBackdrop"),
+  previewInboxSheetClose: document.getElementById("previewInboxSheetClose"),
+  previewInboxSheetTitle: document.getElementById("previewInboxSheetTitle"),
   previewCta: document.getElementById("previewCta"),
   editProfileBtn: document.getElementById("editProfileBtn"),
   profileModal: document.getElementById("profileModal"),
@@ -126,11 +154,14 @@ const elements = {
   showProfileImage: document.getElementById("showProfileImage"),
   showDisplayName: document.getElementById("showDisplayName"),
   showBio: document.getElementById("showBio"),
+  showSocialIcons: document.getElementById("showSocialIcons"),
 };
 
 let editingId = null;
 let openLayoutId = null;
-let draggingLinkId = null;
+let draggingItemId = null;
+let inboxOpen = false;
+let inboxTab = "forms";
 let cropper = null;
 let cropCallback = null;
 
@@ -146,6 +177,9 @@ function saveAll() {
   storage.set("wemint_social_links", socialLinks);
   storage.set("wemint_appearance", appearance);
   storage.set("wemint_visibility", visibility);
+  storage.set("wemint_inbox_position", inboxPosition);
+  storage.set("wemint_inbox_name", inboxName);
+  storage.set("wemint_inbox_layout", inboxLayout);
 }
 
 function renderProfile() {
@@ -153,10 +187,11 @@ function renderProfile() {
   elements.profileMeta.textContent = profile.bio;
   elements.previewName.textContent = profile.name;
   elements.previewBio.textContent = profile.bio;
-  elements.profileName.style.display = visibility.showDisplayName ? "" : "none";
   elements.previewName.style.display = visibility.showDisplayName ? "" : "none";
-  elements.profileMeta.style.display = visibility.showBio ? "" : "none";
   elements.previewBio.style.display = visibility.showBio ? "" : "none";
+  if (elements.previewSocialIcons) {
+    elements.previewSocialIcons.style.display = visibility.showSocialIcons ? "" : "none";
+  }
   updateAvatarInitials();
   const username = profile.username ? profile.username.trim() : "";
   if (elements.previewLinkbarUser) {
@@ -180,8 +215,16 @@ function applyAppearance() {
       : "none";
   }
 
-  document.querySelectorAll(".profile-avatar, .phone-avatar").forEach((avatar) => {
-    const hasImage = Boolean(appearance.profileImageUrl);
+  const hasImage = Boolean(appearance.profileImageUrl);
+  document.querySelectorAll(".profile-avatar").forEach((avatar) => {
+    avatar.style.display = "";
+    avatar.style.backgroundImage = hasImage ? `url(${appearance.profileImageUrl})` : "none";
+    avatar.style.backgroundSize = "cover";
+    avatar.style.backgroundPosition = "center";
+    avatar.style.backgroundRepeat = "no-repeat";
+    avatar.classList.toggle("has-image", hasImage);
+  });
+  document.querySelectorAll(".phone-avatar").forEach((avatar) => {
     avatar.style.display = visibility.showProfileImage ? "" : "none";
     avatar.style.backgroundImage = hasImage ? `url(${appearance.profileImageUrl})` : "none";
     avatar.style.backgroundSize = "cover";
@@ -509,9 +552,212 @@ function createLayoutPanel(link) {
   return panel;
 }
 
+function setInboxOpen(value) {
+  inboxOpen = value;
+  if (!elements.inboxSection || !elements.inboxLayoutBtn) return;
+  elements.inboxSection.classList.toggle("is-open", inboxOpen);
+  elements.inboxLayoutBtn.classList.toggle("is-active", inboxOpen);
+}
+
+function setInboxTab(tab) {
+  inboxTab = tab;
+  if (!elements.inboxSection) return;
+  const tabs = elements.inboxSection.querySelectorAll("[data-inbox-tab]");
+  const panels = elements.inboxSection.querySelectorAll("[data-inbox-panel]");
+  tabs.forEach((btn) => {
+    const isActive = btn.dataset.inboxTab === inboxTab;
+    btn.classList.toggle("is-active", isActive);
+    btn.setAttribute("aria-selected", isActive ? "true" : "false");
+  });
+  panels.forEach((panel) => {
+    panel.classList.toggle("is-active", panel.dataset.inboxPanel === inboxTab);
+  });
+
+  if (inboxTab === "layout") {
+    renderInboxLayoutOptions();
+  }
+}
+
+function setInboxSheetOpen(value) {
+  if (!elements.previewInboxSheet || !elements.previewInboxSheetBackdrop) return;
+  elements.previewInboxSheet.classList.toggle("is-open", value);
+  elements.previewInboxSheetBackdrop.classList.toggle("is-open", value);
+  if (elements.previewInboxSheetTitle) {
+    elements.previewInboxSheetTitle.textContent = inboxName;
+  }
+}
+
+function renderInboxBanner() {
+  if (!elements.previewInboxBanner) return;
+  const isBanner = inboxLayout.type === "banner";
+  const isVisible = isBanner && elements.inboxSwitch?.checked;
+  elements.previewInboxBanner.classList.toggle("is-visible", Boolean(isVisible));
+  if (!isVisible) return;
+
+  const bannerTitle = escapeHTML(inboxName);
+  elements.previewInboxBanner.className = "phone-bottom-banner is-visible";
+  elements.previewInboxBanner.innerHTML = `
+    <div class="banner-handle">
+      <div class="banner-title">${bannerTitle}</div>
+      <button class="banner-toggle" type="button" aria-label="Open form">
+        <span class="material-symbols-outlined">keyboard_arrow_up</span>
+      </button>
+    </div>
+  `;
+
+  const toggleBtn = elements.previewInboxBanner.querySelector(".banner-toggle");
+  if (toggleBtn) {
+    toggleBtn.addEventListener("click", (event) => {
+      event.preventDefault();
+      setInboxSheetOpen(true);
+    });
+  }
+  elements.previewInboxBanner.addEventListener("click", (event) => {
+    if (event.target.closest(".banner-toggle")) return;
+    setInboxSheetOpen(true);
+  });
+}
+
+function renderInboxLayoutOptions() {
+  if (!elements.inboxLayoutBody) return;
+
+  const layoutOptions = [
+    {
+      id: "banner",
+      title: "Banner",
+      desc: "Sticky bottom banner that opens a contact sheet.",
+      preview: `
+        <div class="layout-preview">
+          <div class="layout-preview-banner">
+            <span class="preview-caption">Get in touch</span>
+            <span class="preview-dots">...</span>
+          </div>
+        </div>
+      `,
+    },
+    {
+      id: "classic",
+      title: "Classic",
+      desc: "Efficient, direct and compact.",
+      preview: `
+        <div class="layout-preview">
+          <div class="layout-preview-classic">
+            <div class="preview-avatar-sm"></div>
+            <div class="preview-bar"></div>
+            <span class="preview-dots">...</span>
+          </div>
+        </div>
+      `,
+    },
+  ];
+
+  let optionsHTML = "";
+  layoutOptions.forEach((option) => {
+    const isSelected = option.id === inboxLayout.type;
+
+    optionsHTML += `
+      <label class="layout-option${isSelected ? " is-selected" : ""}" data-layout="${option.id}">
+        <input type="radio" name="layout-inbox" value="${option.id}" ${isSelected ? "checked" : ""} />
+        <div class="layout-text">
+          <div class="link-title">${option.title}</div>
+          <div class="muted">${option.desc}</div>
+        </div>
+        ${option.preview}
+      </label>
+    `;
+  });
+
+  elements.inboxLayoutBody.innerHTML = optionsHTML;
+
+  elements.inboxLayoutBody.querySelectorAll('input[type="radio"]').forEach((input) => {
+    input.addEventListener("change", () => {
+      inboxLayout.type = input.value;
+      saveAll();
+      renderPreview();
+      renderInboxLayoutOptions();
+    });
+  });
+}
+
+function getCombinedOrder() {
+  const clamped = Math.max(0, Math.min(inboxPosition, links.length));
+  const order = links.map((link) => link.id);
+  order.splice(clamped, 0, "inbox");
+  return order;
+}
+
+function applyCombinedOrder(order) {
+  inboxPosition = order.indexOf("inbox");
+  const map = new Map(links.map((link) => [link.id, link]));
+  links.length = 0;
+  order.forEach((id) => {
+    if (id === "inbox") return;
+    const item = map.get(id);
+    if (item) links.push(item);
+  });
+  saveAll();
+}
+
 function renderLinks() {
   elements.linksList.innerHTML = "";
-  links.forEach((link) => {
+  if (elements.inboxTitle) {
+    elements.inboxTitle.textContent = inboxName;
+  }
+  const order = getCombinedOrder();
+  const inboxSection = elements.inboxSection;
+  if (inboxSection && inboxSection.parentElement !== elements.linksList) {
+    inboxSection.remove();
+  }
+
+  const attachDragHandlers = (target, targetId, dragHandle) => {
+    if (!target || !dragHandle) return;
+    dragHandle.setAttribute("draggable", "true");
+    dragHandle.addEventListener("dragstart", (event) => {
+      draggingItemId = targetId;
+      target.classList.add("is-dragging");
+      event.dataTransfer.setData("text/plain", targetId);
+      event.dataTransfer.effectAllowed = "move";
+    });
+    dragHandle.addEventListener("dragend", () => {
+      draggingItemId = null;
+      target.classList.remove("is-dragging");
+    });
+
+    target.addEventListener("dragover", (event) => {
+      if (!draggingItemId || draggingItemId === targetId) return;
+      event.preventDefault();
+      target.classList.add("drag-over");
+    });
+
+    target.addEventListener("dragleave", () => {
+      target.classList.remove("drag-over");
+    });
+
+    target.addEventListener("drop", (event) => {
+      if (!draggingItemId || draggingItemId === targetId) return;
+      event.preventDefault();
+      target.classList.remove("drag-over");
+      const currentOrder = getCombinedOrder();
+      const fromIndex = currentOrder.indexOf(draggingItemId);
+      const toIndex = currentOrder.indexOf(targetId);
+      if (fromIndex < 0 || toIndex < 0) return;
+      const [moved] = currentOrder.splice(fromIndex, 1);
+      const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
+      currentOrder.splice(insertIndex, 0, moved);
+      applyCombinedOrder(currentOrder);
+      renderLinks();
+      renderPreview();
+    });
+  };
+
+  order.forEach((itemId) => {
+    if (itemId === "inbox" && inboxSection) {
+      elements.linksList.appendChild(inboxSection);
+      attachDragHandlers(inboxSection, "inbox", inboxSection.querySelector(".inbox-header-left"));
+      return;
+    }
+    const link = links.find((entry) => entry.id === itemId);
+    if (!link) return;
     const card = document.createElement("div");
     card.className = "link-card";
 
@@ -614,44 +860,7 @@ function renderLinks() {
     });
 
     const dragHandle = card.querySelector(".link-drag");
-    if (dragHandle) {
-      dragHandle.setAttribute("draggable", "true");
-      dragHandle.addEventListener("dragstart", (event) => {
-        draggingLinkId = link.id;
-        card.classList.add("is-dragging");
-        event.dataTransfer.setData("text/plain", link.id);
-        event.dataTransfer.effectAllowed = "move";
-      });
-      dragHandle.addEventListener("dragend", () => {
-        draggingLinkId = null;
-        card.classList.remove("is-dragging");
-      });
-    }
-
-    card.addEventListener("dragover", (event) => {
-      if (!draggingLinkId || draggingLinkId === link.id) return;
-      event.preventDefault();
-      card.classList.add("drag-over");
-    });
-
-    card.addEventListener("dragleave", () => {
-      card.classList.remove("drag-over");
-    });
-
-    card.addEventListener("drop", (event) => {
-      if (!draggingLinkId || draggingLinkId === link.id) return;
-      event.preventDefault();
-      card.classList.remove("drag-over");
-      const fromIndex = links.findIndex((item) => item.id === draggingLinkId);
-      const toIndex = links.findIndex((item) => item.id === link.id);
-      if (fromIndex < 0 || toIndex < 0) return;
-      const [moved] = links.splice(fromIndex, 1);
-      const insertIndex = fromIndex < toIndex ? toIndex - 1 : toIndex;
-      links.splice(insertIndex, 0, moved);
-      saveAll();
-      renderLinks();
-      renderPreview();
-    });
+    attachDragHandlers(card, link.id, dragHandle);
 
     elements.linksList.appendChild(card);
 
@@ -665,9 +874,27 @@ function renderLinks() {
 
 function renderPreview() {
   elements.previewLinks.innerHTML = "";
-  links
-    .filter((link) => link.enabled)
-    .forEach((link) => {
+  const order = getCombinedOrder();
+  order.forEach((itemId) => {
+    if (itemId === "inbox") {
+      if (!elements.inboxSwitch?.checked) {
+        setInboxSheetOpen(false);
+        return;
+      }
+      if (inboxLayout.type !== "banner") {
+        const inboxItem = document.createElement("div");
+        inboxItem.className = "phone-link inbox";
+        inboxItem.innerHTML = `
+          <span>${escapeHTML(inboxName)}</span>
+        `;
+        inboxItem.addEventListener("click", () => setInboxSheetOpen(true));
+        elements.previewLinks.appendChild(inboxItem);
+      }
+      renderInboxBanner();
+      return;
+    }
+    const link = links.find((entry) => entry.id === itemId);
+    if (!link || !link.enabled) return;
       const btn = document.createElement("div");
       const safeTitle = escapeHTML(link.title);
 
@@ -695,6 +922,7 @@ function renderPreview() {
       elements.previewLinks.appendChild(btn);
     });
 
+  renderInboxBanner();
   elements.previewCta.style.display = elements.footerSwitch.checked
     ? "block"
     : "none";
@@ -729,6 +957,7 @@ function openProfileModal() {
   if (elements.showProfileImage) elements.showProfileImage.checked = visibility.showProfileImage;
   if (elements.showDisplayName) elements.showDisplayName.checked = visibility.showDisplayName;
   if (elements.showBio) elements.showBio.checked = visibility.showBio;
+  if (elements.showSocialIcons) elements.showSocialIcons.checked = visibility.showSocialIcons;
   elements.profileModal.classList.add("is-open");
   elements.profileModal.setAttribute("aria-hidden", "false");
 }
@@ -823,6 +1052,83 @@ function initEvents() {
     renderPreview();
     closeModal();
   });
+
+  if (elements.inboxLayoutBtn) {
+    elements.inboxLayoutBtn.addEventListener("click", () => {
+      setInboxOpen(!inboxOpen);
+    });
+  }
+
+  if (elements.inboxCloseBtn) {
+    elements.inboxCloseBtn.addEventListener("click", () => {
+      setInboxOpen(false);
+    });
+  }
+
+  if (elements.inboxSection) {
+    elements.inboxSection.querySelectorAll("[data-inbox-tab]").forEach((btn) => {
+      btn.addEventListener("click", () => {
+        setInboxTab(btn.dataset.inboxTab);
+      });
+    });
+  }
+
+  if (elements.inboxSwitch) {
+    elements.inboxSwitch.addEventListener("change", renderPreview);
+  }
+
+  if (elements.inboxEditBtn && elements.inboxTitle) {
+    elements.inboxEditBtn.addEventListener("click", () => {
+      const current = inboxName;
+      const input = document.createElement("input");
+      input.type = "text";
+      input.value = current;
+      input.className = "inbox-title-input";
+      elements.inboxTitle.replaceWith(input);
+      input.focus();
+      input.select();
+
+      const commit = () => {
+        const next = input.value.trim() || "Get in touch";
+        inboxName = next;
+        saveAll();
+        const span = document.createElement("span");
+        span.className = "link-title";
+        span.id = "inboxTitle";
+        span.textContent = inboxName;
+        input.replaceWith(span);
+        elements.inboxTitle = span;
+        if (elements.previewInboxSheetTitle) {
+          elements.previewInboxSheetTitle.textContent = inboxName;
+        }
+        renderPreview();
+      };
+
+      input.addEventListener("blur", commit);
+      input.addEventListener("keydown", (event) => {
+        if (event.key === "Enter") {
+          event.preventDefault();
+          input.blur();
+        }
+        if (event.key === "Escape") {
+          event.preventDefault();
+          input.value = current;
+          input.blur();
+        }
+      });
+    });
+  }
+
+  if (elements.previewInboxSheetClose) {
+    elements.previewInboxSheetClose.addEventListener("click", () => setInboxSheetOpen(false));
+  }
+  if (elements.previewInboxSheetBackdrop) {
+    elements.previewInboxSheetBackdrop.addEventListener("click", () => setInboxSheetOpen(false));
+  }
+
+  if (elements.previewInboxSheetTitle) {
+    elements.previewInboxSheetTitle.textContent = inboxName;
+  }
 
   elements.footerSwitch.addEventListener("change", () => {
     elements.footerSwitch.checked = true;
@@ -932,6 +1238,13 @@ function initEvents() {
       renderProfile();
     });
   }
+  if (elements.showSocialIcons) {
+    elements.showSocialIcons.addEventListener("change", () => {
+      visibility.showSocialIcons = elements.showSocialIcons.checked;
+      saveAll();
+      renderProfile();
+    });
+  }
 
   elements.designForm.addEventListener("submit", (event) => {
     event.preventDefault();
@@ -1000,6 +1313,10 @@ function initEvents() {
   wireColorPicker(elements.buttonColorPicker, elements.buttonColor);
   wireColorPicker(elements.profileFontColorPicker, elements.profileFontColor);
   wireColorPicker(elements.buttonFontColorPicker, elements.buttonFontColor);
+
+  setInboxOpen(inboxOpen);
+  setInboxTab(inboxTab);
+  renderInboxBanner();
 }
 
 function initNavAccordion() {
