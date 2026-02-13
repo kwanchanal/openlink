@@ -763,7 +763,7 @@ main {
   left: 50%;
   top: 50%;
   transform: translate(-50%, -50%);
-  z-index: 3;
+  z-index: 4;
   width: fit-content;
   max-width: calc(100% - 24px);
   border: 1px solid hsl(0 0% 10%);
@@ -781,6 +781,60 @@ main {
   font-weight: 600;
   letter-spacing: 0.01em;
   pointer-events: none;
+}
+
+.flash-card__tag-cloud {
+  position: absolute;
+  inset: 0;
+  z-index: 3;
+  pointer-events: none;
+}
+
+.flash-card__tag {
+  --spawn-x: 0px;
+  --spawn-y: 0px;
+  position: absolute;
+  border: 1px solid hsl(0 0% 10%);
+  background: linear-gradient(180deg, hsl(0 0% 20%) 0%, hsl(0 0% 6%) 100%);
+  color: #fff;
+  border-radius: 999px;
+  padding: 8px 14px;
+  min-height: 34px;
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  font-weight: 600;
+  letter-spacing: 0.01em;
+  line-height: 1;
+  white-space: nowrap;
+  box-shadow: 0 6px 14px hsl(0 0% 0% / 0.22), inset 0 1px 0 hsl(0 0% 100% / 0.08);
+  opacity: 0;
+  transform: translate(var(--spawn-x), var(--spawn-y)) scale(0.92);
+  transition: opacity 0.28s ease, transform 0.32s cubic-bezier(0.2, 0.72, 0.18, 1.05);
+}
+
+.flash-card__tag.is-visible {
+  opacity: 1;
+  transform: translate(0, 0) scale(1);
+}
+
+.flash-card__tag.is-leaving {
+  opacity: 0;
+  transform: translate(0, 8px) scale(0.95);
+}
+
+.flash-card__tag.from-left {
+  --spawn-x: -18px;
+}
+
+.flash-card__tag.from-right {
+  --spawn-x: 18px;
+}
+
+.flash-card__tag.from-top {
+  --spawn-y: -18px;
+}
+
+.flash-card__tag.from-bottom {
+  --spawn-y: 18px;
 }
 
 .flash-card__overlay-text {
@@ -1047,6 +1101,12 @@ body.is-ready section {
     min-height: 42px;
     font-size: clamp(0.92rem, 4vw, 1.15rem);
     padding: 8px 16px;
+  }
+
+  .flash-card__tag {
+    min-height: 30px;
+    padding: 7px 12px;
+    font-size: clamp(0.75rem, 3.1vw, 0.92rem);
   }
 }
 

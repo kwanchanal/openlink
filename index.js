@@ -15,8 +15,9 @@ document.addEventListener("DOMContentLoaded", () => {
   initContactTyping();
   initNavMenu();
   initScrollReveal();
+  const startFlashTagCloud = initFlashTagCloud();
   initFlashCard();
-  initFlashOverlayTyping();
+  initFlashOverlayTyping(startFlashTagCloud);
 });
 
 function initScrollReveal() {
@@ -108,7 +109,7 @@ function initFlashCard() {
   setInterval(advance, 2800);
 }
 
-function initFlashOverlayTyping() {
+function initFlashOverlayTyping(onFirstPhraseComplete) {
   const textNode = document.querySelector(".flash-card__overlay-text");
   if (!textNode) {
     return;
@@ -132,6 +133,7 @@ function initFlashOverlayTyping() {
   ];
 
   let value = "";
+  let hasTriggeredSecondary = false;
 
   const runPhase = (index) => {
     const phase = phases[index];
@@ -149,6 +151,14 @@ function initFlashOverlayTyping() {
       let charIndex = 0;
       const typeNext = () => {
         if (charIndex >= phase.text.length) {
+          if (
+            !hasTriggeredSecondary &&
+            phase.text === "Get In Touch" &&
+            typeof onFirstPhraseComplete === "function"
+          ) {
+            hasTriggeredSecondary = true;
+            onFirstPhraseComplete();
+          }
           runPhase((index + 1) % phases.length);
           return;
         }
@@ -178,6 +188,94 @@ function initFlashOverlayTyping() {
   };
 
   runPhase(0);
+}
+
+function initFlashTagCloud() {
+  const cloud = document.querySelector(".flash-card__tag-cloud");
+  if (!cloud) {
+    return () => {};
+  }
+
+  const labels = [
+    "Booking Trip",
+    "Reserve",
+    "Request Payment",
+    "Donate",
+    "Get Initery",
+    "Hire",
+    "Get Quotation",
+  ];
+  const directions = ["from-left", "from-right", "from-top", "from-bottom"];
+  const reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+  let active = false;
+
+  const randomDirection = () => directions[Math.floor(Math.random() * directions.length)];
+
+  const clearCloud = () => {
+    cloud.innerHTML = "";
+  };
+
+  const placeTag = (tag) => {
+    const areaWidth = cloud.clientWidth;
+    const areaHeight = cloud.clientHeight;
+    const safeX = 12;
+    const safeY = 12;
+    const tagWidth = tag.offsetWidth;
+    const tagHeight = tag.offsetHeight;
+
+    const maxLeft = Math.max(safeX, areaWidth - tagWidth - safeX);
+    const maxTop = Math.max(safeY, areaHeight - tagHeight - safeY);
+    const left = safeX + Math.random() * Math.max(0, maxLeft - safeX);
+    const top = safeY + Math.random() * Math.max(0, maxTop - safeY);
+
+    tag.style.left = `${left}px`;
+    tag.style.top = `${top}px`;
+  };
+
+  const createTag = (label) => {
+    const tag = document.createElement("span");
+    tag.className = `flash-card__tag ${randomDirection()}`;
+    tag.textContent = label;
+    cloud.appendChild(tag);
+    placeTag(tag);
+
+    requestAnimationFrame(() => {
+      tag.classList.add("is-visible");
+    });
+  };
+
+  const runCycle = () => {
+    clearCloud();
+
+    labels.forEach((label, index) => {
+      setTimeout(() => createTag(label), index * 230);
+    });
+
+    const revealDuration = labels.length * 230 + 1200;
+    setTimeout(() => {
+      const tags = cloud.querySelectorAll(".flash-card__tag");
+      tags.forEach((tag) => tag.classList.add("is-leaving"));
+
+      setTimeout(() => {
+        clearCloud();
+        if (active) {
+          runCycle();
+        }
+      }, 430);
+    }, revealDuration);
+  };
+
+  return () => {
+    if (active) return;
+    active = true;
+
+    if (reduceMotion.matches) {
+      labels.forEach((label) => createTag(label));
+      return;
+    }
+
+    runCycle();
+  };
 }
 
 function initGlobe() {
