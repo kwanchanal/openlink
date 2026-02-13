@@ -81,6 +81,32 @@ textarea {
   background: var(--sidebar);
 }
 
+.desktop-only-notice {
+  display: none;
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  background: rgba(9, 11, 16, 0.9);
+  place-items: center;
+  padding: 24px;
+}
+
+.desktop-only-notice img {
+  width: min(560px, 92vw);
+  height: auto;
+  display: block;
+}
+
+@media (max-width: 1024px), (hover: none), (pointer: coarse) {
+  .desktop-only-notice {
+    display: grid;
+  }
+
+  body.dashboard {
+    overflow: hidden;
+  }
+}
+
 /* ── Top banner ── */
 .top-banner {
   background: var(--primary);
