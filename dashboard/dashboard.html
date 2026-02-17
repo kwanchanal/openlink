@@ -296,6 +296,31 @@
             </div>
           </section>
 
+          <section class="inbox-section banner-section" id="bannerSection">
+            <div class="inbox-section-header">
+              <button class="inbox-header-left" type="button" aria-label="Banner feature">
+                <span class="material-symbols-outlined">drag_indicator</span>
+                <span>Banner</span>
+              </button>
+              <div class="inbox-header-actions">
+                <button class="icon-btn-sm" id="bannerAddBtn" type="button" aria-label="Add banner item">
+                  <span class="material-symbols-outlined">add</span>
+                </button>
+                <button class="icon-btn-sm" type="button" aria-label="Help">
+                  <span class="material-symbols-outlined">help</span>
+                </button>
+                <label class="switch">
+                  <input type="checkbox" id="bannerSwitch" />
+                  <span class="slider"></span>
+                </label>
+              </div>
+            </div>
+            <div class="banner-note" id="bannerRequirementNote">
+              Add at least 3 banners to enable infinite slide in preview.
+            </div>
+            <div class="banner-items" id="bannerItemsList"></div>
+          </section>
+
           <section class="links" id="linksList"></section>
 
           <section class="footer-toggle">
@@ -336,6 +361,7 @@
               <div class="phone-name" id="previewName">Kwanchanal Geographic</div>
               <div class="phone-bio" id="previewBio">Bio-native creator · Bangkok</div>
             </div>
+            <div class="phone-banner-marquee" id="previewBannerMarquee"></div>
             <div class="phone-links" id="previewLinks"></div>
             <div class="phone-footer-group">
               <div class="phone-social" id="previewSocialIcons">
@@ -464,6 +490,56 @@
           <div class="field">
             <label for="socialUrl">URL</label>
             <input id="socialUrl" name="url" type="url" required placeholder="https://" />
+          </div>
+          <button class="primary" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="bannerModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="bannerModalTitle">Add banner</h3>
+          <button class="icon-btn" id="closeBannerBtn" type="button" aria-label="Close banner modal">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form id="bannerForm">
+          <div class="field">
+            <label>Image (100x100)</label>
+            <div class="thumbnail-row">
+              <button class="add-thumbnail-btn" id="bannerImagePickBtn" type="button">
+                <span class="material-symbols-outlined">add_photo_alternate</span>
+                Add image
+              </button>
+              <button class="reset-thumbnail-btn" id="bannerImageResetBtn" type="button">
+                <span class="material-symbols-outlined">refresh</span>
+                Reset
+              </button>
+              <input class="thumbnail-input" id="bannerImageInput" type="file" accept="image/*" />
+            </div>
+            <div class="thumbnail-hint" id="bannerImageHint">No image selected.</div>
+            <div class="thumbnail-preview square" id="bannerImagePreview"></div>
+          </div>
+          <div class="field">
+            <label for="bannerLinkUrl">Link URL</label>
+            <input id="bannerLinkUrl" name="url" type="url" required placeholder="https://" />
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="bannerPriceToggle">Show price</label>
+              <label class="switch switch-sm">
+                <input id="bannerPriceToggle" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <div class="field banner-price-fields" id="bannerPriceFields" hidden>
+            <label for="bannerPriceValue">Price</label>
+            <div class="banner-price-row">
+              <input id="bannerPriceValue" name="price" type="text" placeholder="990" />
+              <input id="bannerPriceUnit" name="unit" type="text" placeholder="THB" />
+            </div>
           </div>
           <button class="primary" type="submit">Save</button>
         </form>

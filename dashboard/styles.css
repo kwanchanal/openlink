@@ -1124,6 +1124,104 @@ textarea {
   background: #ededed;
 }
 
+.banner-section .inbox-header-left {
+  cursor: grab;
+}
+
+.banner-section .inbox-header-left:active {
+  cursor: grabbing;
+}
+
+.banner-note {
+  font-size: 12px;
+  color: var(--muted);
+  background: #f0f0f0;
+  border: 1px solid #e1e1e1;
+  border-radius: 10px;
+  padding: 8px 10px;
+}
+
+.banner-note.is-ready {
+  color: #25663f;
+  background: #eef8f1;
+  border-color: #c9e8d5;
+}
+
+.banner-items {
+  display: grid;
+  gap: 10px;
+}
+
+.banner-empty {
+  font-size: 12px;
+  color: var(--muted);
+  border: 1px dashed var(--border);
+  border-radius: 12px;
+  padding: 14px;
+  text-align: center;
+  background: #fcfcfc;
+}
+
+.banner-item-card {
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: #fff;
+  padding: 10px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.banner-item-left {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  min-width: 0;
+}
+
+.banner-item-thumb {
+  width: 54px;
+  height: 54px;
+  border-radius: 10px;
+  overflow: hidden;
+  flex-shrink: 0;
+  background: #f1f1f1;
+}
+
+.banner-item-thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.banner-item-copy {
+  min-width: 0;
+}
+
+.banner-item-url {
+  font-size: 12px;
+  color: var(--ink);
+  max-width: 240px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.banner-item-price {
+  font-size: 11px;
+  color: #2b7a4a;
+  margin-top: 2px;
+  font-weight: 600;
+}
+
+.banner-item-actions {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+}
+
 .inbox-panel-title {
   font-weight: 600;
   font-size: 13px;
@@ -1692,6 +1790,18 @@ textarea {
   border: 1px solid var(--line);
 }
 
+.thumbnail-preview.square {
+  width: 100px;
+  height: 100px;
+  max-width: 100px;
+}
+
+.banner-price-row {
+  display: grid;
+  grid-template-columns: 1fr 110px;
+  gap: 10px;
+}
+
 .thumbnail-preview img {
   width: 100%;
   height: 100%;
@@ -1858,7 +1968,7 @@ textarea {
   flex-direction: column;
   color: var(--phone-profile-color, var(--foreground));
   width: 280px;
-  height: 560px;
+  height: 600px;
   box-shadow: var(--shadow-lg);
   background-size: cover;
   background-position: center;
@@ -1885,7 +1995,7 @@ textarea {
 .phone-scroll {
   flex: 1;
   overflow-y: auto;
-  padding: 24px 20px 72px;
+  padding: 24px 20px 56px;
   display: flex;
   flex-direction: column;
   gap: 14px;
@@ -1920,7 +2030,7 @@ textarea {
 
 .phone-bio {
   font-size: 10px;
-  color: var(--muted-foreground);
+  color: #000;
   text-align: center;
   line-height: 1.4;
 }
@@ -1947,6 +2057,78 @@ textarea {
   display: flex;
   flex-direction: column;
   gap: 8px;
+}
+
+.phone-banner-marquee {
+  display: none;
+  margin: 6px 0 10px;
+  overflow: hidden;
+  height: 100px;
+  min-height: 100px;
+  max-height: 100px;
+  flex: 0 0 100px;
+  padding: 0;
+  background: transparent;
+  line-height: 0;
+}
+
+.phone-banner-marquee.is-visible {
+  display: block;
+}
+
+.marquee-track {
+  display: flex;
+  align-items: stretch;
+  gap: 8px;
+  width: max-content;
+  animation: banner-marquee 22s linear infinite;
+  height: 100%;
+}
+
+.marquee-item {
+  width: 100px;
+  height: 100%;
+  border-radius: 12px;
+  overflow: hidden;
+  position: relative;
+  display: block;
+  flex-shrink: 0;
+  background: transparent;
+  border: none;
+}
+
+.marquee-item img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+
+.marquee-price {
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1.2;
+  padding: 7px 9px;
+  border-radius: 0;
+  background: linear-gradient(to top, rgba(0, 0, 0, 0.88), rgba(0, 0, 0, 0.56));
+  color: #fff;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, 0.45);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+@keyframes banner-marquee {
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(calc(-50% - 4px));
+  }
 }
 
 .phone-link {

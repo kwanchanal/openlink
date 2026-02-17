@@ -21,29 +21,45 @@ const defaultProfile = {
 const defaultLinks = [
   {
     id: crypto.randomUUID(),
-    title: "dribbble",
-    url: "https://dribbble.com/shots/27030684-Korvex-ai-AI-Auto-UI",
+    title: "founder",
+    url: "https://wemint.link",
     thumbnail: "",
-    featured: true,
+    featured: false,
     enabled: true,
   },
   {
     id: crypto.randomUUID(),
     title: "portfolio",
     url: "https://kwanchanal.github.io/hello",
-    thumbnail: "",
-    featured: false,
+    thumbnail: "../mockup/featured-portfolio.png",
+    featured: true,
     enabled: true,
   },
 ];
+const DEFAULT_PORTFOLIO_THUMBNAIL = "../mockup/featured-portfolio.png";
 
 const FORCE_PROFILE_MOCK = true;
 const FORCE_APPEARANCE_MOCK = true;
 const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : storage.get("wemint_profile", defaultProfile);
 const links = storage.get("wemint_links", defaultLinks);
 const socialLinks = storage.get("wemint_social_links", {});
+
+// Keep existing user data, but backfill mockup thumbnail for portfolio when missing.
+if (Array.isArray(links)) {
+  const portfolioLink = links.find((link) => (link?.title || "").trim().toLowerCase() === "portfolio");
+  if (portfolioLink && !String(portfolioLink.thumbnail || "").trim()) {
+    portfolioLink.thumbnail = DEFAULT_PORTFOLIO_THUMBNAIL;
+    portfolioLink.featured = true;
+    storage.set("wemint_links", links);
+  }
+}
 let inboxName = storage.get("wemint_inbox_name", "Get in touch");
-let inboxPosition = storage.get("wemint_inbox_position", 0);
+const rawInboxPosition = localStorage.getItem("wemint_inbox_position");
+const rawBannerPosition = localStorage.getItem("wemint_banner_position");
+let inboxPosition = Number(rawInboxPosition ?? links.length + 1);
+let bannerPosition = Number(rawBannerPosition ?? links.length);
+if (Number.isNaN(inboxPosition)) inboxPosition = links.length + 1;
+if (Number.isNaN(bannerPosition)) bannerPosition = links.length;
 let inboxLayout = storage.get("wemint_inbox_layout", {
   type: "banner",
   thumbnail: "",
@@ -64,11 +80,61 @@ let inboxFormFields = storage.get("wemint_inbox_fields", defaultInboxFields);
 if (!Array.isArray(inboxFormFields) || inboxFormFields.length === 0) {
   inboxFormFields = [...defaultInboxFields];
 }
+const defaultBannerItems = [
+  {
+    id: "mockup-banner-1",
+    image: "../mockup/banner-1.png",
+    url: "https://wemint.link",
+    showPrice: false,
+    price: "",
+    unit: "",
+  },
+  {
+    id: "mockup-banner-2",
+    image: "../mockup/banner-2.png",
+    url: "https://kwanchanal.github.io/mintable-collection/",
+    showPrice: true,
+    price: "29",
+    unit: "USDT",
+  },
+  {
+    id: "mockup-banner-3",
+    image: "../mockup/banner-3.png",
+    url: "https://kwanchanal.github.io/mintable-collection/",
+    showPrice: true,
+    price: "29",
+    unit: "USDT",
+  },
+];
+const savedBannerItems = storage.get("wemint_banner_items", null);
+let bannerItems = Array.isArray(savedBannerItems) && savedBannerItems.length
+  ? savedBannerItems
+  : defaultBannerItems;
+if (!Array.isArray(bannerItems) || !bannerItems.length) {
+  bannerItems = [...defaultBannerItems];
+}
+bannerItems = bannerItems
+  .map((item) => ({
+    id: item?.id || crypto.randomUUID(),
+    image: String(item?.image || ""),
+    url: String(item?.url || ""),
+    showPrice: Boolean(item?.showPrice),
+    price: String(item?.price || ""),
+    unit: String(item?.unit || ""),
+  }))
+  .filter((item) => item.image && item.url);
+if (!bannerItems.length) {
+  bannerItems = [...defaultBannerItems];
+}
+let bannerEnabled = Boolean(storage.get("wemint_banner_enabled", true));
+if (bannerItems.length < 3) {
+  bannerEnabled = false;
+}
 const defaultAppearance = {
   profileImageUrl: "",
-  backgroundImageUrl: "",
+  backgroundImageUrl: "../mockup/background.png",
   backgroundColor: "#ffffff",
-  buttonColor: "#b3b3b3",
+  buttonColor: "#000000",
   profileFontColor: "#111827",
   buttonFontColor: "#f9fafb",
 };
@@ -224,6 +290,26 @@ const elements = {
   showDisplayName: document.getElementById("showDisplayName"),
   showBio: document.getElementById("showBio"),
   showSocialIcons: document.getElementById("showSocialIcons"),
+  bannerSection: document.getElementById("bannerSection"),
+  bannerSwitch: document.getElementById("bannerSwitch"),
+  bannerAddBtn: document.getElementById("bannerAddBtn"),
+  bannerItemsList: document.getElementById("bannerItemsList"),
+  bannerRequirementNote: document.getElementById("bannerRequirementNote"),
+  previewBannerMarquee: document.getElementById("previewBannerMarquee"),
+  bannerModal: document.getElementById("bannerModal"),
+  bannerModalTitle: document.getElementById("bannerModalTitle"),
+  bannerForm: document.getElementById("bannerForm"),
+  closeBannerBtn: document.getElementById("closeBannerBtn"),
+  bannerImagePickBtn: document.getElementById("bannerImagePickBtn"),
+  bannerImageResetBtn: document.getElementById("bannerImageResetBtn"),
+  bannerImageInput: document.getElementById("bannerImageInput"),
+  bannerImageHint: document.getElementById("bannerImageHint"),
+  bannerImagePreview: document.getElementById("bannerImagePreview"),
+  bannerLinkUrl: document.getElementById("bannerLinkUrl"),
+  bannerPriceToggle: document.getElementById("bannerPriceToggle"),
+  bannerPriceFields: document.getElementById("bannerPriceFields"),
+  bannerPriceValue: document.getElementById("bannerPriceValue"),
+  bannerPriceUnit: document.getElementById("bannerPriceUnit"),
 };
 
 let editingId = null;
@@ -236,6 +322,8 @@ let cropCallback = null;
 let preferredFieldType = "text";
 let draftChoiceOptions = [];
 let didBindDatePickerOutsideClick = false;
+let editingBannerId = null;
+let bannerDraftImage = "";
 
 const CROP_RATIOS = {
   profile: 1,
@@ -250,9 +338,12 @@ function saveAll() {
   storage.set("wemint_appearance", appearance);
   storage.set("wemint_visibility", visibility);
   storage.set("wemint_inbox_position", inboxPosition);
+  storage.set("wemint_banner_position", bannerPosition);
   storage.set("wemint_inbox_name", inboxName);
   storage.set("wemint_inbox_layout", inboxLayout);
   storage.set("wemint_inbox_fields", inboxFormFields);
+  storage.set("wemint_banner_items", bannerItems);
+  storage.set("wemint_banner_enabled", bannerEnabled);
 }
 
 function renderProfile() {
@@ -278,9 +369,9 @@ function applyAppearance() {
   const phone = document.querySelector(".phone");
   if (phone) {
     phone.style.setProperty("--phone-profile-color", appearance.profileFontColor || "#111827");
-    phone.style.setProperty("--phone-button-color", appearance.buttonColor || "#b3b3b3");
+    phone.style.setProperty("--phone-button-color", appearance.buttonColor || "#000000");
     phone.style.setProperty("--phone-button-text", appearance.buttonFontColor || "#f9fafb");
-    phone.style.setProperty("--phone-link-color", appearance.buttonColor || "#b3b3b3");
+    phone.style.setProperty("--phone-link-color", appearance.buttonColor || "#000000");
     phone.style.setProperty("--phone-link-text", appearance.buttonFontColor || "#f9fafb");
     phone.style.backgroundColor = appearance.backgroundColor || "#ffffff";
     phone.style.backgroundImage = appearance.backgroundImageUrl
@@ -658,6 +749,168 @@ function setInboxSheetOpen(value) {
   if (elements.previewInboxSheetTitle) {
     elements.previewInboxSheetTitle.textContent = inboxName;
   }
+}
+
+function isBannerReady() {
+  return bannerItems.length >= 3;
+}
+
+function updateBannerRequirementState() {
+  if (!elements.bannerRequirementNote) return;
+  const ready = isBannerReady();
+  elements.bannerRequirementNote.classList.toggle("is-ready", ready);
+  elements.bannerRequirementNote.textContent = `Add at least 3 banners to enable infinite slide in preview. (${bannerItems.length}/3)`;
+}
+
+function updateBannerModalImageUI() {
+  if (!elements.bannerImagePreview || !elements.bannerImageHint) return;
+  if (bannerDraftImage) {
+    elements.bannerImagePreview.innerHTML = `<img src="${escapeHTML(bannerDraftImage)}" alt="" />`;
+    elements.bannerImageHint.textContent = "Image ready.";
+  } else {
+    elements.bannerImagePreview.innerHTML = "";
+    elements.bannerImageHint.textContent = "No image selected.";
+  }
+}
+
+function updateBannerPriceVisibility() {
+  if (!elements.bannerPriceFields || !elements.bannerPriceToggle) return;
+  const shouldShow = Boolean(elements.bannerPriceToggle.checked);
+  elements.bannerPriceFields.hidden = !shouldShow;
+  if (!shouldShow) {
+    if (elements.bannerPriceValue) elements.bannerPriceValue.value = "";
+    if (elements.bannerPriceUnit) elements.bannerPriceUnit.value = "";
+  }
+}
+
+function openBannerModal(id = null) {
+  if (!elements.bannerModal || !elements.bannerForm) return;
+  editingBannerId = id;
+  const target = id ? bannerItems.find((item) => item.id === id) : null;
+  if (elements.bannerModalTitle) {
+    elements.bannerModalTitle.textContent = target ? "Edit banner" : "Add banner";
+  }
+  elements.bannerForm.reset();
+  if (elements.bannerImageInput) {
+    elements.bannerImageInput.value = "";
+  }
+  bannerDraftImage = target?.image || "";
+  if (elements.bannerLinkUrl) {
+    elements.bannerLinkUrl.value = target?.url || "";
+  }
+  if (elements.bannerPriceToggle) {
+    elements.bannerPriceToggle.checked = Boolean(target?.showPrice);
+  }
+  if (elements.bannerPriceValue) {
+    elements.bannerPriceValue.value = target?.price || "";
+  }
+  if (elements.bannerPriceUnit) {
+    elements.bannerPriceUnit.value = target?.unit || "";
+  }
+  updateBannerModalImageUI();
+  updateBannerPriceVisibility();
+  elements.bannerModal.classList.add("is-open");
+  elements.bannerModal.setAttribute("aria-hidden", "false");
+}
+
+function closeBannerModal() {
+  if (!elements.bannerModal) return;
+  elements.bannerModal.classList.remove("is-open");
+  elements.bannerModal.setAttribute("aria-hidden", "true");
+  editingBannerId = null;
+  bannerDraftImage = "";
+}
+
+function renderBannerItems() {
+  if (!elements.bannerItemsList) return;
+  updateBannerRequirementState();
+  const ready = isBannerReady();
+  if (elements.bannerSwitch) {
+    elements.bannerSwitch.checked = ready && bannerEnabled;
+    elements.bannerSwitch.disabled = !ready;
+  }
+
+  if (!bannerItems.length) {
+    elements.bannerItemsList.innerHTML = `<div class="banner-empty">No banner items yet. Add at least 3.</div>`;
+    return;
+  }
+
+  elements.bannerItemsList.innerHTML = bannerItems.map((item, index) => {
+    const safeUrl = escapeHTML(item.url);
+    const showPrice = item.showPrice && item.price;
+    const badge = showPrice
+      ? `<div class="banner-item-price">${escapeHTML(item.price)}${item.unit ? ` ${escapeHTML(item.unit)}` : ""}</div>`
+      : "";
+    return `
+      <article class="banner-item-card" data-banner-id="${escapeHTML(item.id)}">
+        <div class="banner-item-left">
+          <div class="banner-item-thumb"><img src="${escapeHTML(item.image)}" alt="Banner ${index + 1}" /></div>
+          <div class="banner-item-copy">
+            <div class="banner-item-url">${safeUrl}</div>
+            ${badge}
+          </div>
+        </div>
+        <div class="banner-item-actions">
+          <button class="icon-btn-sm banner-edit-btn" type="button" aria-label="Edit banner">
+            <span class="material-symbols-outlined">edit</span>
+          </button>
+          <button class="icon-btn-sm banner-delete-btn" type="button" aria-label="Delete banner">
+            <span class="material-symbols-outlined">delete</span>
+          </button>
+        </div>
+      </article>
+    `;
+  }).join("");
+
+  elements.bannerItemsList.querySelectorAll(".banner-item-card").forEach((card) => {
+    const id = card.dataset.bannerId;
+    const editBtn = card.querySelector(".banner-edit-btn");
+    const deleteBtn = card.querySelector(".banner-delete-btn");
+    if (editBtn) {
+      editBtn.addEventListener("click", () => openBannerModal(id));
+    }
+    if (deleteBtn) {
+      deleteBtn.addEventListener("click", () => {
+        bannerItems = bannerItems.filter((item) => item.id !== id);
+        if (!isBannerReady()) {
+          bannerEnabled = false;
+        }
+        saveAll();
+        renderBannerItems();
+        renderPreview();
+      });
+    }
+  });
+}
+
+function renderPreviewBannerMarquee() {
+  if (!elements.previewBannerMarquee) return;
+  const shouldShow = bannerEnabled && isBannerReady();
+  elements.previewBannerMarquee.classList.toggle("is-visible", shouldShow);
+  if (!shouldShow) {
+    elements.previewBannerMarquee.innerHTML = "";
+    return false;
+  }
+
+  const content = bannerItems.map((item) => {
+    const price = item.showPrice && item.price
+      ? `<span class="marquee-price">${escapeHTML(item.price)}${item.unit ? ` ${escapeHTML(item.unit)}` : ""}</span>`
+      : "";
+    return `
+      <a class="marquee-item" href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">
+        <img src="${escapeHTML(item.image)}" alt="" />
+        ${price}
+      </a>
+    `;
+  }).join("");
+
+  elements.previewBannerMarquee.innerHTML = `
+    <div class="marquee-track">
+      ${content}
+      ${content}
+    </div>
+  `;
+  return true;
 }
 
 function renderInboxBanner() {
@@ -1157,18 +1410,26 @@ function renderInboxLayoutOptions() {
 }
 
 function getCombinedOrder() {
-  const clamped = Math.max(0, Math.min(inboxPosition, links.length));
   const order = links.map((link) => link.id);
-  order.splice(clamped, 0, "inbox");
+  const specials = [
+    { id: "inbox", position: inboxPosition },
+    { id: "banner", position: bannerPosition },
+  ].sort((a, b) => a.position - b.position || a.id.localeCompare(b.id));
+
+  specials.forEach((special) => {
+    const clamped = Math.max(0, Math.min(special.position, order.length));
+    order.splice(clamped, 0, special.id);
+  });
   return order;
 }
 
 function applyCombinedOrder(order) {
   inboxPosition = order.indexOf("inbox");
+  bannerPosition = order.indexOf("banner");
   const map = new Map(links.map((link) => [link.id, link]));
   links.length = 0;
   order.forEach((id) => {
-    if (id === "inbox") return;
+    if (id === "inbox" || id === "banner") return;
     const item = map.get(id);
     if (item) links.push(item);
   });
@@ -1182,8 +1443,12 @@ function renderLinks() {
   }
   const order = getCombinedOrder();
   const inboxSection = elements.inboxSection;
+  const bannerSection = elements.bannerSection;
   if (inboxSection && inboxSection.parentElement !== elements.linksList) {
     inboxSection.remove();
+  }
+  if (bannerSection && bannerSection.parentElement !== elements.linksList) {
+    bannerSection.remove();
   }
 
   const attachDragHandlers = (target, targetId, dragHandle) => {
@@ -1231,6 +1496,11 @@ function renderLinks() {
     if (itemId === "inbox" && inboxSection) {
       elements.linksList.appendChild(inboxSection);
       attachDragHandlers(inboxSection, "inbox", inboxSection.querySelector(".inbox-header-left"));
+      return;
+    }
+    if (itemId === "banner" && bannerSection) {
+      elements.linksList.appendChild(bannerSection);
+      attachDragHandlers(bannerSection, "banner", bannerSection.querySelector(".inbox-header-left"));
       return;
     }
     const link = links.find((entry) => entry.id === itemId);
@@ -1415,6 +1685,13 @@ function renderPreview() {
   elements.previewLinks.innerHTML = "";
   const order = getCombinedOrder();
   order.forEach((itemId) => {
+    if (itemId === "banner") {
+      const shouldShowBanner = renderPreviewBannerMarquee();
+      if (shouldShowBanner && elements.previewBannerMarquee) {
+        elements.previewLinks.appendChild(elements.previewBannerMarquee);
+      }
+      return;
+    }
     if (itemId === "inbox") {
       if (!elements.inboxSwitch?.checked) {
         setInboxSheetOpen(false);
@@ -1615,6 +1892,90 @@ function initEvents() {
 
   if (elements.inboxSwitch) {
     elements.inboxSwitch.addEventListener("change", renderPreview);
+  }
+
+  if (elements.bannerAddBtn) {
+    elements.bannerAddBtn.addEventListener("click", () => openBannerModal());
+  }
+  if (elements.closeBannerBtn) {
+    elements.closeBannerBtn.addEventListener("click", closeBannerModal);
+  }
+  if (elements.bannerModal) {
+    elements.bannerModal.addEventListener("click", (event) => {
+      if (event.target === elements.bannerModal) closeBannerModal();
+    });
+  }
+  if (elements.bannerPriceToggle) {
+    elements.bannerPriceToggle.addEventListener("change", updateBannerPriceVisibility);
+  }
+  if (elements.bannerImagePickBtn && elements.bannerImageInput) {
+    elements.bannerImagePickBtn.addEventListener("click", () => {
+      elements.bannerImageInput.click();
+    });
+    elements.bannerImageInput.addEventListener("change", () => {
+      const file = elements.bannerImageInput.files?.[0];
+      if (!file) return;
+      openCropModal({
+        file,
+        title: "Crop banner image",
+        aspectRatio: 1,
+        onSave: (dataUrl) => {
+          bannerDraftImage = dataUrl;
+          updateBannerModalImageUI();
+        },
+      });
+    });
+  }
+  if (elements.bannerImageResetBtn) {
+    elements.bannerImageResetBtn.addEventListener("click", () => {
+      bannerDraftImage = "";
+      if (elements.bannerImageInput) elements.bannerImageInput.value = "";
+      updateBannerModalImageUI();
+    });
+  }
+  if (elements.bannerSwitch) {
+    elements.bannerSwitch.addEventListener("change", () => {
+      if (elements.bannerSwitch.checked && !isBannerReady()) {
+        bannerEnabled = false;
+        elements.bannerSwitch.checked = false;
+        updateBannerRequirementState();
+        return;
+      }
+      bannerEnabled = elements.bannerSwitch.checked;
+      saveAll();
+      renderPreview();
+    });
+  }
+  if (elements.bannerForm) {
+    elements.bannerForm.addEventListener("submit", (event) => {
+      event.preventDefault();
+      const url = elements.bannerLinkUrl?.value.trim() || "";
+      const showPrice = Boolean(elements.bannerPriceToggle?.checked);
+      const price = elements.bannerPriceValue?.value.trim() || "";
+      const unit = elements.bannerPriceUnit?.value.trim() || "";
+      if (!bannerDraftImage || !url) return;
+
+      const payload = {
+        id: editingBannerId || crypto.randomUUID(),
+        image: bannerDraftImage,
+        url,
+        showPrice,
+        price: showPrice ? price : "",
+        unit: showPrice ? unit : "",
+      };
+
+      if (editingBannerId) {
+        const index = bannerItems.findIndex((item) => item.id === editingBannerId);
+        if (index > -1) bannerItems[index] = payload;
+      } else {
+        bannerItems.push(payload);
+      }
+
+      saveAll();
+      renderBannerItems();
+      renderPreview();
+      closeBannerModal();
+    });
   }
 
   if (elements.inboxEditBtn && elements.inboxTitle) {
@@ -1952,6 +2313,8 @@ function initEvents() {
   setInboxOpen(inboxOpen);
   setInboxTab(inboxTab);
   renderInboxBanner();
+  renderBannerItems();
+  renderPreviewBannerMarquee();
 }
 
 function initNavAccordion() {
