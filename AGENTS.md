@@ -2,6 +2,10 @@
 
 This repository contains the static front-end pages for `wemint.link`, a payment-link experience that lets creators and small businesses share a personalized link with a QR code, profile, and message.
 
+## Core product
+- `wemint.link` helps people create a portfolio link for themselves or their brand in minutes.
+- The core value is simple setup: one shareable page with profile, links, media, and contact entry points.
+
 ## What this repo is
 - Static HTML/CSS/JS pages (no build step required).
 - Primary screens:
