@@ -22,6 +22,7 @@ const defaultLinks = [
   {
     id: crypto.randomUUID(),
     title: "founder",
+    hasUrl: true,
     url: "https://wemint.link",
     thumbnail: "",
     featured: false,
@@ -30,6 +31,7 @@ const defaultLinks = [
   {
     id: crypto.randomUUID(),
     title: "portfolio",
+    hasUrl: true,
     url: "https://kwanchanal.github.io/hello",
     thumbnail: "../mockup/featured-portfolio.png",
     featured: true,
@@ -43,6 +45,15 @@ const FORCE_APPEARANCE_MOCK = true;
 const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : storage.get("wemint_profile", defaultProfile);
 const links = storage.get("wemint_links", defaultLinks);
 const socialLinks = storage.get("wemint_social_links", {});
+
+if (Array.isArray(links)) {
+  links.forEach((link) => {
+    const nextUrl = String(link?.url || "").trim();
+    const nextHasUrl = typeof link?.hasUrl === "boolean" ? link.hasUrl : Boolean(nextUrl);
+    link.url = nextHasUrl ? nextUrl : "";
+    link.hasUrl = nextHasUrl;
+  });
+}
 
 // Keep existing user data, but backfill mockup thumbnail for portfolio when missing.
 if (Array.isArray(links)) {
@@ -84,6 +95,7 @@ const defaultBannerItems = [
   {
     id: "mockup-banner-1",
     image: "../mockup/banner-1.png",
+    hasLink: true,
     url: "https://wemint.link",
     showPrice: false,
     price: "",
@@ -92,6 +104,7 @@ const defaultBannerItems = [
   {
     id: "mockup-banner-2",
     image: "../mockup/banner-2.png",
+    hasLink: true,
     url: "https://kwanchanal.github.io/mintable-collection/",
     showPrice: true,
     price: "29",
@@ -100,6 +113,7 @@ const defaultBannerItems = [
   {
     id: "mockup-banner-3",
     image: "../mockup/banner-3.png",
+    hasLink: true,
     url: "https://kwanchanal.github.io/mintable-collection/",
     showPrice: true,
     price: "29",
@@ -114,15 +128,20 @@ if (!Array.isArray(bannerItems) || !bannerItems.length) {
   bannerItems = [...defaultBannerItems];
 }
 bannerItems = bannerItems
-  .map((item) => ({
-    id: item?.id || crypto.randomUUID(),
-    image: String(item?.image || ""),
-    url: String(item?.url || ""),
-    showPrice: Boolean(item?.showPrice),
-    price: String(item?.price || ""),
-    unit: String(item?.unit || ""),
-  }))
-  .filter((item) => item.image && item.url);
+  .map((item) => {
+    const nextUrl = String(item?.url || "").trim();
+    const nextHasLink = typeof item?.hasLink === "boolean" ? item.hasLink : Boolean(nextUrl);
+    return {
+      id: item?.id || crypto.randomUUID(),
+      image: String(item?.image || ""),
+      hasLink: nextHasLink,
+      url: nextHasLink ? nextUrl : "",
+      showPrice: Boolean(item?.showPrice),
+      price: String(item?.price || ""),
+      unit: String(item?.unit || ""),
+    };
+  })
+  .filter((item) => item.image && (!item.hasLink || item.url));
 if (!bannerItems.length) {
   bannerItems = [...defaultBannerItems];
 }
@@ -203,6 +222,9 @@ const elements = {
   downloadPreviewBtn: document.getElementById("downloadPreviewBtn"),
   linkModal: document.getElementById("linkModal"),
   linkForm: document.getElementById("linkForm"),
+  linkHasUrlToggle: document.getElementById("linkHasUrlToggle"),
+  linkUrlField: document.getElementById("linkUrlField"),
+  linkUrl: document.getElementById("linkUrl"),
   addLinkBtn: document.getElementById("addLinkBtn"),
   topbarAddBtn: document.getElementById("topbarAddBtn"),
   sidebarAddBtn: document.getElementById("sidebarAddBtn"),
@@ -305,6 +327,8 @@ const elements = {
   bannerImageInput: document.getElementById("bannerImageInput"),
   bannerImageHint: document.getElementById("bannerImageHint"),
   bannerImagePreview: document.getElementById("bannerImagePreview"),
+  bannerHasLinkToggle: document.getElementById("bannerHasLinkToggle"),
+  bannerLinkField: document.getElementById("bannerLinkField"),
   bannerLinkUrl: document.getElementById("bannerLinkUrl"),
   bannerPriceToggle: document.getElementById("bannerPriceToggle"),
   bannerPriceFields: document.getElementById("bannerPriceFields"),
@@ -783,6 +807,18 @@ function updateBannerPriceVisibility() {
   }
 }
 
+function updateBannerLinkVisibility() {
+  if (!elements.bannerHasLinkToggle) return;
+  const shouldShow = Boolean(elements.bannerHasLinkToggle.checked);
+  if (elements.bannerLinkField) {
+    elements.bannerLinkField.hidden = !shouldShow;
+  }
+  if (elements.bannerLinkUrl) {
+    elements.bannerLinkUrl.disabled = !shouldShow;
+    elements.bannerLinkUrl.required = shouldShow;
+  }
+}
+
 function openBannerModal(id = null) {
   if (!elements.bannerModal || !elements.bannerForm) return;
   editingBannerId = id;
@@ -795,6 +831,11 @@ function openBannerModal(id = null) {
     elements.bannerImageInput.value = "";
   }
   bannerDraftImage = target?.image || "";
+  if (elements.bannerHasLinkToggle) {
+    elements.bannerHasLinkToggle.checked = target
+      ? Boolean(typeof target.hasLink === "boolean" ? target.hasLink : target.url)
+      : true;
+  }
   if (elements.bannerLinkUrl) {
     elements.bannerLinkUrl.value = target?.url || "";
   }
@@ -808,6 +849,7 @@ function openBannerModal(id = null) {
     elements.bannerPriceUnit.value = target?.unit || "";
   }
   updateBannerModalImageUI();
+  updateBannerLinkVisibility();
   updateBannerPriceVisibility();
   elements.bannerModal.classList.add("is-open");
   elements.bannerModal.setAttribute("aria-hidden", "false");
@@ -836,7 +878,9 @@ function renderBannerItems() {
   }
 
   elements.bannerItemsList.innerHTML = bannerItems.map((item, index) => {
-    const safeUrl = escapeHTML(item.url);
+    const safeUrl = item.hasLink && item.url
+      ? escapeHTML(item.url)
+      : '<span class="banner-item-url-empty">No link</span>';
     const showPrice = item.showPrice && item.price;
     const badge = showPrice
       ? `<div class="banner-item-price">${escapeHTML(item.price)}${item.unit ? ` ${escapeHTML(item.unit)}` : ""}</div>`
@@ -896,11 +940,21 @@ function renderPreviewBannerMarquee() {
     const price = item.showPrice && item.price
       ? `<span class="marquee-price">${escapeHTML(item.price)}${item.unit ? ` ${escapeHTML(item.unit)}` : ""}</span>`
       : "";
+    const inner = `
+      <img src="${escapeHTML(item.image)}" alt="" />
+      ${price}
+    `;
+    if (item.hasLink && item.url) {
+      return `
+        <a class="marquee-item" href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">
+          ${inner}
+        </a>
+      `;
+    }
     return `
-      <a class="marquee-item" href="${escapeHTML(item.url)}" target="_blank" rel="noopener noreferrer">
-        <img src="${escapeHTML(item.image)}" alt="" />
-        ${price}
-      </a>
+      <div class="marquee-item is-static">
+        ${inner}
+      </div>
     `;
   }).join("");
 
@@ -1509,11 +1563,11 @@ function renderLinks() {
     card.className = "link-card";
 
     const safeTitle = escapeHTML(link.title);
-    const safeUrl = escapeHTML(link.url);
-    const displayUrl =
-      link.url.length > 45
-        ? escapeHTML(link.url.substring(0, 45) + "...")
-        : safeUrl;
+    const hasUrl = Boolean(typeof link.hasUrl === "boolean" ? link.hasUrl : link.url);
+    const safeUrl = hasUrl ? escapeHTML(link.url) : "No URL";
+    const displayUrl = hasUrl
+      ? (link.url.length > 45 ? escapeHTML(link.url.substring(0, 45) + "...") : safeUrl)
+      : safeUrl;
 
     const isLayoutOpen = openLayoutId === link.id;
 
@@ -1530,7 +1584,7 @@ function renderLinks() {
             </button>
           </div>
           <div class="link-url-row">
-            <span class="link-url">${displayUrl}</span>
+            <span class="link-url${hasUrl ? "" : " is-empty"}">${displayUrl}</span>
             <button class="icon-btn-sm edit-url-btn" aria-label="Edit URL">
               <span class="material-symbols-outlined">edit</span>
             </button>
@@ -1640,8 +1694,9 @@ function renderLinks() {
           value: link.url || "",
           className: "inbox-title-input link-url-input",
           onCommit: (nextValue, fallbackValue) => {
-            const next = nextValue.trim() || fallbackValue || "https://";
+            const next = nextValue.trim() || fallbackValue || "";
             link.url = next;
+            link.hasUrl = Boolean(next);
             saveAll();
             renderLinks();
             renderPreview();
@@ -1748,18 +1803,36 @@ function renderPreview() {
 function openModal(id = null) {
   editingId = id;
   const isEdit = Boolean(id);
-  elements.modalTitle.textContent = isEdit ? "Edit link" : "Add link";
+  elements.modalTitle.textContent = isEdit ? "Edit box" : "Add box";
   const link = links.find((item) => item.id === id);
   elements.linkForm.reset();
+  if (elements.linkHasUrlToggle) {
+    elements.linkHasUrlToggle.checked = link
+      ? Boolean(typeof link.hasUrl === "boolean" ? link.hasUrl : link.url)
+      : true;
+  }
   if (link) {
     elements.linkForm.title.value = link.title;
     elements.linkForm.url.value = link.url;
   }
+  updateLinkUrlVisibility();
   elements.linkModal.classList.add("is-open");
 }
 
 function closeModal() {
   elements.linkModal.classList.remove("is-open");
+}
+
+function updateLinkUrlVisibility() {
+  if (!elements.linkHasUrlToggle) return;
+  const shouldShow = Boolean(elements.linkHasUrlToggle.checked);
+  if (elements.linkUrlField) {
+    elements.linkUrlField.hidden = !shouldShow;
+  }
+  if (elements.linkUrl) {
+    elements.linkUrl.disabled = !shouldShow;
+    elements.linkUrl.required = shouldShow;
+  }
 }
 
 function openProfileModal() {
@@ -1847,10 +1920,13 @@ function initEvents() {
   elements.linkForm.addEventListener("submit", (event) => {
     event.preventDefault();
     const formData = new FormData(elements.linkForm);
+    const hasUrl = Boolean(elements.linkHasUrlToggle?.checked);
+    const urlValue = hasUrl ? String(formData.get("url") || "").trim() : "";
     const linkData = {
       id: editingId || crypto.randomUUID(),
       title: formData.get("title"),
-      url: formData.get("url"),
+      hasUrl,
+      url: urlValue,
       thumbnail: editingId ? links.find((item) => item.id === editingId)?.thumbnail || "" : "",
       featured: false,
       enabled: true,
@@ -1869,6 +1945,10 @@ function initEvents() {
     renderPreview();
     closeModal();
   });
+
+  if (elements.linkHasUrlToggle) {
+    elements.linkHasUrlToggle.addEventListener("change", updateLinkUrlVisibility);
+  }
 
   if (elements.inboxLayoutBtn) {
     elements.inboxLayoutBtn.addEventListener("click", () => {
@@ -1907,6 +1987,9 @@ function initEvents() {
   }
   if (elements.bannerPriceToggle) {
     elements.bannerPriceToggle.addEventListener("change", updateBannerPriceVisibility);
+  }
+  if (elements.bannerHasLinkToggle) {
+    elements.bannerHasLinkToggle.addEventListener("change", updateBannerLinkVisibility);
   }
   if (elements.bannerImagePickBtn && elements.bannerImageInput) {
     elements.bannerImagePickBtn.addEventListener("click", () => {
@@ -1949,15 +2032,17 @@ function initEvents() {
   if (elements.bannerForm) {
     elements.bannerForm.addEventListener("submit", (event) => {
       event.preventDefault();
-      const url = elements.bannerLinkUrl?.value.trim() || "";
+      const hasLink = Boolean(elements.bannerHasLinkToggle?.checked);
+      const url = hasLink ? (elements.bannerLinkUrl?.value.trim() || "") : "";
       const showPrice = Boolean(elements.bannerPriceToggle?.checked);
       const price = elements.bannerPriceValue?.value.trim() || "";
       const unit = elements.bannerPriceUnit?.value.trim() || "";
-      if (!bannerDraftImage || !url) return;
+      if (!bannerDraftImage || (hasLink && !url)) return;
 
       const payload = {
         id: editingBannerId || crypto.randomUUID(),
         image: bannerDraftImage,
+        hasLink,
         url,
         showPrice,
         price: showPrice ? price : "",

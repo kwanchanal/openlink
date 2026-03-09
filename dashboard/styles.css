@@ -163,6 +163,19 @@ textarea {
   height: calc(100vh - 44px);
 }
 
+.app-shell.discover-layout {
+  grid-template-columns: 260px 1fr;
+  gap: 20px;
+}
+
+.discover-main {
+  background: var(--card);
+  border: 1px solid var(--border);
+  border-radius: 32px;
+  box-shadow: var(--shadow-sm);
+  min-height: calc(100vh - 88px);
+}
+
 /* ── Sidebar ── */
 .sidebar {
   background: transparent;
@@ -312,6 +325,7 @@ textarea {
   border: 1px solid transparent;
   background: transparent;
   text-align: left;
+  text-decoration: none;
   padding: 8px 12px;
   border-radius: 8px;
   font-weight: 500;
@@ -955,6 +969,10 @@ textarea {
   max-width: 360px;
 }
 
+.link-url.is-empty {
+  opacity: 0.85;
+}
+
 .link-right {
   display: flex;
   align-items: center;
@@ -1207,6 +1225,10 @@ textarea {
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+}
+
+.banner-item-url-empty {
+  color: var(--muted);
 }
 
 .banner-item-price {
@@ -2097,6 +2119,10 @@ textarea {
   border: none;
 }
 
+.marquee-item.is-static {
+  cursor: default;
+}
+
 .marquee-item img {
   width: 100%;
   height: 100%;
@@ -2580,9 +2606,13 @@ textarea {
   inset: 0;
   display: none;
   place-items: center;
-  background: hsl(0 0% 0% / 0.4);
+  background:
+    radial-gradient(1200px 420px at 50% -12%, hsl(0 0% 100% / 0.18), transparent 60%),
+    hsl(0 0% 0% / 0.46);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
   z-index: 20;
-  padding: 20px;
+  padding: 24px;
 }
 
 .modal.is-open {
@@ -2590,13 +2620,16 @@ textarea {
 }
 
 .modal-card {
-  background: var(--card);
-  border-radius: calc(var(--radius) + 2px);
-  padding: 24px;
-  width: min(440px, 92vw);
-  border: 1px solid var(--border);
-  box-shadow: var(--shadow-lg);
-  animation: rise 0.25s ease;
+  background: linear-gradient(180deg, #fcfcfc 0%, #f7f7f7 100%);
+  border-radius: 20px;
+  padding: 26px 26px 24px;
+  width: min(470px, 92vw);
+  border: 1px solid #d9d9d9;
+  box-shadow:
+    0 20px 45px hsl(0 0% 0% / 0.2),
+    0 2px 0 hsl(0 0% 100% / 0.6) inset,
+    0 0 0 1px hsl(0 0% 100% / 0.55) inset;
+  animation: modal-pop 0.2s ease;
 }
 
 .crop-modal-card {
@@ -2660,14 +2693,36 @@ textarea {
   display: flex;
   justify-content: space-between;
   align-items: center;
-  margin-bottom: 16px;
+  margin-bottom: 18px;
+  padding-bottom: 10px;
+  border-bottom: 1px solid #e6e6e6;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 40px;
+  font-size: clamp(34px, 2.1vw, 44px);
+  line-height: 1.03;
+  letter-spacing: -0.03em;
+  font-weight: 700;
+}
+
+.modal-header .icon-btn {
+  border: 1px solid #dadada;
+  background: #f4f4f4;
+  border-radius: 14px;
+  box-shadow: 0 1px 0 hsl(0 0% 100% / 0.75) inset;
+}
+
+.modal-header .icon-btn:hover {
+  background: #eeeeee;
 }
 
 .field {
   display: flex;
   flex-direction: column;
-  gap: 6px;
-  margin-bottom: 10px;
+  gap: 8px;
+  margin-bottom: 12px;
 }
 
 .field:last-child {
@@ -2675,8 +2730,8 @@ textarea {
 }
 
 .field label {
-  font-size: 13px;
-  font-weight: 500;
+  font-size: 15px;
+  font-weight: 600;
   color: var(--foreground);
 }
 
@@ -2686,42 +2741,51 @@ textarea {
   margin-top: -2px;
 }
 
+.toggle-hint {
+  margin-top: -1px;
+  line-height: 1.45;
+  max-width: 95%;
+}
+
 .field input {
-  border: 1px solid var(--input);
-  border-radius: calc(var(--radius) - 2px);
-  padding: 10px 12px;
+  border: 1px solid #d8d8d8;
+  border-radius: 13px;
+  padding: 12px 14px;
   font-family: inherit;
-  background: var(--background);
+  background: #fbfbfb;
   color: var(--foreground);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 1px 1px hsl(0 0% 0% / 0.06) inset, 0 1px 0 hsl(0 0% 100% / 0.7);
 }
 
 .field select {
-  border: 1px solid var(--input);
-  border-radius: calc(var(--radius) - 2px);
-  padding: 10px 12px;
+  border: 1px solid #d8d8d8;
+  border-radius: 13px;
+  padding: 12px 14px;
   font-family: inherit;
-  background: var(--background);
+  background: #fbfbfb;
   color: var(--foreground);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
+  box-shadow: 0 1px 1px hsl(0 0% 0% / 0.06) inset, 0 1px 0 hsl(0 0% 100% / 0.7);
 }
 
 .field textarea {
-  border: 1px solid var(--input);
-  border-radius: calc(var(--radius) - 2px);
-  padding: 10px 12px;
+  border: 1px solid #d8d8d8;
+  border-radius: 13px;
+  padding: 12px 14px;
   font-family: inherit;
-  background: var(--background);
+  background: #fbfbfb;
   color: var(--foreground);
-  font-size: 14px;
+  font-size: 15px;
   line-height: 1.4;
   transition: box-shadow 0.2s ease, border-color 0.2s ease;
   resize: vertical;
   min-height: 90px;
+  box-shadow: 0 1px 1px hsl(0 0% 0% / 0.06) inset, 0 1px 0 hsl(0 0% 100% / 0.7);
 }
 
 .field textarea:focus-visible {
@@ -2787,22 +2851,24 @@ textarea {
 }
 
 .primary {
-  border: 1px solid var(--primary);
-  background: var(--primary);
-  color: var(--primary-foreground);
-  border-radius: calc(var(--radius) - 2px);
-  padding: 9px 16px;
+  border: 1px solid hsl(0 0% 10%);
+  background: linear-gradient(180deg, hsl(0 0% 24%) 0%, hsl(0 0% 8%) 100%);
+  color: #fff;
+  border-radius: 13px;
+  padding: 11px 18px;
   cursor: pointer;
-  font-weight: 500;
-  font-size: 14px;
+  font-weight: 600;
+  font-size: 15px;
+  letter-spacing: 0.01em;
   line-height: 1.2;
   transition: transform 0.15s ease, box-shadow 0.2s ease, background 0.2s ease,
     border-color 0.2s ease;
+  box-shadow: 0 6px 14px hsl(0 0% 0% / 0.22), inset 0 1px 0 hsl(0 0% 100% / 0.08);
 }
 
 .primary:hover {
-  background: color-mix(in oklch, var(--primary) 88%, #000);
-  border-color: color-mix(in oklch, var(--primary) 88%, #000);
+  filter: brightness(1.06);
+  box-shadow: 0 8px 18px hsl(0 0% 0% / 0.28), inset 0 1px 0 hsl(0 0% 100% / 0.1);
 }
 
 .primary:active {
@@ -2843,9 +2909,9 @@ textarea {
   box-shadow: 0 0 0 3px color-mix(in oklch, var(--ring) 35%, transparent);
 }
 
-@keyframes rise {
+@keyframes modal-pop {
   from {
-    transform: translateY(20px);
+    transform: translateY(12px) scale(0.985);
     opacity: 0;
   }
   to {

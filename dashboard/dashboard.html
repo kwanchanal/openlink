@@ -3,7 +3,7 @@
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Dashboard</title>
+    <title>minting...</title>
     <link rel="icon" type="image/png" href="../logo.png" />
     <link
       rel="stylesheet"
@@ -42,20 +42,18 @@
       <aside class="sidebar" id="sidebar">
         <nav class="nav">
           <div class="nav-section">
-            <button class="nav-title" type="button">Your Link</button>
-            <div class="nav-items">
-              <button class="nav-link" id="sidebarAddBtn">
-                <span class="material-symbols-outlined nav-icon">badge</span>
-                Homepage
-              </button>
-            </div>
+            <a class="nav-link" href="discover.html">
+              <span class="material-symbols-outlined nav-icon">explore</span>
+              Discover
+            </a>
           </div>
           <div class="nav-section">
+            <button class="nav-title" type="button">Your Link</button>
             <div class="nav-items">
-              <button class="nav-link">
-                <span class="material-symbols-outlined nav-icon">chat</span>
-                Inbox
-              </button>
+              <a class="nav-link" href="dashboard.html" aria-current="page">
+                <span class="material-symbols-outlined nav-icon">badge</span>
+                Homepage
+              </a>
             </div>
           </div>
           <div class="nav-section">
@@ -68,6 +66,10 @@
                 <span class="material-symbols-outlined nav-icon">insights</span>
                 Insights
                 <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
+              </button>
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">chat</span>
+                Inbox
               </button>
             </div>
           </div>
@@ -82,11 +84,6 @@
               <button class="nav-link">
                 <span class="material-symbols-outlined nav-icon">payments</span>
                 Add Payment
-                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
-              </button>
-              <button class="nav-link">
-                <span class="material-symbols-outlined nav-icon">paid</span>
-                Get Paid
                 <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
               </button>
               <button class="nav-link">
@@ -188,7 +185,7 @@
           </section>
 
           <section class="cta-card">
-            <button class="cta" id="addLinkBtn">+ &nbsp;Add</button>
+            <button class="cta" id="addLinkBtn">+ &nbsp;Add Box</button>
           </section>
 
           <section class="inbox-section" id="inboxSection">
@@ -400,7 +397,7 @@
     <div class="modal" id="linkModal" aria-hidden="true">
       <div class="modal-card">
         <div class="modal-header">
-          <h3 id="modalTitle">Add link</h3>
+          <h3 id="modalTitle">Add box</h3>
           <button class="icon-btn" id="closeModalBtn">
             <span class="material-symbols-outlined">close</span>
           </button>
@@ -411,6 +408,16 @@
             <input id="linkTitle" name="title" type="text" required />
           </div>
           <div class="field">
+            <div class="field-head">
+              <label for="linkHasUrlToggle">Add URL</label>
+              <label class="switch switch-sm">
+                <input id="linkHasUrlToggle" type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="field-hint toggle-hint">Turn off if this box should display without a URL.</p>
+          </div>
+          <div class="field" id="linkUrlField">
             <label for="linkUrl">URL</label>
             <input id="linkUrl" name="url" type="url" required placeholder="https://" />
           </div>
@@ -522,6 +529,16 @@
             <div class="thumbnail-preview square" id="bannerImagePreview"></div>
           </div>
           <div class="field">
+            <div class="field-head">
+              <label for="bannerHasLinkToggle">Add URL</label>
+              <label class="switch switch-sm">
+                <input id="bannerHasLinkToggle" type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="field-hint toggle-hint">Turn on to make this banner clickable.</p>
+          </div>
+          <div class="field" id="bannerLinkField">
             <label for="bannerLinkUrl">Link URL</label>
             <input id="bannerLinkUrl" name="url" type="url" required placeholder="https://" />
           </div>
@@ -533,6 +550,7 @@
                 <span class="slider"></span>
               </label>
             </div>
+            <p class="field-hint toggle-hint">Turn on to display price text on the banner.</p>
           </div>
           <div class="field banner-price-fields" id="bannerPriceFields" hidden>
             <label for="bannerPriceValue">Price</label>
