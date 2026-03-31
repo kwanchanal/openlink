@@ -97,6 +97,18 @@ textarea {
   display: block;
 }
 
+.desktop-only-card {
+  width: min(560px, 92vw);
+  border-radius: 28px;
+  background: #ffffff;
+  color: #111827;
+  padding: 28px 24px;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 600;
+  box-shadow: 0 24px 60px rgba(0, 0, 0, 0.24);
+}
+
 @media (max-width: 1024px), (hover: none), (pointer: coarse) {
   .desktop-only-notice {
     display: grid;

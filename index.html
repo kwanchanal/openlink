@@ -1,226 +1,517 @@
 <!doctype html>
-<html lang="th">
+<html lang="en">
   <head>
-    <meta charset="UTF-8" />
+    <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>wemint.link</title>
-    <link rel="icon" type="image/png" href="logo.png" />
-    <!-- Google Sans is not available on Google Fonts; use local installed font with fallbacks. -->
+    <title>OpenAd</title>
+    <link rel="icon" type="image/png" href="favicon/logo.png" />
     <link
       rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200&icon_names=arrow_forward,dehaze"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200"
     />
-    <link rel="stylesheet" href="index.css" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/icon?family=Material+Icons"
+    />
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.css"
+    />
+    <style>
+      .material-symbols-outlined {
+        font-variation-settings: 'FILL' 0, 'wght' 400, 'GRAD' 0, 'opsz' 24;
+      }
+    </style>
+    <link rel="stylesheet" href="styles.css" />
+    <script src="https://tweakcn.com/live-preview.min.js"></script>
+    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   </head>
-  <body>
-    <div class="noise"></div>
-    <div class="globe-bg" aria-hidden="true">
-      <canvas class="globe-canvas"></canvas>
+  <body class="dashboard">
+    <div class="desktop-only-notice" aria-hidden="true">
+      <div class="desktop-only-card">Please open dashboard on desktop.</div>
     </div>
 
-    <header class="nav">
-      <div class="nav__pill">
-        <div class="nav__links nav__links--left">
-          <a href="#main">Main</a>
-          <a href="#about">About Us</a>
-          <a href="#blog">Blog</a>
-        </div>
-        <div class="nav__links nav__links--right">
-          <a class="nav__cta apple-btn" href="/dashboard/dashboard.html">Make Your Link</a>
-        </div>
-        <button
-          class="nav__toggle"
-          type="button"
-          aria-label="Open menu"
-          aria-expanded="false"
-          aria-controls="navDrawer"
-          aria-haspopup="menu"
-        >
-          <span class="material-symbols-outlined" aria-hidden="true">dehaze</span>
-        </button>
-        <div class="nav__drawer" id="navDrawer" aria-label="Primary">
-          <a href="#main">Main</a>
-          <a href="#about">About Us</a>
-          <a href="#blog">Blog</a>
-          <a href="#login">Log-in</a>
-        </div>
-      </div>
-    </header>
+    <div class="top-banner">
+      <span class="banner-text" id="bannerText">OpenAd — Post Anything</span>
+    </div>
 
-    <main>
-      <section class="hero" id="main">
-        <div class="hero__orbit">
-          <img class="orbit__avatar a1" src="asset/circle-1.png" alt="" />
-          <img class="orbit__avatar a2" src="asset/circle-2.png" alt="" />
-          <img class="orbit__avatar a3" src="asset/circle-3.png" alt="" />
-          <img class="orbit__avatar a4" src="asset/circle-4.png" alt="" />
-          <img class="orbit__avatar a5" src="asset/circle-5.png" alt="" />
-          <img class="orbit__avatar a6" src="asset/circle-6.png" alt="" />
+    <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
 
-          <div class="hero__content">
-            <p class="hero__brand">
-              wemint.link/
-              <span class="you-pill"><span class="you-word" id="youWord">YOU</span></span>
-            </p>
-            <a class="btn primary btn-hero apple-btn" href="/dashboard/dashboard.html">Make Your Link</a>
+    <div class="app-shell">
+      <aside class="sidebar" id="sidebar">
+        <nav class="nav">
+          <div class="nav-section">
+            <a class="nav-link" href="discover.html">
+              <span class="material-symbols-outlined nav-icon">explore</span>
+              Discover
+            </a>
           </div>
-        </div>
-      </section>
+          <div class="nav-section">
+            <button class="nav-title" type="button">Your Link</button>
+            <div class="nav-items">
+              <a class="nav-link is-active" href="index.html" aria-current="page">
+                <span class="material-symbols-outlined nav-icon">badge</span>
+                Homepage
+              </a>
+            </div>
+          </div>
+          <div class="nav-section">
+            <div class="nav-items">
+              <button class="nav-link" id="openDesignBtn">
+                <span class="material-symbols-outlined nav-icon">palette</span>
+                Design
+              </button>
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">insights</span>
+                Insights
+                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
+              </button>
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">chat</span>
+                Inbox
+              </button>
+            </div>
+          </div>
+          <div class="nav-section">
+            <button class="nav-title" type="button">Tools</button>
+            <div class="nav-items">
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">link</span>
+                Link Shortener
+                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
+              </button>
+              <button class="nav-link">
+                <span class="material-symbols-outlined nav-icon">travel_explore</span>
+                SEO
+                <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
+              </button>
+            </div>
+          </div>
+        </nav>
 
-      <section class="blank-panel" aria-label="Spacer section">
-        <div class="blank-panel__box">
-          <div class="flash-card" aria-live="polite">
-            <img class="flash-card__image" src="flash/Desktop%20-%203.png" alt="Flash card preview" />
-            <div class="flash-card__tag-cloud" aria-hidden="true"></div>
-            <button class="flash-card__overlay-btn" type="button" aria-label="Get In Touch">
-              <span class="flash-card__overlay-text"></span>
-              <span class="flash-card__cursor" aria-hidden="true">|</span>
+        <section class="sidebar-signup">
+          <p class="signup-title">Love it?</p>
+          <button class="signup-pill" type="button">Sign Up</button>
+          <p class="signup-copy">to get your link, it's free!</p>
+        </section>
+
+        <div class="sidebar-footer">
+          <div class="user-chip">
+            <div class="user-avatar">KG</div>
+            <div class="user-meta">
+              <div class="user-name">Kwanchanal</div>
+              <div class="user-email">m@example.com</div>
+            </div>
+            <button class="icon-btn-sm" type="button" aria-label="More options">
+              <span class="material-symbols-outlined">more_horiz</span>
             </button>
           </div>
         </div>
-      </section>
+      </aside>
 
-      <section class="slogan" id="about" aria-label="Brand message">
-        <h2 class="slogan__title">
-          We Help <span class="globe"><img src="asset/rotating-globe.gif" alt="Globe" /></span> You Link
-          <br />
-          From Anywhere Just Being Who You Are
-        </h2>
-        <div class="message__stack" aria-label="Message previews">
-          <div class="message__track">
-            <img src="asset/message1.png" alt="Message preview one" />
-            <img src="asset/message2.png" alt="Message preview two" />
-            <img src="asset/message3.png" alt="Message preview three" />
-            <img src="asset/message4.png" alt="Message preview four" />
-            <img src="asset/message5.png" alt="Message preview five" />
-            <img src="asset/message6.png" alt="Message preview six" />
-            <img src="asset/message1.png" alt="" aria-hidden="true" />
-            <img src="asset/message2.png" alt="" aria-hidden="true" />
-            <img src="asset/message3.png" alt="" aria-hidden="true" />
-            <img src="asset/message4.png" alt="" aria-hidden="true" />
-            <img src="asset/message5.png" alt="" aria-hidden="true" />
-            <img src="asset/message6.png" alt="" aria-hidden="true" />
+      <main class="main canvas-main">
+        <div class="canvas-area" id="canvasArea">
+          <div class="canvas-elements" id="canvasElements"></div>
+        </div>
+        <div class="canvas-toolbar">
+          <div class="canvas-toolbar-group">
+            <button class="canvas-tool-btn is-active" data-tool="select" title="Select">
+              <span class="material-symbols-outlined">near_me</span>
+            </button>
+            <button class="canvas-tool-btn" data-tool="hand" title="Hand">
+              <span class="material-symbols-outlined">pan_tool</span>
+            </button>
+          </div>
+          <div class="canvas-toolbar-divider"></div>
+          <div class="canvas-toolbar-group">
+            <button class="canvas-tool-btn" id="addTextBtn" data-type="text" title="Text">
+              <span class="material-symbols-outlined">title</span>
+            </button>
+            <button class="canvas-tool-btn" id="addBoxBtn" data-type="box" title="Box">
+              <span class="material-symbols-outlined">check_box_outline_blank</span>
+            </button>
+            <button class="canvas-tool-btn" id="addImageBtn" data-type="image" title="Image">
+              <span class="material-symbols-outlined">image</span>
+            </button>
+            <button class="canvas-tool-btn" id="addLinkBtn" data-type="link" title="Link">
+              <span class="material-symbols-outlined">link</span>
+            </button>
+            <button class="canvas-tool-btn" id="addVideoBtn" data-type="video" title="Video">
+              <span class="material-symbols-outlined">play_circle</span>
+            </button>
+          </div>
+          <div class="canvas-toolbar-divider"></div>
+          <div class="canvas-toolbar-group">
+            <button class="canvas-tool-btn" id="topbarAddBtn" title="More">
+              <span class="material-symbols-outlined">add</span>
+            </button>
           </div>
         </div>
-      </section>
+      </main>
 
-      <section class="pricing" aria-label="Our Pricing">
-        <div class="pricing__title">
-          <img src="asset/ourpricing.png" alt="Our Pricing" />
-        </div>
-        <div class="pricing__grid">
-          <div class="price-card">
-            <img src="asset/price1.png" alt="Free plan" />
-            <img class="price-card__sticker" src="asset/sticker1.png" alt="" />
-          </div>
-          <div class="price-card">
-            <img src="asset/price2.png" alt="Starter plan" />
-          </div>
-          <div class="price-card">
-            <img src="asset/price3.png" alt="Business plan" />
-            <img class="price-card__sticker right" src="asset/sticker2.png" alt="" />
+      <aside class="preview">
+        <div class="preview-linkbar">
+          <span id="previewUsername">openad.me/yours</span>
+          <div class="preview-linkbar-actions">
+            <button class="icon-btn" aria-label="Home">
+              <span class="material-symbols-outlined">home</span>
+            </button>
+            <button class="icon-btn" id="downloadPreviewBtn" aria-label="Download preview">
+              <span class="material-symbols-outlined">download</span>
+            </button>
           </div>
         </div>
-      </section>
+        <div class="phone">
+          <div class="phone-scroll">
+            <div class="phone-links" id="previewLinks"></div>
+            <div class="phone-footer-group">
+              <div class="phone-cta-text" id="previewCta">OPENAD.ME/YOU/&gt;_POST ANYTHING</div>
+            </div>
+          </div>
+          <div class="phone-bottom-banner" id="previewInboxBanner"></div>
+          <div class="phone-sheet-backdrop" id="previewInboxSheetBackdrop"></div>
+          <div class="phone-bottom-sheet" id="previewInboxSheet">
+            <div class="sheet-handle"></div>
+            <div class="sheet-header">
+              <span id="previewInboxSheetTitle">Get in touch</span>
+              <button class="icon-btn-sm" type="button" id="previewInboxSheetClose" aria-label="Close form">
+                <span class="material-symbols-outlined">close</span>
+              </button>
+            </div>
+            <form class="sheet-form" id="previewInboxForm"></form>
+          </div>
+        </div>
+      </aside>
+    </div>
 
-      <section class="contact">
-        <h2>More?</h2>
-        <div class="contact__bar">
-          <span class="contact__text" id="contactText" aria-live="polite">Tell us how we can help you</span>
-          <button class="contact__go" type="button" aria-label="Send">
-            <span class="material-symbols-outlined" aria-hidden="true">arrow_forward</span>
+    <div class="modal" id="linkModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="modalTitle">Add box</h3>
+          <button class="icon-btn" id="closeModalBtn">
+            <span class="material-symbols-outlined">close</span>
           </button>
         </div>
-      </section>
-    </main>
+        <form id="linkForm">
+          <div class="field">
+            <label for="linkTitle">Title</label>
+            <input id="linkTitle" name="title" type="text" required />
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="linkHasUrlToggle">Add URL</label>
+              <label class="switch switch-sm">
+                <input id="linkHasUrlToggle" type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="field-hint toggle-hint">Turn off if this box should display without a URL.</p>
+          </div>
+          <div class="field" id="linkUrlField">
+            <label for="linkUrl">URL</label>
+            <input id="linkUrl" name="url" type="url" required placeholder="https://" />
+          </div>
+          <button class="primary" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
 
-    <div class="flag-marquee" aria-label="Country flags">
-      <div class="flag-marquee-inner">
-        <div class="flag-track">
-          <img src="https://circle-flags.cdn.skk.moe/flags/th.svg" alt="Thailand" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/us.svg" alt="United States" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/jp.svg" alt="Japan" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/kr.svg" alt="South Korea" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/cn.svg" alt="China" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/hk.svg" alt="Hong Kong" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/sg.svg" alt="Singapore" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/my.svg" alt="Malaysia" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/id.svg" alt="Indonesia" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/vn.svg" alt="Vietnam" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ph.svg" alt="Philippines" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/in.svg" alt="India" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/au.svg" alt="Australia" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/nz.svg" alt="New Zealand" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/gb.svg" alt="United Kingdom" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ie.svg" alt="Ireland" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/fr.svg" alt="France" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/de.svg" alt="Germany" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/nl.svg" alt="Netherlands" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/be.svg" alt="Belgium" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ch.svg" alt="Switzerland" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/it.svg" alt="Italy" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/es.svg" alt="Spain" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/pt.svg" alt="Portugal" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/se.svg" alt="Sweden" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/no.svg" alt="Norway" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/dk.svg" alt="Denmark" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/fi.svg" alt="Finland" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/pl.svg" alt="Poland" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/tr.svg" alt="Turkey" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ae.svg" alt="United Arab Emirates" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/sa.svg" alt="Saudi Arabia" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/eg.svg" alt="Egypt" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/za.svg" alt="South Africa" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ng.svg" alt="Nigeria" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ke.svg" alt="Kenya" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/br.svg" alt="Brazil" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/mx.svg" alt="Mexico" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ca.svg" alt="Canada" />
+    <div class="modal" id="profileModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Edit profile</h3>
+          <button class="icon-btn" id="closeProfileBtn">
+            <span class="material-symbols-outlined">close</span>
+          </button>
         </div>
-        <div class="flag-track" aria-hidden="true">
-          <img src="https://circle-flags.cdn.skk.moe/flags/th.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/us.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/jp.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/kr.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/cn.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/hk.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/sg.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/my.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/id.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/vn.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ph.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/in.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/au.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/nz.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/gb.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ie.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/fr.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/de.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/nl.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/be.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ch.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/it.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/es.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/pt.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/se.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/no.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/dk.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/fi.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/pl.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/tr.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ae.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/sa.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/eg.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/za.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ng.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ke.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/br.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/mx.svg" alt="" />
-          <img src="https://circle-flags.cdn.skk.moe/flags/ca.svg" alt="" />
+        <form id="profileForm">
+          <div class="field">
+            <label for="profileUsernameInput">Username</label>
+            <input id="profileUsernameInput" name="username" type="text" placeholder="your-username" />
+            <p class="field-hint">openad.me/your-username</p>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="profileImageFile">Upload profile image</label>
+              <label class="switch switch-sm">
+                <input type="checkbox" id="showProfileImage" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <input id="profileImageFile" type="file" accept="image/*" />
+            <p class="field-hint" id="profileImageHint">Supports JPG, PNG, WebP.</p>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="profileNameInput">Display name</label>
+              <label class="switch switch-sm">
+                <input type="checkbox" id="showDisplayName" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <input id="profileNameInput" name="name" type="text" required />
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="profileMetaInput">Bio</label>
+              <label class="switch switch-sm">
+                <input type="checkbox" id="showBio" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <textarea id="profileMetaInput" name="bio" rows="3"></textarea>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="showSocialIcons">Social icons</label>
+              <label class="switch switch-sm">
+                <input type="checkbox" id="showSocialIcons" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+          </div>
+          <button class="primary" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="socialModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="socialModalTitle">Add social link</h3>
+          <button class="icon-btn" id="closeSocialBtn">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form id="socialForm">
+          <div class="field">
+            <label for="socialUrl">URL</label>
+            <input id="socialUrl" name="url" type="url" required placeholder="https://" />
+          </div>
+          <button class="primary" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="bannerModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3 id="bannerModalTitle">Add banner</h3>
+          <button class="icon-btn" id="closeBannerBtn" type="button" aria-label="Close banner modal">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form id="bannerForm">
+          <div class="field">
+            <label>Image (100x100)</label>
+            <div class="thumbnail-row">
+              <button class="add-thumbnail-btn" id="bannerImagePickBtn" type="button">
+                <span class="material-symbols-outlined">add_photo_alternate</span>
+                Add image
+              </button>
+              <button class="reset-thumbnail-btn" id="bannerImageResetBtn" type="button">
+                <span class="material-symbols-outlined">refresh</span>
+                Reset
+              </button>
+              <input class="thumbnail-input" id="bannerImageInput" type="file" accept="image/*" />
+            </div>
+            <div class="thumbnail-hint" id="bannerImageHint">No image selected.</div>
+            <div class="thumbnail-preview square" id="bannerImagePreview"></div>
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="bannerHasLinkToggle">Add URL</label>
+              <label class="switch switch-sm">
+                <input id="bannerHasLinkToggle" type="checkbox" checked />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="field-hint toggle-hint">Turn on to make this banner clickable.</p>
+          </div>
+          <div class="field" id="bannerLinkField">
+            <label for="bannerLinkUrl">Link URL</label>
+            <input id="bannerLinkUrl" name="url" type="url" required placeholder="https://" />
+          </div>
+          <div class="field">
+            <div class="field-head">
+              <label for="bannerPriceToggle">Show price</label>
+              <label class="switch switch-sm">
+                <input id="bannerPriceToggle" type="checkbox" />
+                <span class="slider"></span>
+              </label>
+            </div>
+            <p class="field-hint toggle-hint">Turn on to display price text on the banner.</p>
+          </div>
+          <div class="field banner-price-fields" id="bannerPriceFields" hidden>
+            <label for="bannerPriceValue">Price</label>
+            <div class="banner-price-row">
+              <input id="bannerPriceValue" name="price" type="text" placeholder="990" />
+              <input id="bannerPriceUnit" name="unit" type="text" placeholder="THB" />
+            </div>
+          </div>
+          <button class="primary" type="submit">Save</button>
+        </form>
+      </div>
+    </div>
+
+    <div class="modal" id="designModal" aria-hidden="true">
+      <div class="modal-card">
+        <div class="modal-header">
+          <h3>Design</h3>
+          <button class="icon-btn" id="closeDesignBtn">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="modal-body">
+          <form id="designForm">
+            <div class="field">
+              <label for="backgroundImageFile">Upload background image</label>
+              <input id="backgroundImageFile" type="file" accept="image/*" />
+              <p class="field-hint" id="backgroundImageHint">Supports JPG, PNG, WebP.</p>
+            </div>
+            <div class="field">
+              <label for="backgroundColor">Background color</label>
+              <div class="color-input">
+                <input id="backgroundColor" name="backgroundColor" type="text" placeholder="#0b201b" />
+                <input id="backgroundColorPicker" type="color" value="#0b201b" aria-label="Pick background color" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="buttonColor">Button color</label>
+              <div class="color-input">
+                <input id="buttonColor" name="buttonColor" type="text" placeholder="#75d9a0" />
+                <input id="buttonColorPicker" type="color" value="#75d9a0" aria-label="Pick button color" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="profileFontColor">Profile font color</label>
+              <div class="color-input">
+                <input id="profileFontColor" name="profileFontColor" type="text" placeholder="#dff4e7" />
+                <input id="profileFontColorPicker" type="color" value="#dff4e7" aria-label="Pick profile font color" />
+              </div>
+            </div>
+            <div class="field">
+              <label for="buttonFontColor">Button font color</label>
+              <div class="color-input">
+                <input id="buttonFontColor" name="buttonFontColor" type="text" placeholder="#0b201b" />
+                <input id="buttonFontColorPicker" type="color" value="#0b201b" aria-label="Pick button font color" />
+              </div>
+            </div>
+            <div class="modal-actions">
+              <button class="ghost" type="button" id="resetDesignBtn">Reset</button>
+              <button class="primary" type="submit">Save</button>
+            </div>
+          </form>
         </div>
       </div>
     </div>
 
-    <script src="index.js"></script>
+    <div class="modal" id="cropModal" aria-hidden="true">
+      <div class="modal-card crop-modal-card">
+        <div class="modal-header">
+          <h3 id="cropTitle">Crop image</h3>
+          <button class="icon-btn" id="closeCropBtn" aria-label="Close crop">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="crop-body">
+          <img id="cropImage" alt="Crop preview" />
+        </div>
+        <div class="modal-actions">
+          <button class="ghost" id="cropCancelBtn" type="button">Cancel</button>
+          <button class="primary" id="cropSaveBtn" type="button">Save</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal inbox-form-modal" id="inboxFormModal" aria-hidden="true">
+      <div class="modal-card inbox-form-card">
+        <div class="modal-header inbox-form-header">
+          <button class="icon-btn inbox-back-btn" id="closeInboxFormBtn" type="button" aria-label="Back">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h3>Add a form</h3>
+          <button class="icon-btn" id="dismissInboxFormBtn" type="button" aria-label="Close">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="inbox-form-headline">
+          <span>Information</span>
+          <span>Required</span>
+        </div>
+        <div class="inbox-form-rows" id="inboxFormRows"></div>
+        <button class="inbox-primary-btn" id="inboxAddFieldBtn" type="button">
+          <span class="material-symbols-outlined">add</span>
+          Add field
+        </button>
+        <div class="inbox-form-footer">
+          <button class="primary inbox-done-btn" id="inboxFormDoneBtn" type="button">Done</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="modal inbox-form-modal" id="inboxFieldLibraryModal" aria-hidden="true">
+      <div class="modal-card inbox-form-card inbox-library-card">
+        <div class="modal-header inbox-form-header">
+          <button class="icon-btn inbox-back-btn" id="inboxFieldLibraryBackBtn" type="button" aria-label="Back">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h3>Add field</h3>
+          <button class="icon-btn" id="dismissInboxFieldLibraryBtn" type="button" aria-label="Close">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <div class="field">
+          <input id="inboxFieldSearchInput" type="text" placeholder="Search" />
+        </div>
+        <div class="inbox-field-library-list" id="inboxFieldLibraryList"></div>
+      </div>
+    </div>
+
+    <div class="modal inbox-form-modal" id="inboxFieldConfigModal" aria-hidden="true">
+      <div class="modal-card inbox-form-card inbox-config-card">
+        <div class="modal-header inbox-form-header">
+          <button class="icon-btn inbox-back-btn" id="inboxFieldConfigBackBtn" type="button" aria-label="Back">
+            <span class="material-symbols-outlined">arrow_back</span>
+          </button>
+          <h3>Add field</h3>
+          <button class="icon-btn" id="dismissInboxFieldConfigBtn" type="button" aria-label="Close">
+            <span class="material-symbols-outlined">close</span>
+          </button>
+        </div>
+        <form id="inboxFieldConfigForm">
+          <div class="field">
+            <label for="inboxFieldTypeSelect">Field Type</label>
+            <select id="inboxFieldTypeSelect" name="type">
+              <option value="text">Short answer</option>
+              <option value="textarea">Paragraph</option>
+              <option value="single_choice">Single choice</option>
+              <option value="checkboxes">Checkboxes</option>
+              <option value="dropdown">Dropdown</option>
+              <option value="date">Date</option>
+            </select>
+          </div>
+          <div class="field">
+            <label for="inboxFieldLabelInput">Label</label>
+            <input id="inboxFieldLabelInput" name="label" type="text" maxlength="200" required />
+          </div>
+          <div class="field" id="inboxFieldChoicesSection" hidden>
+            <label>Choices</label>
+            <div class="inbox-choice-list" id="inboxChoiceList"></div>
+            <button class="inbox-add-choice-btn" id="inboxAddChoiceBtn" type="button">+ Add another option</button>
+          </div>
+          <div class="field">
+            <label class="inbox-required-toggle">
+              <input id="inboxFieldRequiredInput" name="required" type="checkbox" />
+              Required
+            </label>
+          </div>
+          <button class="primary inbox-done-btn" type="submit">Done</button>
+        </form>
+      </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/cropperjs/1.5.13/cropper.min.js"></script>
+    <script src="app.js"></script>
   </body>
 </html>

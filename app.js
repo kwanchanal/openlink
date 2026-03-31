@@ -19,7 +19,19 @@ const defaultProfile = {
 };
 
 const defaultLinks = [];
-const DEFAULT_PORTFOLIO_THUMBNAIL = "../mockup/featured-portfolio.png";
+const DEFAULT_PORTFOLIO_THUMBNAIL = "";
+const retiredAssetPaths = new Set([
+  "mockup/featured-portfolio.png",
+  "mockup/banner-1.png",
+  "mockup/banner-2.png",
+  "mockup/banner-3.png",
+  "mockup/background.png",
+]);
+
+function sanitizeRetiredAssetPath(value) {
+  const normalized = String(value || "").trim();
+  return retiredAssetPaths.has(normalized) ? "" : normalized;
+}
 
 const FORCE_PROFILE_MOCK = false;
 const FORCE_APPEARANCE_MOCK = true;
@@ -33,13 +45,14 @@ if (Array.isArray(links)) {
     const nextHasUrl = typeof link?.hasUrl === "boolean" ? link.hasUrl : Boolean(nextUrl);
     link.url = nextHasUrl ? nextUrl : "";
     link.hasUrl = nextHasUrl;
+    link.thumbnail = sanitizeRetiredAssetPath(link?.thumbnail);
   });
 }
 
-// Keep existing user data, but backfill mockup thumbnail for portfolio when missing.
+// Keep existing user data, but backfill a portfolio thumbnail only when a valid default exists.
 if (Array.isArray(links)) {
   const portfolioLink = links.find((link) => (link?.title || "").trim().toLowerCase() === "portfolio");
-  if (portfolioLink && !String(portfolioLink.thumbnail || "").trim()) {
+  if (portfolioLink && DEFAULT_PORTFOLIO_THUMBNAIL && !String(portfolioLink.thumbnail || "").trim()) {
     portfolioLink.thumbnail = DEFAULT_PORTFOLIO_THUMBNAIL;
     portfolioLink.featured = true;
     storage.set("wemint_links", links);
@@ -72,35 +85,7 @@ let inboxFormFields = storage.get("wemint_inbox_fields", defaultInboxFields);
 if (!Array.isArray(inboxFormFields) || inboxFormFields.length === 0) {
   inboxFormFields = [...defaultInboxFields];
 }
-const defaultBannerItems = [
-  {
-    id: "mockup-banner-1",
-    image: "../mockup/banner-1.png",
-    hasLink: true,
-    url: "https://wemint.link",
-    showPrice: false,
-    price: "",
-    unit: "",
-  },
-  {
-    id: "mockup-banner-2",
-    image: "../mockup/banner-2.png",
-    hasLink: true,
-    url: "https://kwanchanal.github.io/mintable-collection/",
-    showPrice: true,
-    price: "29",
-    unit: "USDT",
-  },
-  {
-    id: "mockup-banner-3",
-    image: "../mockup/banner-3.png",
-    hasLink: true,
-    url: "https://kwanchanal.github.io/mintable-collection/",
-    showPrice: true,
-    price: "29",
-    unit: "USDT",
-  },
-];
+const defaultBannerItems = [];
 const savedBannerItems = storage.get("wemint_banner_items", null);
 let bannerItems = Array.isArray(savedBannerItems) && savedBannerItems.length
   ? savedBannerItems
@@ -114,7 +99,7 @@ bannerItems = bannerItems
     const nextHasLink = typeof item?.hasLink === "boolean" ? item.hasLink : Boolean(nextUrl);
     return {
       id: item?.id || crypto.randomUUID(),
-      image: String(item?.image || ""),
+      image: sanitizeRetiredAssetPath(item?.image),
       hasLink: nextHasLink,
       url: nextHasLink ? nextUrl : "",
       showPrice: Boolean(item?.showPrice),
@@ -132,7 +117,7 @@ if (bannerItems.length < 3) {
 }
 const defaultAppearance = {
   profileImageUrl: "",
-  backgroundImageUrl: "../mockup/background.png",
+  backgroundImageUrl: "",
   backgroundColor: "#ffffff",
   buttonColor: "#000000",
   profileFontColor: "#111827",
@@ -141,6 +126,7 @@ const defaultAppearance = {
 const appearance = FORCE_APPEARANCE_MOCK
   ? { ...defaultAppearance }
   : storage.get("wemint_appearance", defaultAppearance);
+appearance.backgroundImageUrl = sanitizeRetiredAssetPath(appearance.backgroundImageUrl);
 const visibility = storage.get("wemint_visibility", {
   showProfileImage: true,
   showDisplayName: true,
