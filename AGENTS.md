@@ -1,12 +1,12 @@
-# AGENTS.md — openad.me(OpenAd)
+# AGENTS.md — wemint.app(Wemint)
 
-This repository contains product description, frontend, product logic, for **openad.me**, an open canvas platform where anyone can post anything on a personal board.
+This repository contains product description, frontend, product logic, for **wemint.app**, an open canvas platform where anyone can post anything on a personal board.
 
 ---
 
 ## 🧠 Product Philosophy
 > “post anything”
-**openad is a open canvas**
+**wemint is a open canvas**
 
 A place where:
 * users can freely express on his/her own canvas
@@ -56,7 +56,7 @@ A global shared space:
 ### 2. Your Canvas (User's Board)
 
 Each user has:
-* sharable unique URL: `openad.me/{username}`
+* sharable unique URL: `wemint.app/{username}`
 * editable personal canvas
 
 #### Capabilities:
@@ -95,7 +95,7 @@ Each user has:
 
 ## 🖥️ Interface Structure
 
-### Layout (OpenAd Dashboard = index.html )
+### Layout (Wemint Dashboard = index.html )
 
 #### Left Sidebar
 
@@ -253,7 +253,7 @@ A new user should:
 
 ## 🔥 Tagline
 
-**openad**
+**wemint**
 post anything
 
 ---

@@ -351,8 +351,8 @@ function renderProfile() {
   const username = profile.username ? profile.username.trim() : "";
   if (elements.previewLinkbarUser) {
     elements.previewLinkbarUser.textContent = username
-      ? `openad.me/${username}`
-      : "openad.me/yours";
+      ? `wemint.app/${username}`
+      : "wemint.app/yours";
   }
 }
 
@@ -2365,7 +2365,7 @@ function initNavAccordion() {
 
 function initBannerCycle() {
   const messages = [
-    "OpenAd — Post Anything",
+    "Wemint — Post Anything",
     "Open For Bespoke Design Service",
   ];
   const el = elements.bannerText;
