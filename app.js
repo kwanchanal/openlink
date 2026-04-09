@@ -2380,7 +2380,7 @@ function initNavAccordion() {
 
 function initBannerCycle() {
   const messages = [
-    "Wemint — Post Anything",
+    "WeMint — Make Anything",
     "Open For Bespoke Design Service",
   ];
   const el = elements.bannerText;
