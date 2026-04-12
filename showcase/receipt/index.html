@@ -107,11 +107,9 @@
         top: 20px;
         padding: 18px;
         border-radius: 44px;
-        background: rgba(255, 255, 255, 0.54);
-        box-shadow:
-          0 30px 80px rgba(15, 15, 15, 0.08),
-          inset 0 0 0 1px rgba(255, 255, 255, 0.72);
-        backdrop-filter: blur(20px);
+        background: transparent;
+        box-shadow: none;
+        backdrop-filter: none;
       }
 
       .phone {
@@ -120,7 +118,7 @@
         margin: 0 auto;
         min-height: 820px;
         border-radius: 54px;
-        background: linear-gradient(180deg, #fefefe 0%, #f6f6f4 100%);
+        background: transparent;
         box-shadow:
           0 0 0 8px #080808,
           0 22px 80px rgba(15, 15, 15, 0.18);
@@ -208,9 +206,7 @@
         height: 100%;
         min-height: 678px;
         border-radius: 36px;
-        background:
-          radial-gradient(circle at top, rgba(255, 255, 255, 0.92), transparent 25%),
-          linear-gradient(180deg, #fcfcfb 0%, #f1f1ef 100%);
+        background: transparent;
         overflow: hidden;
       }
 
@@ -268,7 +264,7 @@
         border-radius: 0 0 18px 18px;
         background: linear-gradient(180deg, #ffffff 0%, #f1f1ef 100%);
         box-shadow:
-          0 12px 30px rgba(15, 15, 15, 0.12),
+          0 8px 18px rgba(15, 15, 15, 0.08),
           inset 0 -1px 0 rgba(17, 17, 17, 0.08);
         transform-origin: top center;
         transition: opacity 320ms ease;
@@ -283,7 +279,7 @@
         height: 0;
         background: linear-gradient(180deg, #fffffd 0%, #f7f5ef 100%);
         border-radius: 0 0 24px 24px;
-        box-shadow: 0 24px 48px rgba(15, 15, 15, 0.12);
+        box-shadow: 0 10px 22px rgba(15, 15, 15, 0.07);
         overflow: hidden;
         transition: height 2200ms cubic-bezier(0.22, 1, 0.36, 1);
       }
@@ -492,20 +488,26 @@
 
       .bottom-sheet {
         position: absolute;
-        left: 12px;
-        right: 12px;
-        bottom: 14px;
+        left: 0;
+        right: 0;
+        bottom: 0;
         z-index: 6;
-        padding: 14px;
-        border-radius: 28px;
-        background: var(--sheet);
-        box-shadow: 0 16px 46px rgba(15, 15, 15, 0.14);
-        backdrop-filter: blur(var(--sheet-blur));
-        transform: translateY(calc(100% + 24px));
+        padding: 12px 18px 28px;
+        border-radius: 32px 32px 0 0;
+        background: rgba(255, 255, 255, 0.92);
+        box-shadow:
+          0 -18px 46px rgba(15, 15, 15, 0.14),
+          inset 0 1px 0 rgba(255, 255, 255, 0.82);
+        backdrop-filter: blur(26px);
+        transform: translateY(calc(100% - 36px));
         opacity: 0;
         transition:
-          transform 420ms cubic-bezier(0.2, 0.9, 0.2, 1),
+          transform 520ms cubic-bezier(0.2, 0.92, 0.2, 1),
           opacity 240ms ease;
+      }
+
+      body.sheet-available .bottom-sheet {
+        opacity: 1;
       }
 
       body.show-sheet .bottom-sheet {
@@ -514,11 +516,14 @@
       }
 
       .bottom-sheet-handle {
-        width: 48px;
+        display: block;
+        width: 42px;
         height: 5px;
-        margin: 0 auto 14px;
+        padding: 0;
+        border: 0;
+        margin: 0 auto 16px;
         border-radius: 999px;
-        background: rgba(17, 17, 17, 0.12);
+        background: rgba(17, 17, 17, 0.18);
       }
 
       .bottom-sheet h2 {
@@ -894,20 +899,21 @@
                   </div>
                 </div>
 
-                <aside class="bottom-sheet" id="bottomSheet" aria-label="Edit mode prompt">
-                  <div class="bottom-sheet-handle" aria-hidden="true"></div>
-                  <h2>Make your own receipt</h2>
-                  <p>
-                    You reached the end of the print. Now turn it into your own little artifact: edit rows, upload
-                    your QR, and publish a shareable receipt.
-                  </p>
-                  <div class="sheet-actions">
-                    <button class="primary-btn" id="editModeBtn" type="button">Enter edit mode</button>
-                    <button class="secondary-btn" id="dismissSheetBtn" type="button">Keep browsing</button>
-                  </div>
-                </aside>
               </div>
             </div>
+
+            <aside class="bottom-sheet" id="bottomSheet" aria-label="Edit mode prompt">
+              <div class="bottom-sheet-handle" aria-hidden="true"></div>
+              <h2>Make your own receipt</h2>
+              <p>
+                You reached the end of the print. Now turn it into your own little artifact: edit rows, upload
+                your QR, and publish a shareable receipt.
+              </p>
+              <div class="sheet-actions">
+                <button class="primary-btn" id="editModeBtn" type="button">Enter edit mode</button>
+                <button class="secondary-btn" id="dismissSheetBtn" type="button">Keep browsing</button>
+              </div>
+            </aside>
           </div>
         </section>
 
@@ -1015,7 +1021,6 @@
         customQr: false,
         editMode: false,
         shareId: `rcpt${Math.random().toString(36).slice(2, 8)}`,
-        sheetDismissed: false,
       };
 
       const elements = {
@@ -1160,12 +1165,20 @@
       }
 
       function showSheet() {
-        if (state.editMode || state.sheetDismissed) return;
+        if (state.editMode) return;
+        elements.body.classList.add("sheet-available");
         elements.body.classList.add("show-sheet");
       }
 
       function hideSheet() {
         elements.body.classList.remove("show-sheet");
+      }
+
+      function setSheetAvailable(value) {
+        elements.body.classList.toggle("sheet-available", value);
+        if (!value) {
+          hideSheet();
+        }
       }
 
       function enterEditMode() {
@@ -1256,10 +1269,8 @@
 
       elements.editModeBtn.addEventListener("click", enterEditMode);
       elements.dismissSheetBtn.addEventListener("click", () => {
-        state.sheetDismissed = true;
         hideSheet();
       });
-
       elements.addItemBtn.addEventListener("click", () => {
         state.editMode = true;
         state.items.push({
@@ -1310,6 +1321,8 @@
           elements.receiptScroll.scrollHeight - threshold;
         if (atBottom) {
           showSheet();
+        } else {
+          setSheetAvailable(false);
         }
       });
 
