@@ -67,6 +67,7 @@ body {
   background-color: var(--bg);
   color: var(--ink);
   line-height: 1.5;
+  overflow-x: hidden;
 }
 
 button,
@@ -718,6 +719,21 @@ textarea {
 .form-card {
   margin-top: 0;
 }
+
+.icon-btn {
+  border: none;
+  background: none;
+  padding: 6px;
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  color: var(--muted);
+  border-radius: 8px;
+}
+
+.icon-btn:hover {
+  background: var(--secondary);
 }
 
 .icon-btn:disabled {
@@ -879,6 +895,30 @@ textarea {
 }
 
 /* ── Ad panel ── */
+.ad-sheet-handle {
+  display: none;
+}
+
+
+.ad-sheet-label {
+  display: none;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 2px;
+  font-size: 13px;
+  font-weight: 700;
+  color: #111827;
+  letter-spacing: 0.03em;
+  text-transform: uppercase;
+}
+
+.ad-sheet-label .material-symbols-outlined {
+  font-size: 20px;
+  font-variation-settings: 'wght' 600;
+  transition: transform 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
 .ad-panel {
   position: sticky;
   top: 24px;
@@ -1438,6 +1478,7 @@ textarea {
   box-shadow: 0 18px 45px rgba(15, 23, 42, 0.08);
   display: grid;
   gap: 14px;
+  overflow: hidden;
 }
 
 .link-card.is-dragging {
@@ -1504,6 +1545,10 @@ textarea {
   color: #111827;
   font-weight: 600;
   text-decoration: none;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
 }
 
 .copy-link-btn {
@@ -1520,10 +1565,10 @@ textarea {
   color: var(--muted);
   font-size: 14px;
   line-height: 1.45;
-  word-break: break-all;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  min-width: 0;
   max-width: 100%;
 }
 
@@ -2324,13 +2369,13 @@ textarea {
 }
 
 .qr-code-preview {
-  width: min(100%, 220px);
-  aspect-ratio: 1;
+  width: fit-content;
   border: 1px solid var(--border);
   border-radius: 18px;
   background: #ffffff;
   padding: 18px;
   box-shadow: var(--shadow-xs);
+  line-height: 0;
 }
 
 .qr-code-pattern {
@@ -3732,28 +3777,72 @@ textarea {
 
   .main-scroll {
     height: auto;
+    scrollbar-gutter: auto;
+    padding: 16px 20px 24px;
+  }
+
+  .ad-sheet-handle {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    border: none;
+    background: none;
+    cursor: pointer;
+    flex-shrink: 0;
+    padding: 4px 0 0;
+    width: 100%;
+  }
+
+  .ad-sheet-label {
+    display: flex;
+  }
+
+  .ad-panel:not(.is-collapsed) .ad-sheet-arrow {
+    transform: rotate(180deg);
   }
 
   .ad-panel {
     position: fixed;
-    inset: auto 14px 14px;
+    inset: auto 0 0;
     z-index: 40;
     display: flex;
-    width: auto;
-    max-height: 360px;
+    flex-direction: column;
+    width: 100%;
+    max-height: 88vh;
     min-height: 0;
-    padding: 14px;
-    gap: 12px;
-    border-radius: 18px;
-    box-shadow: 0 24px 80px hsl(0 0% 0% / 0.24);
+    padding: 10px 20px 32px;
+    gap: 14px;
+    border-radius: 24px 24px 0 0;
+    box-shadow: 0 -8px 40px hsl(0 0% 0% / 0.14);
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1);
+  }
+
+  .ad-panel.is-collapsed {
+    max-height: 62px;
+    padding-top: 10px;
+    padding-bottom: 10px;
+    cursor: pointer;
+    overflow: hidden;
+  }
+
+  .ad-panel:not(.is-collapsed) {
+    overflow-y: auto;
+  }
+
+  .ad-panel.is-collapsed .ad-panel-header,
+  .ad-panel.is-collapsed .ad-panel-copy,
+  .ad-panel.is-collapsed .ad-message-stack,
+  .ad-panel.is-collapsed .ad-contact-line {
+    display: none;
   }
 
   .ad-panel-close {
-    display: grid;
+    display: none;
   }
 
   .ad-panel-header {
-    display: flex;
+    display: none;
   }
 
   .ad-panel-title {
@@ -3823,30 +3912,15 @@ textarea {
   }
 
   .main {
-    padding: 16px;
-  }
-
-  .ad-panel {
-    position: fixed;
-    inset: auto 14px 14px;
-    z-index: 40;
-    display: flex;
-    width: auto;
-    max-height: 360px;
-    min-height: 0;
-    padding: 14px;
-    gap: 12px;
-    border-radius: 18px;
-    box-shadow: 0 24px 80px hsl(0 0% 0% / 0.24);
+    padding: 0;
   }
 
   .ad-panel-close {
-    display: grid;
+    display: none;
   }
 
   .ad-panel-header {
-    display: flex;
-    justify-content: flex-end;
+    display: none;
   }
 
   .ad-panel-title {
@@ -3877,27 +3951,63 @@ textarea {
     display: inline-flex;
   }
 
+  .link-card {
+    position: relative;
+    padding-right: 60px;
+  }
+
   .link-row {
-    flex-direction: column;
-    align-items: stretch;
+    flex-direction: row;
+    align-items: flex-start;
   }
 
   .link-right {
-    align-self: flex-end;
+    position: absolute;
+    top: 18px;
+    right: 18px;
   }
 
   .link-meta-row {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 8px;
+    flex-direction: row;
+    align-items: center;
+    flex-wrap: nowrap;
+    gap: 6px;
+    overflow: hidden;
   }
 
   .link-tool-icons {
-    flex-wrap: wrap;
+    flex-shrink: 1;
+    min-width: 0;
+    overflow: hidden;
+    flex-wrap: nowrap;
+  }
+
+  .link-tool-icons .icon-btn-sm:not(.layout-toggle-btn) {
+    display: none;
+  }
+
+  .link-stats {
+    white-space: nowrap;
+    flex-shrink: 0;
+    display: flex !important;
+  }
+
+  .link-delete {
+    flex-shrink: 0;
   }
 
   .link-url {
     max-width: 100%;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
+  .link-url-row,
+  .link-short-row {
+    flex-wrap: nowrap;
+    overflow: hidden;
+    min-width: 0;
   }
 
   .layout-option {
@@ -3911,10 +4021,11 @@ textarea {
 
   .qr-preview-card {
     grid-template-columns: 1fr;
+    justify-items: center;
   }
 
   .qr-code-preview {
-    width: min(220px, 100%);
+    width: fit-content;
   }
 
   .thumbnail-row {
@@ -3931,8 +4042,15 @@ textarea {
     justify-content: space-between;
   }
 
+  .page-title-group {
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 8px;
+  }
+
   .topbar-row--menu {
     display: flex;
+    width: fit-content;
   }
 }
 

@@ -709,9 +709,7 @@ function createLayoutPanel(link) {
     <div class="layout-body">
       <div class="qr-tab-panel is-active" data-qr-panel="preview" role="tabpanel">
         <div class="qr-preview-card">
-          <div class="qr-code-preview" aria-label="QR Code preview">
-            <div class="qr-code-pattern"></div>
-          </div>
+          <div class="qr-code-preview" aria-label="QR Code preview"></div>
           <div class="qr-preview-copy">
             <p class="link-title">${escapeHTML(link.title || "Untitled")}</p>
             <p class="muted">${getShortLink(link)}</p>
@@ -755,6 +753,30 @@ function createLayoutPanel(link) {
       </div>
     </div>
   `;
+
+  // Generate QR code
+  const qrContainer = panel.querySelector(".qr-code-preview");
+  const shortLink = getShortLink(link);
+  if (qrContainer && typeof QRCode !== "undefined") {
+    new QRCode(qrContainer, {
+      text: shortLink,
+      width: 160,
+      height: 160,
+      colorDark: "#000000",
+      colorLight: "#ffffff",
+      correctLevel: QRCode.CorrectLevel.M,
+    });
+  }
+
+  // Download QR code
+  panel.querySelector(".qr-download-btn").addEventListener("click", () => {
+    const canvas = panel.querySelector(".qr-code-preview canvas");
+    if (!canvas) return;
+    const a = document.createElement("a");
+    a.href = canvas.toDataURL("image/png");
+    a.download = `qr-${link.shortCode || link.id}.png`;
+    a.click();
+  });
 
   // Close button
   panel.querySelector(".layout-close-btn").addEventListener("click", () => {
@@ -1940,23 +1962,38 @@ async function downloadPreviewImage() {
 }
 
 function initEvents() {
+  const isMobileAd = () => window.matchMedia("(max-width: 1024px), (hover: none), (pointer: coarse)").matches;
   if (elements.adPanel && elements.appShell) {
     const syncAdPanelState = () => {
-      const isMobileAd = window.matchMedia("(max-width: 1024px), (hover: none), (pointer: coarse)").matches;
-      const isDismissed = sessionStorage.getItem("openlink_ad_panel_dismissed") === "true";
-      const shouldHide = isMobileAd && isDismissed;
-      elements.adPanel.classList.toggle("is-hidden", shouldHide);
-      elements.appShell.classList.toggle("is-ad-dismissed", !isMobileAd && shouldHide);
+      const mobile = isMobileAd();
+      if (mobile) {
+        elements.adPanel.classList.remove("is-hidden", "is-collapsed");
+        elements.adPanel.classList.add("is-expanded");
+        elements.appShell.classList.remove("is-ad-dismissed");
+      } else {
+        elements.adPanel.classList.remove("is-collapsed", "is-expanded", "is-hidden");
+        elements.appShell.classList.remove("is-ad-dismissed");
+      }
     };
     syncAdPanelState();
     window.addEventListener("resize", syncAdPanelState);
   }
-  if (elements.adPanelClose && elements.adPanel && elements.appShell) {
-    elements.adPanelClose.addEventListener("click", () => {
-      sessionStorage.setItem("openlink_ad_panel_dismissed", "true");
-      elements.adPanel.classList.add("is-hidden");
-      elements.appShell.classList.remove("is-ad-dismissed");
+  const toggleAdCollapse = () => {
+    if (!isMobileAd() || !elements.adPanel) return;
+    const willExpand = elements.adPanel.classList.contains("is-collapsed");
+    elements.adPanel.classList.toggle("is-collapsed", !willExpand);
+    elements.adPanel.classList.toggle("is-expanded", willExpand);
+    sessionStorage.setItem("openlink_ad_collapsed", String(!willExpand));
+  };
+  if (elements.adPanelClose && elements.adPanel) {
+    elements.adPanelClose.addEventListener("click", (e) => {
+      e.stopPropagation();
+      toggleAdCollapse();
     });
+  }
+  const adSheetHandle = document.getElementById("adSheetHandle");
+  if (adSheetHandle) {
+    adSheetHandle.addEventListener("click", toggleAdCollapse);
   }
   const setAdContactSheetOpen = (value) => {
     elements.adContactSheet?.classList.toggle("is-open", value);
