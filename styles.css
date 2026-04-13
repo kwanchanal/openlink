@@ -2245,6 +2245,230 @@ textarea {
   overflow: hidden;
 }
 
+.qr-tabs {
+  display: flex;
+  align-items: center;
+  gap: 28px;
+  padding: 0 16px;
+  min-height: 58px;
+  border-bottom: 1px solid var(--border);
+  background: #ffffff;
+}
+
+.qr-tab {
+  position: relative;
+  align-self: stretch;
+  border: 0;
+  border-radius: 0;
+  background: transparent;
+  color: var(--muted);
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+  padding: 0 8px;
+  letter-spacing: 0;
+}
+
+.qr-tab.is-active {
+  color: var(--foreground);
+  box-shadow: none;
+}
+
+.qr-tab.is-active::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: #111827;
+}
+
+.qr-tab:focus-visible {
+  outline: none;
+}
+
+.qr-tab:focus-visible::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  border-radius: 999px;
+  background: #111827;
+}
+
+.qr-tab-panel {
+  display: none;
+}
+
+.qr-tab-panel.is-active {
+  display: block;
+}
+
+.qr-preview-card {
+  display: grid;
+  grid-template-columns: minmax(180px, 240px) 1fr;
+  align-items: center;
+  gap: 24px;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  padding: 20px;
+  background: #ffffff;
+}
+
+.qr-code-preview {
+  width: min(100%, 220px);
+  aspect-ratio: 1;
+  border: 1px solid var(--border);
+  border-radius: 18px;
+  background: #ffffff;
+  padding: 18px;
+  box-shadow: var(--shadow-xs);
+}
+
+.qr-code-pattern {
+  width: 100%;
+  height: 100%;
+  border-radius: 10px;
+  background-color: #111827;
+  background-image:
+    linear-gradient(90deg, #ffffff 12px, transparent 12px),
+    linear-gradient(#ffffff 12px, transparent 12px);
+  background-size: 28px 28px;
+  background-position: 4px 4px;
+  position: relative;
+}
+
+.qr-code-pattern::before,
+.qr-code-pattern::after {
+  content: "";
+  position: absolute;
+  width: 42px;
+  height: 42px;
+  border: 10px solid #111827;
+  background: #ffffff;
+}
+
+.qr-code-pattern::before {
+  top: 10px;
+  left: 10px;
+  box-shadow: 96px 0 0 -10px #ffffff, 96px 0 0 0 #111827, 0 96px 0 -10px #ffffff, 0 96px 0 0 #111827;
+}
+
+.qr-code-pattern::after {
+  right: 20px;
+  bottom: 20px;
+  width: 28px;
+  height: 28px;
+  border-width: 8px;
+}
+
+.qr-preview-copy {
+  display: grid;
+  gap: 8px;
+}
+
+.qr-preview-copy p {
+  margin: 0;
+}
+
+.qr-download-btn {
+  width: fit-content;
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card);
+  color: var(--foreground);
+  cursor: pointer;
+  font-size: 13px;
+  font-weight: 600;
+  padding: 10px 14px;
+  box-shadow: var(--shadow-xs);
+}
+
+.qr-download-btn .material-symbols-outlined {
+  font-size: 18px;
+}
+
+.qr-upgrade-note {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 12px;
+  border: 1px solid #dedede;
+  border-radius: 14px;
+  background: #f8f8f8;
+  color: #4b5563;
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 12px 14px;
+}
+
+.qr-upgrade-note .material-symbols-outlined {
+  font-size: 20px;
+  color: #111827;
+}
+
+.qr-setting-grid {
+  display: grid;
+  gap: 12px;
+}
+
+.qr-setting-option {
+  display: grid;
+  gap: 8px;
+  border: 1px solid var(--border);
+  border-radius: 16px;
+  background: #ffffff;
+  padding: 14px;
+}
+
+.qr-setting-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 12px;
+  font-size: 14px;
+  font-weight: 650;
+}
+
+.qr-lock {
+  border: 1px solid var(--border);
+  border-radius: 999px;
+  background: #f5f5f5;
+  color: var(--muted);
+  font-size: 11px;
+  font-weight: 650;
+  line-height: 1;
+  padding: 5px 8px;
+}
+
+.qr-setting-option.is-locked {
+  opacity: 0.78;
+}
+
+.qr-setting-option button:disabled,
+.qr-frame-select:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+
+.qr-frame-select {
+  width: 100%;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--secondary);
+  color: var(--foreground);
+  font-size: 13px;
+  padding: 10px 12px;
+}
+
 .layout-preview-classic {
   display: flex;
   align-items: center;
@@ -3680,6 +3904,14 @@ textarea {
 
   .layout-preview {
     width: 100%;
+  }
+
+  .qr-preview-card {
+    grid-template-columns: 1fr;
+  }
+
+  .qr-code-preview {
+    width: min(220px, 100%);
   }
 
   .thumbnail-row {

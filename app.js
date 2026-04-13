@@ -692,86 +692,66 @@ function closeSocialModal() {
 
 function createLayoutPanel(link) {
   const panel = document.createElement("div");
-  panel.className = "layout-card";
-
-  const layoutOptions = [
-    {
-      id: "classic",
-      title: "Classic",
-      desc: "Efficient, direct and compact.",
-      preview: `
-        <div class="layout-preview">
-          <div class="layout-preview-classic">
-            <div class="preview-avatar-sm"></div>
-            <div class="preview-bar"></div>
-            <span class="preview-dots">...</span>
-          </div>
-        </div>
-      `,
-    },
-    {
-      id: "featured",
-      title: "Featured",
-      desc: "Make your link stand out with a larger, more attractive display.",
-      preview: `
-        <div class="layout-preview">
-          <div class="layout-preview-featured">
-            <span class="preview-caption">Now touring, get your tickets</span>
-            <span class="preview-dots">...</span>
-          </div>
-        </div>
-      `,
-    },
-  ];
-
-  let optionsHTML = "";
-  layoutOptions.forEach((option) => {
-    const isSelected =
-      (option.id === "featured" && link.featured) ||
-      (option.id === "classic" && !link.featured);
-
-    let extraContent = "";
-    if (option.id === "featured") {
-      extraContent = `
-        <div class="thumbnail-row">
-          <button class="add-thumbnail-btn" type="button">
-            <span class="material-symbols-outlined">add_photo_alternate</span>
-            Add thumbnail
-          </button>
-          <button class="reset-thumbnail-btn" type="button">
-            <span class="material-symbols-outlined">refresh</span>
-            Reset
-          </button>
-          <input class="thumbnail-input" type="file" accept="image/*" />
-        </div>
-        <div class="thumbnail-hint">No thumbnail yet.</div>
-        <div class="thumbnail-preview"></div>
-      `;
-    }
-
-    optionsHTML += `
-      <label class="layout-option${isSelected ? " is-selected" : ""}" data-layout="${option.id}">
-        <input type="radio" name="layout-${link.id}" value="${option.id}" ${isSelected ? "checked" : ""} />
-        <div class="layout-text">
-          <div class="link-title">${option.title}</div>
-          <div class="muted">${option.desc}</div>
-          ${extraContent}
-        </div>
-        ${option.preview}
-      </label>
-    `;
-  });
+  panel.className = "layout-card qr-panel";
 
   panel.innerHTML = `
     <div class="layout-bar">
-      <h3>Layout</h3>
+      <h3>QR Code</h3>
       <button class="icon-btn layout-close-btn" aria-label="Close">
         <span class="material-symbols-outlined">close</span>
       </button>
     </div>
+    <div class="qr-tabs" role="tablist" aria-label="QR Code manager">
+      <button class="qr-tab is-active" type="button" role="tab" aria-selected="true" data-qr-tab="preview">Preview</button>
+      <button class="qr-tab" type="button" role="tab" aria-selected="false" data-qr-tab="setting">Setting</button>
+    </div>
     <div class="layout-body">
-      <p class="muted">Choose a layout for your link</p>
-      <div class="layout-options">${optionsHTML}</div>
+      <div class="qr-tab-panel is-active" data-qr-panel="preview" role="tabpanel">
+        <div class="qr-preview-card">
+          <div class="qr-code-preview" aria-label="QR Code preview">
+            <div class="qr-code-pattern"></div>
+          </div>
+          <div class="qr-preview-copy">
+            <p class="link-title">${escapeHTML(link.title || "Untitled")}</p>
+            <p class="muted">${getShortLink(link)}</p>
+            <button class="qr-download-btn" type="button">
+              <span class="material-symbols-outlined" aria-hidden="true">download</span>
+              Download QR Code
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="qr-tab-panel" data-qr-panel="setting" role="tabpanel">
+        <div class="qr-upgrade-note">
+          <span class="material-symbols-outlined" aria-hidden="true">workspace_premium</span>
+          <span>Upgrade to customize your QR Code with a center logo and frame.</span>
+        </div>
+        <div class="qr-setting-grid">
+          <label class="qr-setting-option is-locked">
+            <span class="qr-setting-head">
+              <span>Logo in center</span>
+              <span class="qr-lock">Upgrade</span>
+            </span>
+            <button class="add-thumbnail-btn" type="button" disabled>
+              <span class="material-symbols-outlined" aria-hidden="true">add_photo_alternate</span>
+              Upload logo
+            </button>
+            <span class="thumbnail-hint">Available after upgrade.</span>
+          </label>
+          <label class="qr-setting-option is-locked">
+            <span class="qr-setting-head">
+              <span>QR Code frame</span>
+              <span class="qr-lock">Upgrade</span>
+            </span>
+            <select class="qr-frame-select" disabled>
+              <option>Clean frame</option>
+              <option>Rounded card</option>
+              <option>Scan me badge</option>
+            </select>
+            <span class="thumbnail-hint">Choose a frame style on a paid plan.</span>
+          </label>
+        </div>
+      </div>
     </div>
   `;
 
@@ -781,69 +761,19 @@ function createLayoutPanel(link) {
     renderLinks();
   });
 
-  // Radio change events
-  panel.querySelectorAll('input[type="radio"]').forEach((input) => {
-    input.addEventListener("change", () => {
-      link.featured = input.value === "featured";
-      saveAll();
-      renderPreview();
-      renderLinks();
-    });
-  });
-
-  const thumbInput = panel.querySelector(".thumbnail-input");
-  const thumbButton = panel.querySelector(".add-thumbnail-btn");
-  const resetThumbButton = panel.querySelector(".reset-thumbnail-btn");
-  const thumbPreview = panel.querySelector(".thumbnail-preview");
-  const thumbHint = panel.querySelector(".thumbnail-hint");
-
-  const updateThumbnailUI = () => {
-    if (!thumbPreview || !thumbHint) return;
-    if (link.thumbnail) {
-      thumbPreview.innerHTML = `<img src="${escapeHTML(link.thumbnail)}" alt="" />`;
-      thumbHint.textContent = "Thumbnail ready.";
-    } else {
-      thumbPreview.innerHTML = "";
-      thumbHint.textContent = "No thumbnail yet.";
-    }
-  };
-
-  if (thumbButton && thumbInput) {
-    thumbInput.addEventListener("change", () => {
-      const file = thumbInput.files?.[0];
-      if (!file) return;
-      openCropModal({
-        file,
-        title: "Crop thumbnail",
-        aspectRatio: CROP_RATIOS.thumbnail,
-        onSave: (dataUrl) => {
-          link.thumbnail = dataUrl;
-          saveAll();
-          renderPreview();
-          renderLinks();
-        },
+  panel.querySelectorAll("[data-qr-tab]").forEach((tab) => {
+    tab.addEventListener("click", () => {
+      const nextTab = tab.dataset.qrTab;
+      panel.querySelectorAll("[data-qr-tab]").forEach((button) => {
+        const isActive = button.dataset.qrTab === nextTab;
+        button.classList.toggle("is-active", isActive);
+        button.setAttribute("aria-selected", isActive ? "true" : "false");
+      });
+      panel.querySelectorAll("[data-qr-panel]").forEach((tabPanel) => {
+        tabPanel.classList.toggle("is-active", tabPanel.dataset.qrPanel === nextTab);
       });
     });
-
-    thumbButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      thumbInput.click();
-    });
-  }
-
-  if (resetThumbButton) {
-    resetThumbButton.addEventListener("click", (event) => {
-      event.preventDefault();
-      event.stopPropagation();
-      link.thumbnail = "";
-      saveAll();
-      renderPreview();
-      renderLinks();
-    });
-  }
-
-  updateThumbnailUI();
+  });
 
   return panel;
 }
@@ -1721,8 +1651,8 @@ function renderLinks() {
       </div>
       <div class="link-meta-row">
         <div class="link-tool-icons">
-          <button class="icon-btn-sm layout-toggle-btn${isLayoutOpen ? " is-active" : ""}" aria-label="Layout">
-            <span class="material-symbols-outlined">grid_view</span>
+          <button class="icon-btn-sm layout-toggle-btn${isLayoutOpen ? " is-active" : ""}" aria-label="QR Code">
+            <span class="material-symbols-outlined">qr_code_2</span>
           </button>
           <button class="icon-btn-sm" aria-label="Pin">
             <span class="material-symbols-outlined">push_pin</span>
