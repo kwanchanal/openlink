@@ -2023,7 +2023,7 @@ function initEvents() {
       if (elements.adContactNote) {
         elements.adContactNote.textContent = "Opening your email app...";
       }
-      window.location.href = `mailto:hello@op4n.link?subject=${subject}&body=${body}`;
+      window.location.href = `mailto:kwanchanok.phon@gmail.com?subject=${subject}&body=${body}`;
     });
   }
   if (elements.addLinkFeatureBtn) {
