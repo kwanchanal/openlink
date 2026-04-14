@@ -5,6 +5,7 @@ This repository contains product description, frontend, and product logic for
 generating QR codes, tracking engagement, and managing branded link pages.
 
 Primary product domain: `op4n.link`
+Repository remote: `https://github.com/kwanchanal/openlink`
 
 Reference products:
 - `shorturl.at` for the minimal paste URL -> shorten -> copy experience

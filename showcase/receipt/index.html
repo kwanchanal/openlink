@@ -985,12 +985,12 @@
             <div class="eyebrow">Share</div>
             <h3>Download or share a unique receipt URL</h3>
             <p>
-              This showcase uses a generated URL stub in the format <code>[uniqueid].wemint.app</code> so the share
+              This showcase uses a generated URL stub in the format <code>op4n.link/[uniqueid]</code> so the share
               moment already feels productized even before backend wiring exists.
             </p>
 
             <div class="share-link-box">
-              <input id="shareUrlInput" type="text" readonly value="rcpt8041.wemint.app" />
+              <input id="shareUrlInput" type="text" readonly value="op4n.link/rcpt8041" />
               <button class="secondary-btn" id="copyLinkBtn" type="button">Copy link</button>
             </div>
 
@@ -1072,7 +1072,7 @@
         const heading = document.querySelector(".receipt-brand h1");
         if (heading) heading.textContent = state.title || "receipt";
         elements.totalText.textContent = formatPrice(totalAmount());
-        elements.shareUrlInput.value = `${state.shareId}.wemint.app`;
+        elements.shareUrlInput.value = `op4n.link/${state.shareId}`;
       }
 
       function createCellInput(value, className, onInput) {

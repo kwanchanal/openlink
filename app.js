@@ -12,6 +12,46 @@ const storage = {
   },
 };
 
+const STORAGE_PREFIX = "openlink";
+const LEGACY_STORAGE_PREFIX = "wemint";
+
+function storageKey(name) {
+  return `${STORAGE_PREFIX}_${name}`;
+}
+
+function legacyStorageKey(name) {
+  return `${LEGACY_STORAGE_PREFIX}_${name}`;
+}
+
+function getStorageValue(name, fallback) {
+  const key = storageKey(name);
+  const legacyKey = legacyStorageKey(name);
+  const value = storage.get(key, undefined);
+  if (value !== undefined) return value;
+  const legacyValue = storage.get(legacyKey, undefined);
+  if (legacyValue !== undefined) {
+    storage.set(key, legacyValue);
+    return legacyValue;
+  }
+  return fallback;
+}
+
+function setStorageValue(name, value) {
+  storage.set(storageKey(name), value);
+}
+
+function getRawStorageValue(name) {
+  const key = storageKey(name);
+  const legacyKey = legacyStorageKey(name);
+  const value = localStorage.getItem(key);
+  if (value !== null) return value;
+  const legacyValue = localStorage.getItem(legacyKey);
+  if (legacyValue !== null) {
+    localStorage.setItem(key, legacyValue);
+  }
+  return legacyValue;
+}
+
 const defaultProfile = {
   name: "Kwanchanal Grographic",
   username: "yours",
@@ -64,15 +104,15 @@ function sanitizeRetiredAssetPath(value) {
 
 const FORCE_PROFILE_MOCK = false;
 const FORCE_APPEARANCE_MOCK = true;
-const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : storage.get("wemint_profile", defaultProfile);
-const savedLinks = storage.get("wemint_links", defaultLinks);
+const profile = FORCE_PROFILE_MOCK ? { ...defaultProfile } : getStorageValue("profile", defaultProfile);
+const savedLinks = getStorageValue("links", defaultLinks);
 const links = Array.isArray(savedLinks)
   ? savedLinks.filter((link) => {
       if (REQUIRED_DEFAULT_LINK_IDS.has(link?.id)) return true;
       return !retiredMockLinkTitles.has(String(link?.title || "").trim().toLowerCase());
     })
   : defaultLinks;
-const socialLinks = storage.get("wemint_social_links", {});
+const socialLinks = getStorageValue("social_links", {});
 
 function ensureRequiredDefaultLinks() {
   if (!Array.isArray(links)) return;
@@ -121,7 +161,7 @@ function ensureRequiredDefaultLinks() {
     }
   }
   if (didChange) {
-    storage.set("wemint_links", links);
+    setStorageValue("links", links);
   }
 }
 
@@ -141,7 +181,7 @@ if (Array.isArray(links)) {
   });
   links.forEach((link) => ensureShortCode(link, existingCodes));
   if (savedLinks.length !== links.length) {
-    storage.set("wemint_links", links);
+    setStorageValue("links", links);
   }
 }
 
@@ -151,17 +191,17 @@ if (Array.isArray(links)) {
   if (portfolioLink && DEFAULT_PORTFOLIO_THUMBNAIL && !String(portfolioLink.thumbnail || "").trim()) {
     portfolioLink.thumbnail = DEFAULT_PORTFOLIO_THUMBNAIL;
     portfolioLink.featured = true;
-    storage.set("wemint_links", links);
+    setStorageValue("links", links);
   }
 }
-let inboxName = storage.get("wemint_inbox_name", "Get in touch");
-const rawInboxPosition = localStorage.getItem("wemint_inbox_position");
-const rawBannerPosition = localStorage.getItem("wemint_banner_position");
+let inboxName = getStorageValue("inbox_name", "Get in touch");
+const rawInboxPosition = getRawStorageValue("inbox_position");
+const rawBannerPosition = getRawStorageValue("banner_position");
 let inboxPosition = Number(rawInboxPosition ?? links.length + 1);
 let bannerPosition = Number(rawBannerPosition ?? links.length);
 if (Number.isNaN(inboxPosition)) inboxPosition = links.length + 1;
 if (Number.isNaN(bannerPosition)) bannerPosition = links.length;
-let inboxLayout = storage.get("wemint_inbox_layout", {
+let inboxLayout = getStorageValue("inbox_layout", {
   type: "banner",
   thumbnail: "",
 });
@@ -177,12 +217,12 @@ const defaultInboxFields = [
   { id: "inbox-phone", label: "Phone number", required: true, type: "tel" },
   { id: "inbox-booking", label: "Booking Date", required: true, type: "date" },
 ];
-let inboxFormFields = storage.get("wemint_inbox_fields", defaultInboxFields);
+let inboxFormFields = getStorageValue("inbox_fields", defaultInboxFields);
 if (!Array.isArray(inboxFormFields) || inboxFormFields.length === 0) {
   inboxFormFields = [...defaultInboxFields];
 }
 const defaultBannerItems = [];
-const savedBannerItems = storage.get("wemint_banner_items", null);
+const savedBannerItems = getStorageValue("banner_items", null);
 let bannerItems = Array.isArray(savedBannerItems) && savedBannerItems.length
   ? savedBannerItems
   : defaultBannerItems;
@@ -207,7 +247,7 @@ bannerItems = bannerItems
 if (!bannerItems.length) {
   bannerItems = [...defaultBannerItems];
 }
-let bannerEnabled = Boolean(storage.get("wemint_banner_enabled", true));
+let bannerEnabled = Boolean(getStorageValue("banner_enabled", true));
 if (bannerItems.length < 3) {
   bannerEnabled = false;
 }
@@ -221,9 +261,9 @@ const defaultAppearance = {
 };
 const appearance = FORCE_APPEARANCE_MOCK
   ? { ...defaultAppearance }
-  : storage.get("wemint_appearance", defaultAppearance);
+  : getStorageValue("appearance", defaultAppearance);
 appearance.backgroundImageUrl = sanitizeRetiredAssetPath(appearance.backgroundImageUrl);
-const visibility = storage.get("wemint_visibility", {
+const visibility = getStorageValue("visibility", {
   showProfileImage: true,
   showDisplayName: true,
   showBio: true,
@@ -460,18 +500,18 @@ const CROP_RATIOS = {
 };
 
 function saveAll() {
-  storage.set("wemint_profile", profile);
-  storage.set("wemint_links", links);
-  storage.set("wemint_social_links", socialLinks);
-  storage.set("wemint_appearance", appearance);
-  storage.set("wemint_visibility", visibility);
-  storage.set("wemint_inbox_position", inboxPosition);
-  storage.set("wemint_banner_position", bannerPosition);
-  storage.set("wemint_inbox_name", inboxName);
-  storage.set("wemint_inbox_layout", inboxLayout);
-  storage.set("wemint_inbox_fields", inboxFormFields);
-  storage.set("wemint_banner_items", bannerItems);
-  storage.set("wemint_banner_enabled", bannerEnabled);
+  setStorageValue("profile", profile);
+  setStorageValue("links", links);
+  setStorageValue("social_links", socialLinks);
+  setStorageValue("appearance", appearance);
+  setStorageValue("visibility", visibility);
+  setStorageValue("inbox_position", inboxPosition);
+  setStorageValue("banner_position", bannerPosition);
+  setStorageValue("inbox_name", inboxName);
+  setStorageValue("inbox_layout", inboxLayout);
+  setStorageValue("inbox_fields", inboxFormFields);
+  setStorageValue("banner_items", bannerItems);
+  setStorageValue("banner_enabled", bannerEnabled);
 }
 
 function renderProfile() {
@@ -488,13 +528,13 @@ function renderProfile() {
   const username = profile.username ? profile.username.trim() : "";
   if (elements.previewLinkbarUser) {
     elements.previewLinkbarUser.textContent = username
-      ? `wemint.app/${username}`
-      : "wemint.app/yours";
+      ? `op4n.link/${username}`
+      : "op4n.link/yours";
   }
   if (elements.previewCta) {
     elements.previewCta.textContent = username
-      ? `WEMINT.APP/${username.toUpperCase()}/>_POST ANYTHING`
-      : "WEMINT.APP/YOU/>_POST ANYTHING";
+      ? `OP4N.LINK/${username.toUpperCase()}/>_SHARE ANYTHING`
+      : "OP4N.LINK/YOU/>_SHARE ANYTHING";
   }
 }
 
@@ -1288,7 +1328,7 @@ function renderPreviewInboxForm() {
     ${fieldsHTML}
     <button class="sheet-submit" type="button" disabled>Send</button>
     <p class="sheet-footnote">
-      By submitting, you agree to wemint.link's T&amp;Cs and Privacy Notice.
+      By submitting, you agree to op4n.link's T&amp;Cs and Privacy Notice.
     </p>
   `;
   wirePreviewDatePickers();
@@ -1945,7 +1985,7 @@ async function downloadPreviewImage() {
         const url = URL.createObjectURL(blob);
         const link = document.createElement("a");
         link.href = url;
-        link.download = "wemint-preview.png";
+        link.download = "openlink-preview.png";
         document.body.appendChild(link);
         link.click();
         link.remove();
@@ -2669,10 +2709,10 @@ function initAdYouWord() {
 
 function init() {
   if (FORCE_PROFILE_MOCK) {
-    storage.set("wemint_profile", defaultProfile);
+    setStorageValue("profile", defaultProfile);
   }
   if (FORCE_APPEARANCE_MOCK) {
-    storage.set("wemint_appearance", defaultAppearance);
+    setStorageValue("appearance", defaultAppearance);
   }
   renderProfile();
   renderLinks();
