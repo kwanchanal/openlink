@@ -190,7 +190,7 @@
   </head>
   <body class="dashboard">
     <div class="top-banner">
-      <span class="banner-text" id="bannerText">openlink — Share Anything</span>
+      <span class="banner-text" id="bannerText">OP4N.LINK/YOU</span>
     </div>
 
     <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
@@ -300,20 +300,9 @@
 
     <script>
       (function () {
-        const messages = ["openlink — Share Anything", "Open For Bespoke Design Service"];
-        const el = document.getElementById("bannerText");
         const sidebar = document.getElementById("sidebar");
         const sidebarToggle = document.getElementById("sidebarToggle");
         const sidebarOverlay = document.getElementById("sidebarOverlay");
-        let index = 0;
-        setInterval(() => {
-          el.style.animation = "banner-slide-up-out 0.4s ease forwards";
-          setTimeout(() => {
-            index = (index + 1) % messages.length;
-            el.textContent = messages[index];
-            el.style.animation = "banner-slide-up-in 0.4s ease forwards";
-          }, 420);
-        }, 2000);
 
         const closeSidebar = () => {
           sidebar?.classList.remove("is-open");
