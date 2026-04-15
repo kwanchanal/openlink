@@ -7,6 +7,62 @@ generating QR codes, tracking engagement, and managing branded link pages.
 Primary product domain: `op4n.link`
 Repository remote: `https://github.com/kwanchanal/openlink`
 
+# op4n.link
+
+## Our Product
+
+We make link as a product.  
+We make links short, shareable, trackable — and truly yours
+
+---
+
+## Product Description
+
+op4n.link is a link management platform that turns any URL into a short, shareable, and trackable link  
+
+op4n.link treats links-first as a core product — enabling identity, analytics, and extensibility into richer digital experiences.  
+
+op4n.link is built for creators, businesses, and builders, helps them distribute content better, understand your audience, and own your digital presence.
+
+---
+
+## Problem
+
+Everyone has links — but most of them are:
+
+- Not designed for sharing  
+- Long and shucky, can be messy sometimes  
+- No Invisible (no insight into clicks or users)  
+
+---
+
+## Our Solution
+
+**Make your link better**
+
+---
+
+## Our Features
+
+### Free
+- Link Shortener  
+- Built-in Analytics (click tracking)
+
+### Upgrade
+- Custom Domain  
+- Branded links
+
+### Other
+- Landing Page Design (coming soon)
+
+---
+
+## Our DNA
+
+We do only one thing — links. And we try to make it well.
+
+---
+
 Reference products:
 - `shorturl.at` for the minimal paste URL -> shorten -> copy experience
 - `app.bitly.com` for managed dashboard patterns, analytics, branding, and link lifecycle tooling
