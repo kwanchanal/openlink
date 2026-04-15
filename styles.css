@@ -1392,10 +1392,10 @@ textarea {
   display: grid;
   gap: 16px;
   background: var(--card);
-  border: 1px solid var(--border);
+  border: 2px solid rgba(17, 24, 39, 0.2);
   border-radius: 22px;
   padding: 18px;
-  box-shadow: 0 10px 24px hsl(0 0% 0% / 0.06);
+  box-shadow: 0 14px 32px hsl(0 0% 0% / 0.1);
 }
 
 .form-card .section-label {
@@ -1498,6 +1498,7 @@ textarea {
 }
 
 .link-card {
+  position: relative;
   background: #ffffff;
   border-radius: 24px;
   padding: 18px;
@@ -1506,6 +1507,12 @@ textarea {
   display: grid;
   gap: 14px;
   overflow: hidden;
+}
+
+.link-card.is-example {
+  border-color: rgba(148, 163, 184, 0.34);
+  padding-top: 34px;
+  background: #ffffff;
 }
 
 .link-card.is-dragging {
@@ -1550,6 +1557,25 @@ textarea {
 .link-title {
   font-size: 16px;
   font-weight: 700;
+}
+
+.link-example-label {
+  position: absolute;
+  top: 0;
+  right: 18px;
+  transform: translateY(-1px);
+  display: inline-flex;
+  align-items: center;
+  min-height: 24px;
+  padding: 0 12px;
+  border-radius: 0 0 8px 8px;
+  border: 1px solid rgba(148, 163, 184, 0.34);
+  border-top: 0;
+  background: #f8fafc;
+  color: #334155;
+  font-size: 12px;
+  font-weight: 700;
+  line-height: 1;
 }
 
 .link-url-row {
@@ -2796,6 +2822,15 @@ textarea {
   transform: translateX(22px);
 }
 
+.switch input:disabled + .slider {
+  cursor: not-allowed;
+  opacity: 0.55;
+}
+
+.switch input:disabled + .slider::before {
+  background: #e5e7eb;
+}
+
 /* ── Preview ── */
 .preview {
   position: sticky;
@@ -4031,6 +4066,12 @@ textarea {
   .link-card {
     position: relative;
     padding-right: 50px;
+  }
+
+  .link-example-label {
+    right: auto;
+    left: 50%;
+    transform: translate(-50%, -1px);
   }
 
   .link-row {

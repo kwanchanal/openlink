@@ -67,9 +67,8 @@ const REQUIRED_DEFAULT_LINKS = [
     shortCode: "PL2TSH5",
     thumbnail: "",
     featured: false,
-    enabled: true,
+    enabled: false,
     locked: true,
-    alwaysEnabled: true,
   },
   {
     id: "default-art-collection",
@@ -79,7 +78,7 @@ const REQUIRED_DEFAULT_LINKS = [
     shortCode: "49BJ5U",
     thumbnail: "",
     featured: false,
-    enabled: true,
+    enabled: false,
     locked: true,
   },
 ];
@@ -113,6 +112,38 @@ const links = Array.isArray(savedLinks)
     })
   : defaultLinks;
 const socialLinks = getStorageValue("social_links", {});
+const savedLinkEnabledOverrides = getStorageValue("link_enabled_overrides", {});
+const linkEnabledOverrides = savedLinkEnabledOverrides
+  && typeof savedLinkEnabledOverrides === "object"
+  && !Array.isArray(savedLinkEnabledOverrides)
+  ? savedLinkEnabledOverrides
+  : {};
+
+function getLinkEnabled(link) {
+  const id = String(link?.id || "");
+  if (REQUIRED_DEFAULT_LINK_IDS.has(id)) {
+    return false;
+  }
+  if (id && Object.prototype.hasOwnProperty.call(linkEnabledOverrides, id)) {
+    return Boolean(linkEnabledOverrides[id]);
+  }
+  return typeof link?.enabled === "boolean" ? link.enabled : true;
+}
+
+function setLinkEnabled(link, enabled) {
+  if (REQUIRED_DEFAULT_LINK_IDS.has(link?.id)) {
+    link.enabled = false;
+    if (link?.id) {
+      linkEnabledOverrides[link.id] = false;
+    }
+    return;
+  }
+  const nextEnabled = Boolean(enabled);
+  link.enabled = nextEnabled;
+  if (link?.id) {
+    linkEnabledOverrides[link.id] = nextEnabled;
+  }
+}
 
 function ensureRequiredDefaultLinks() {
   if (!Array.isArray(links)) return;
@@ -132,13 +163,20 @@ function ensureRequiredDefaultLinks() {
     });
     if (existingIndex >= 0) {
       const [existingLink] = links.splice(existingIndex, 1);
-      links.splice(targetIndex, 0, {
+      const nextLink = {
         ...existingLink,
         ...requiredLink,
-      });
+        enabled: REQUIRED_DEFAULT_LINK_IDS.has(requiredLink.id) ? false : getLinkEnabled(existingLink),
+      };
+      delete nextLink.alwaysEnabled;
+      links.splice(targetIndex, 0, nextLink);
       didChange = didChange
         || existingIndex !== targetIndex
-        || Object.entries(requiredLink).some(([key, value]) => existingLink[key] !== value);
+        || Boolean(existingLink.alwaysEnabled)
+        || Object.entries(requiredLink).some(([key, value]) => {
+          if (key === "enabled") return false;
+          return existingLink[key] !== value;
+        });
       return;
     }
     links.splice(targetIndex, 0, { ...requiredLink });
@@ -169,18 +207,47 @@ ensureRequiredDefaultLinks();
 
 if (Array.isArray(links)) {
   const existingCodes = new Set();
+  let didNormalizeLinks = savedLinks.length !== links.length;
   links.forEach((link) => {
+    if (REQUIRED_DEFAULT_LINK_IDS.has(link?.id)) {
+      if (link.alwaysEnabled !== undefined) {
+        delete link.alwaysEnabled;
+        didNormalizeLinks = true;
+      }
+      if (typeof link.enabled !== "boolean") {
+        link.enabled = false;
+        didNormalizeLinks = true;
+      }
+      if (link.enabled !== false) {
+        link.enabled = false;
+        linkEnabledOverrides[link.id] = false;
+        didNormalizeLinks = true;
+      }
+    }
     const nextUrl = String(link?.url || "").trim();
     const nextHasUrl = typeof link?.hasUrl === "boolean" ? link.hasUrl : Boolean(nextUrl);
+    if (link.url !== (nextHasUrl ? nextUrl : "") || link.hasUrl !== nextHasUrl) {
+      didNormalizeLinks = true;
+    }
     link.url = nextHasUrl ? nextUrl : "";
     link.hasUrl = nextHasUrl;
-    link.thumbnail = sanitizeRetiredAssetPath(link?.thumbnail);
+    const nextThumbnail = sanitizeRetiredAssetPath(link?.thumbnail);
+    if (link.thumbnail !== nextThumbnail) {
+      didNormalizeLinks = true;
+    }
+    link.thumbnail = nextThumbnail;
     if (String(link.shortCode || "").trim()) {
       existingCodes.add(String(link.shortCode).trim());
     }
   });
-  links.forEach((link) => ensureShortCode(link, existingCodes));
-  if (savedLinks.length !== links.length) {
+  links.forEach((link) => {
+    const previousShortCode = link.shortCode;
+    ensureShortCode(link, existingCodes);
+    if (link.shortCode !== previousShortCode) {
+      didNormalizeLinks = true;
+    }
+  });
+  if (didNormalizeLinks) {
     setStorageValue("links", links);
   }
 }
@@ -503,6 +570,7 @@ function saveAll() {
   setStorageValue("profile", profile);
   setStorageValue("links", links);
   setStorageValue("social_links", socialLinks);
+  setStorageValue("link_enabled_overrides", linkEnabledOverrides);
   setStorageValue("appearance", appearance);
   setStorageValue("visibility", visibility);
   setStorageValue("inbox_position", inboxPosition);
@@ -1673,6 +1741,11 @@ function renderLinks() {
     const shortLink = getShortLink(link);
     const isLayoutOpen = openLayoutId === link.id;
     const isLockedDefault = Boolean(link.locked);
+    const isExampleLink = REQUIRED_DEFAULT_LINK_IDS.has(link.id);
+    const exampleLabel = isExampleLink ? '<div class="link-example-label">Example</div>' : "";
+    if (isExampleLink) {
+      card.classList.add("is-example");
+    }
     const editLockedAttrs = isLockedDefault
       ? 'disabled aria-disabled="true" title="Sign up to edit default links"'
       : "";
@@ -1681,6 +1754,7 @@ function renderLinks() {
       : "";
 
     card.innerHTML = `
+      ${exampleLabel}
       <div class="link-row">
         <div class="link-drag">
           <span class="material-symbols-outlined">drag_indicator</span>
@@ -1707,7 +1781,7 @@ function renderLinks() {
         </div>
         <div class="link-right">
           <label class="switch">
-            <input type="checkbox" ${link.enabled ? "checked" : ""} />
+            <input type="checkbox" ${getLinkEnabled(link) ? "checked" : ""} ${isExampleLink ? 'disabled aria-disabled="true" title="Example links stay off"' : ""} />
             <span class="slider"></span>
           </label>
         </div>
@@ -1747,11 +1821,7 @@ function renderLinks() {
     card
       .querySelector(".link-right .switch input")
       .addEventListener("change", (event) => {
-        if (link.alwaysEnabled) {
-          event.target.checked = true;
-          return;
-        }
-        link.enabled = event.target.checked;
+        setLinkEnabled(link, event.target.checked);
         saveAll();
         renderPreview();
       });
