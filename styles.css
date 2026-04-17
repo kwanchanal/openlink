@@ -1509,10 +1509,26 @@ textarea {
   overflow: hidden;
 }
 
+.link-card > * {
+  position: relative;
+  z-index: 1;
+}
+
 .link-card.is-example {
   border-color: rgba(148, 163, 184, 0.34);
   padding-top: 34px;
   background: #ffffff;
+}
+
+.link-card.is-example::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image: radial-gradient(rgba(148, 163, 184, 0.42) 1px, transparent 1px);
+  background-size: 10px 10px;
+  opacity: 0.34;
+  pointer-events: none;
+  z-index: 0;
 }
 
 .link-card.is-dragging {
@@ -1709,11 +1725,25 @@ textarea {
 
 /* ── Layout card (inline per-link) ── */
 .layout-card {
+  position: relative;
   background: var(--card);
   border-radius: var(--radius);
   overflow: hidden;
   border: 1px solid var(--border);
   box-shadow: var(--shadow-sm);
+}
+
+.layout-card > * {
+  position: relative;
+  z-index: 1;
+}
+
+.qr-panel.is-example .qr-tabs,
+.qr-panel.is-example .layout-body,
+.qr-panel.is-example .qr-preview-card {
+  background-image: radial-gradient(rgba(148, 163, 184, 0.14) 1px, transparent 1px);
+  background-size: 10px 10px;
+  background-color: #ffffff;
 }
 
 .inbox-section {

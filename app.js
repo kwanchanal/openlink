@@ -801,7 +801,7 @@ function closeSocialModal() {
 
 function createLayoutPanel(link) {
   const panel = document.createElement("div");
-  panel.className = "layout-card qr-panel";
+  panel.className = `layout-card qr-panel${REQUIRED_DEFAULT_LINK_IDS.has(link?.id) ? " is-example" : ""}`;
 
   panel.innerHTML = `
     <div class="layout-bar">
