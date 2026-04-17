@@ -1415,6 +1415,15 @@ textarea {
   margin-bottom: 0;
 }
 
+.link-entry-form .form-intro-hint {
+  margin: 0;
+  color: var(--muted);
+  font-size: 13px;
+  font-weight: 400;
+  line-height: 1.4;
+  text-align: center;
+}
+
 .link-entry-form input {
   width: 100%;
 }
