@@ -2695,14 +2695,7 @@ function initTopbarTypewriter() {
   if (!el) return;
 
   const phrases = [
-    "Tell The World What You Do",
-    "Instagram Reels",
-    "Facebook Post",
-    "TikTok Shop Link",
-    "YouTube Video",
-    "Product Page",
-    "Event Registration",
-    "Google Form",
+    "Paste Your Link And Get Shareable One",
   ];
   const typeDelay = 70;
   const deleteDelay = 40;
