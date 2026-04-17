@@ -118,6 +118,13 @@ const linkEnabledOverrides = savedLinkEnabledOverrides
   && !Array.isArray(savedLinkEnabledOverrides)
   ? savedLinkEnabledOverrides
   : {};
+let activeLinkFilter = getStorageValue(
+  "link_filter",
+  "example"
+);
+if (!["created", "example"].includes(activeLinkFilter)) {
+  activeLinkFilter = "example";
+}
 
 function getLinkEnabled(link) {
   const id = String(link?.id || "");
@@ -143,6 +150,10 @@ function setLinkEnabled(link, enabled) {
   if (link?.id) {
     linkEnabledOverrides[link.id] = nextEnabled;
   }
+}
+
+function getLinkFilterType(link) {
+  return REQUIRED_DEFAULT_LINK_IDS.has(link?.id) ? "example" : "created";
 }
 
 function ensureRequiredDefaultLinks() {
@@ -571,6 +582,7 @@ function saveAll() {
   setStorageValue("links", links);
   setStorageValue("social_links", socialLinks);
   setStorageValue("link_enabled_overrides", linkEnabledOverrides);
+  setStorageValue("link_filter", activeLinkFilter);
   setStorageValue("appearance", appearance);
   setStorageValue("visibility", visibility);
   setStorageValue("inbox_position", inboxPosition);
@@ -1659,6 +1671,32 @@ function applyCombinedOrder(order) {
   saveAll();
 }
 
+function createLinkFilterBar() {
+  const filters = [
+    { id: "example", label: "Example" },
+    { id: "created", label: "Created Link" },
+  ];
+  const bar = document.createElement("div");
+  bar.className = "link-filter-bar";
+  bar.setAttribute("aria-label", "Filter links");
+  bar.innerHTML = filters.map((filter) => {
+    const isActive = activeLinkFilter === filter.id;
+    return `
+      <button class="link-filter-pill${isActive ? " is-active" : ""}" type="button" data-link-filter="${filter.id}" aria-pressed="${isActive}">
+        <span>${filter.label}</span>
+      </button>
+    `;
+  }).join("");
+  bar.querySelectorAll("[data-link-filter]").forEach((button) => {
+    button.addEventListener("click", () => {
+      activeLinkFilter = button.dataset.linkFilter;
+      saveAll();
+      renderLinks();
+    });
+  });
+  return bar;
+}
+
 function renderLinks() {
   if (!elements.linksList) return;
   elements.linksList.innerHTML = "";
@@ -1716,19 +1754,30 @@ function renderLinks() {
     });
   };
 
+  elements.linksList.appendChild(createLinkFilterBar());
+
+  const visibleLinkIds = new Set(
+    links
+      .filter((link) => getLinkFilterType(link) === activeLinkFilter)
+      .map((link) => link.id)
+  );
+
   order.forEach((itemId) => {
     if (itemId === "inbox" && inboxSection) {
+      if (activeLinkFilter !== "created") return;
       elements.linksList.appendChild(inboxSection);
       attachDragHandlers(inboxSection, "inbox", inboxSection.querySelector(".inbox-header-left"));
       return;
     }
     if (itemId === "banner" && bannerSection) {
+      if (activeLinkFilter !== "created") return;
       elements.linksList.appendChild(bannerSection);
       attachDragHandlers(bannerSection, "banner", bannerSection.querySelector(".inbox-header-left"));
       return;
     }
     const link = links.find((entry) => entry.id === itemId);
     if (!link) return;
+    if (!visibleLinkIds.has(link.id)) return;
     const card = document.createElement("div");
     card.className = "link-card";
 
@@ -2213,6 +2262,7 @@ function initEvents() {
       if (index > -1) links[index] = { ...links[index], ...linkData };
     } else {
       links.unshift(linkData);
+      activeLinkFilter = "created";
     }
 
     editingId = null;
