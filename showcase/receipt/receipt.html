@@ -1,0 +1,195 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>receipt</title>
+    <link rel="icon" type="image/png" href="../../favicon/logo.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <script src="https://unpkg.com/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+    <link rel="stylesheet" href="receipt.css" />
+  </head>
+  <body>
+    <div class="receipt-page">
+      <nav class="receipt-nav" aria-label="Showcase navigation">
+        <a class="receipt-nav-back" href="../../discover.html">Back to discover</a>
+        <div class="receipt-nav-status">receipt / showcase html</div>
+      </nav>
+
+      <div class="receipt-layout">
+        <section class="stage-shell">
+          <div class="phone" aria-label="Receipt stage preview">
+            <div class="phone-chrome">
+              <span>9:41</span>
+              <div class="status-icons" aria-hidden="true">
+                <span class="status-pill"></span>
+                <span class="status-bar"></span>
+                <span class="status-battery"></span>
+              </div>
+            </div>
+
+            <div class="phone-screen">
+              <div class="screen-stage">
+                <div class="printer" aria-hidden="true">
+                  <div class="printer-top"></div>
+                  <div class="printer-mouth"></div>
+                </div>
+
+                <div class="receipt-window">
+                  <div class="receipt-roll"></div>
+                  <div class="receipt-paper" id="receiptPaper">
+                    <div class="receipt-scroll" id="receiptScroll">
+                      <div class="receipt-content" id="captureTarget">
+                        <div class="receipt-brand">
+                          <div class="receipt-brand-mark">=^.^=</div>
+                          <h1>receipt</h1>
+                          <p>One receipt. One reveal. One tiny whimsical proof.</p>
+                        </div>
+
+                        <div class="receipt-meta">
+                          <div>Order ID <strong id="orderIdText">R-8041</strong></div>
+                          <div>Timestamp <strong id="timestampText">2026-04-09 21:41</strong></div>
+                          <div>Table <strong id="tableText">07</strong></div>
+                        </div>
+
+                        <table class="receipt-table" aria-label="Receipt items">
+                          <thead>
+                            <tr>
+                              <th>Item</th>
+                              <th>Detail</th>
+                              <th>Unit</th>
+                              <th>THB</th>
+                            </tr>
+                          </thead>
+                          <tbody id="itemsBody"></tbody>
+                        </table>
+
+                        <div class="receipt-total">
+                          <span>Total</span>
+                          <strong id="totalText">165 THB</strong>
+                        </div>
+
+                        <section class="qr-section" id="qrSection">
+                          <div class="qr-card">
+                            <img class="qr-image" id="qrImage" src="../../social-icons/qr-mock.svg" alt="Payment QR code" />
+                            <p class="qr-copy">Scan to pay or swap in your own code in edit mode.</p>
+                          </div>
+                        </section>
+                        <div class="receipt-footer-space"></div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <aside class="bottom-sheet" id="bottomSheet" aria-label="Edit mode prompt">
+              <div class="bottom-sheet-handle" aria-hidden="true"></div>
+              <h2>Make your own receipt</h2>
+              <p>
+                You reached the end of the print. Now turn it into your own little artifact: edit rows, upload
+                your QR, and publish a shareable receipt.
+              </p>
+              <div class="sheet-actions">
+                <button class="primary-btn" id="editModeBtn" type="button">Enter edit mode</button>
+                <button class="secondary-btn" id="dismissSheetBtn" type="button">Keep browsing</button>
+              </div>
+            </aside>
+          </div>
+        </section>
+
+        <section class="control-panel">
+          <article class="panel-card hidden" id="editPanel">
+            <div class="eyebrow">Concept</div>
+            <h2 class="hero-title">Apple corporate restraint, then a small whimsical wink.</h2>
+            <p>
+              The page begins in reverse: first the polished end-state, then the maker controls. A thermal printer
+              appears, the paper unfurls, the order reveals itself, and only at the bottom does the interface invite
+              the user to make one.
+            </p>
+            <div class="status-chip-row">
+              <span class="status-chip">IBM Plex Mono</span>
+              <span class="status-chip">Receipt reveal animation</span>
+              <span class="status-chip">Editable line items</span>
+              <span class="status-chip">Share-ready receipt</span>
+            </div>
+          </article>
+
+          <article class="panel-card hidden" id="sharePanel">
+            <div class="eyebrow">Edit Mode</div>
+            <h3>Receipt details</h3>
+            <div class="field-grid">
+              <div class="field">
+                <label for="orderIdInput">Order ID</label>
+                <input id="orderIdInput" type="text" value="R-8041" />
+              </div>
+              <div class="field">
+                <label for="timestampInput">Timestamp</label>
+                <input id="timestampInput" type="text" value="2026-04-09 21:41" />
+              </div>
+              <div class="field">
+                <label for="tableInput">Table no.</label>
+                <input id="tableInput" type="text" value="07" />
+              </div>
+              <div class="field">
+                <label for="receiptTitleInput">Title</label>
+                <input id="receiptTitleInput" type="text" value="receipt" />
+              </div>
+            </div>
+
+            <div class="edit-actions">
+              <button class="secondary-btn" id="addItemBtn" type="button">Add item</button>
+              <button class="ghost-btn" id="resetItemsBtn" type="button">Reset sample order</button>
+            </div>
+
+            <div class="toggle-row">
+              <span>Show payment QR</span>
+              <label class="switch">
+                <input id="qrToggle" type="checkbox" checked />
+                <span class="switch-slider"></span>
+              </label>
+            </div>
+
+            <div class="edit-actions">
+              <button class="secondary-btn" id="uploadQrBtn" type="button">Upload QR code</button>
+              <button class="ghost-btn" id="resetQrBtn" type="button">Reset QR</button>
+              <input id="qrFileInput" class="hidden" type="file" accept="image/*" />
+            </div>
+
+            <div class="inline-note">
+              In edit mode, every line item becomes editable inline inside the receipt itself. Add, remove, or tweak
+              rows directly where the content lives.
+            </div>
+          </article>
+
+          <article class="panel-card">
+            <div class="eyebrow">Share</div>
+            <h3>Download or share a unique receipt URL</h3>
+            <p>
+              This showcase uses a generated URL stub in the format <code>op4n.link/[uniqueid]</code> so the share
+              moment already feels productized even before backend wiring exists.
+            </p>
+
+            <div class="share-link-box">
+              <input id="shareUrlInput" type="text" readonly value="op4n.link/rcpt8041" />
+              <button class="secondary-btn" id="copyLinkBtn" type="button">Copy link</button>
+            </div>
+
+            <div class="share-actions">
+              <button class="primary-btn" id="downloadBtn" type="button">Download image</button>
+              <button class="secondary-btn" id="shareBtn" type="button">Share receipt</button>
+            </div>
+          </article>
+        </section>
+      </div>
+    </div>
+
+    <script src="receipt.js"></script>
+  </body>
+</html>
