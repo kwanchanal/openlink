@@ -9,6 +9,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200"
     />
+    <link rel="stylesheet" href="showcase/hello/hello.css?v=20" />
     <style>
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
@@ -16,9 +17,10 @@
 
       .discover-gallery {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(280px, 360px));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 432px), 448px));
         gap: 24px;
         align-content: start;
+        justify-content: start;
         padding: 36px;
       }
 
@@ -154,6 +156,397 @@
         font-size: 13px;
       }
 
+      .hello-widget-link {
+        display: block;
+        color: inherit;
+        text-decoration: none;
+        width: min(100%, 403px);
+        margin-left: 18px;
+      }
+
+      .hello-widget-link .hello-maker {
+        min-width: 0;
+        box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .hello-widget-link:hover .hello-maker {
+        transform: translateY(-4px);
+        box-shadow: 0 28px 64px rgba(15, 23, 42, 0.12);
+      }
+
+      .showcase-stack {
+        display: grid;
+        gap: 24px;
+        width: min(100%, 448px);
+        align-content: start;
+        margin-top: -12px;
+      }
+
+      .receipt-widget {
+        display: block;
+        width: min(100%, 403px);
+        margin-left: -36px;
+        color: #252525;
+        text-decoration: none;
+      }
+
+      .receipt-widget-stage {
+        position: relative;
+        display: grid;
+        justify-items: center;
+        min-height: 549px;
+        padding: 25px 22px 31px;
+        overflow: visible;
+        border: 0;
+        border-radius: 0;
+        background: transparent;
+        box-shadow: none;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .receipt-widget:hover .receipt-widget-stage {
+        transform: translateY(-4px);
+        box-shadow: none;
+      }
+
+      .receipt-widget-printer {
+        position: relative;
+        z-index: 2;
+        width: min(100%, 367px);
+        height: 28px;
+        border-radius: 999px;
+        background: linear-gradient(180deg, #3a3a3c 0%, #1d1d1f 100%);
+        box-shadow:
+          0 12px 20px rgba(17, 17, 17, 0.16),
+          inset 0 2px 2px rgba(255, 255, 255, 0.12);
+      }
+
+      .receipt-widget-printer::after {
+        content: "";
+        position: absolute;
+        top: 7px;
+        left: 25px;
+        right: 25px;
+        height: 4px;
+        border-radius: 999px;
+        background: rgba(255, 255, 255, 0.14);
+      }
+
+      .receipt-widget-paper {
+        width: min(100%, 320px);
+        margin-top: -5px;
+        padding: 31px 20px 25px;
+        border-radius: 0 0 22px 22px;
+        background:
+          linear-gradient(rgba(20, 20, 20, 0.026) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(20, 20, 20, 0.026) 1px, transparent 1px),
+          #fffdf7;
+        background-size: 21px 21px;
+        box-shadow: 0 22px 31px rgba(17, 17, 17, 0.13);
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+        animation: receiptPaperPulse 4.8s ease-in-out infinite;
+        transform-origin: top center;
+      }
+
+      @keyframes receiptPaperPulse {
+        0%, 100% {
+          transform: translateY(-18px);
+        }
+
+        45%, 60% {
+          transform: translateY(-7px);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .receipt-widget-paper {
+          animation: none;
+        }
+      }
+
+      .receipt-widget-mark {
+        width: 58px;
+        height: 58px;
+        margin: 0 auto 14px;
+        display: grid;
+        place-items: center;
+        border: 1px solid rgba(17, 17, 17, 0.08);
+        border-radius: 16px;
+        background: rgba(255, 255, 255, 0.45);
+        font-size: 18px;
+        font-weight: 700;
+      }
+
+      .receipt-widget-title {
+        margin: 0;
+        text-align: center;
+        font-size: 32px;
+        line-height: 1;
+        letter-spacing: -0.06em;
+      }
+
+      .receipt-widget-subtitle {
+        width: min(207px, 100%);
+        margin: 16px auto 18px;
+        color: #6a6a6f;
+        text-align: center;
+        font-size: 12px;
+        font-weight: 600;
+        line-height: 1.45;
+      }
+
+      .receipt-widget-meta,
+      .receipt-widget-total {
+        border-top: 1px dotted rgba(17, 17, 17, 0.12);
+        border-bottom: 1px dotted rgba(17, 17, 17, 0.12);
+      }
+
+      .receipt-widget-meta {
+        display: grid;
+        gap: 10px;
+        padding: 14px 0 16px;
+        color: #6a6a6f;
+        font-size: 12px;
+        font-weight: 600;
+      }
+
+      .receipt-widget-meta div {
+        display: flex;
+        gap: 8px;
+      }
+
+      .receipt-widget-meta strong,
+      .receipt-widget-table strong {
+        color: #333338;
+      }
+
+      .receipt-widget-table {
+        width: 100%;
+        margin: 20px 0;
+        border-collapse: collapse;
+        color: #343438;
+        font-size: 12px;
+        line-height: 1.35;
+      }
+
+      .receipt-widget-table th,
+      .receipt-widget-table td {
+        padding: 10px 0;
+        border-bottom: 1px dotted rgba(17, 17, 17, 0.1);
+        text-align: left;
+        vertical-align: top;
+      }
+
+      .receipt-widget-table th {
+        color: #6a6a6f;
+        font-weight: 700;
+      }
+
+      .receipt-widget-table th:nth-child(2),
+      .receipt-widget-table td:nth-child(2),
+      .receipt-widget-table th:nth-child(3),
+      .receipt-widget-table td:nth-child(3) {
+        text-align: right;
+      }
+
+      .receipt-widget-total {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 20px 0;
+        font-size: 14px;
+      }
+
+      .receipt-widget-total strong {
+        color: #171717;
+        font-size: 24px;
+        letter-spacing: -0.04em;
+      }
+
+      .sudoku-widget {
+        display: block;
+        width: min(100%, 282px);
+        color: #202020;
+        text-decoration: none;
+      }
+
+      .sudoku-widget-board {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(9, 1fr);
+        width: 282px;
+        max-width: 100%;
+        aspect-ratio: 1;
+        overflow: hidden;
+        border: 2px solid #1f1f1f;
+        border-radius: 8px;
+        background: #f9f9f8;
+        box-shadow: 0 18px 44px rgba(15, 23, 42, 0.08);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .sudoku-widget:hover .sudoku-widget-board {
+        transform: translateY(-4px);
+        box-shadow: 0 24px 58px rgba(15, 23, 42, 0.12);
+      }
+
+      .sudoku-widget-board span {
+        display: grid;
+        place-items: center;
+        min-width: 0;
+        border-right: 1px solid rgba(17, 17, 17, 0.24);
+        border-bottom: 1px solid rgba(17, 17, 17, 0.24);
+        color: #565656;
+        font-size: 16px;
+        font-weight: 500;
+        line-height: 1;
+        background: #fbfbfa;
+      }
+
+      .sudoku-widget-board span:nth-child(3n) {
+        border-right-width: 2px;
+        border-right-color: #1f1f1f;
+      }
+
+      .sudoku-widget-board span:nth-child(9n) {
+        border-right: 0;
+      }
+
+      .sudoku-widget-board span:nth-child(n + 19):nth-child(-n + 27),
+      .sudoku-widget-board span:nth-child(n + 46):nth-child(-n + 54) {
+        border-bottom-width: 2px;
+        border-bottom-color: #1f1f1f;
+      }
+
+      .sudoku-widget-board span:nth-child(n + 73) {
+        border-bottom: 0;
+      }
+
+      .sudoku-widget-board .is-given {
+        color: #151515;
+        font-weight: 800;
+      }
+
+      .sudoku-widget-board .is-selected {
+        background: #cfd1d4;
+        color: #111;
+      }
+
+      .sudoku-widget-board .is-auto-fill {
+        animation: sudokuAutoFill 3.8s ease-in-out infinite;
+      }
+
+      .sudoku-win-paper {
+        position: absolute;
+        left: 50%;
+        top: 50%;
+        z-index: 3;
+        display: grid;
+        gap: 2px;
+        min-width: 104px;
+        padding: 8px 10px;
+        border: 1px solid rgba(17, 17, 17, 0.12);
+        border-radius: 8px;
+        background:
+          linear-gradient(rgba(20, 20, 20, 0.035) 1px, transparent 1px),
+          #fffef8;
+        background-size: 100% 12px;
+        box-shadow: 0 12px 24px rgba(17, 17, 17, 0.12);
+        color: #171717;
+        font-size: 12px;
+        font-weight: 800;
+        text-align: center;
+        transform: translate(-50%, -50%) rotate(-3deg) scale(0.92);
+        animation: sudokuWinPaper 3.8s ease-in-out infinite;
+      }
+
+      .sudoku-win-paper small {
+        color: #6c6c6f;
+        font-size: 9px;
+        font-weight: 700;
+      }
+
+      .sudoku-confetti-loop {
+        position: absolute;
+        inset: 0;
+        z-index: 2;
+        pointer-events: none;
+        overflow: hidden;
+      }
+
+      .sudoku-confetti-loop i {
+        position: absolute;
+        left: var(--x);
+        top: var(--y);
+        width: var(--s);
+        height: var(--s);
+        border-radius: 2px;
+        background: var(--c);
+        opacity: 0;
+        animation: sudokuConfettiLoop 3.8s ease-in-out infinite;
+        animation-delay: var(--d);
+        transform-origin: center;
+      }
+
+      @keyframes sudokuAutoFill {
+        0%, 18% {
+          color: transparent;
+          background: #cfd1d4;
+        }
+
+        30%, 100% {
+          color: #111;
+          background: #fbfbfa;
+        }
+      }
+
+      @keyframes sudokuWinPaper {
+        0%, 28% {
+          opacity: 0;
+          transform: translate(-50%, -46%) rotate(-3deg) scale(0.78);
+        }
+
+        42%, 78% {
+          opacity: 1;
+          transform: translate(-50%, -50%) rotate(-3deg) scale(1);
+        }
+
+        100% {
+          opacity: 0;
+          transform: translate(-50%, -54%) rotate(-3deg) scale(0.92);
+        }
+      }
+
+      @keyframes sudokuConfettiLoop {
+        0%, 28% {
+          opacity: 0;
+          transform: translate(0, 0) scale(0.3);
+        }
+
+        42% {
+          opacity: 1;
+        }
+
+        100% {
+          opacity: 0;
+          transform: translate(var(--tx), var(--ty)) rotate(var(--r)) scale(0.86);
+        }
+      }
+
+      @media (prefers-reduced-motion: reduce) {
+        .sudoku-widget-board .is-auto-fill,
+        .sudoku-win-paper,
+        .sudoku-confetti-loop i {
+          animation: none;
+        }
+
+        .sudoku-win-paper {
+          opacity: 1;
+          transform: translate(-50%, -50%) rotate(-3deg) scale(1);
+        }
+      }
+
       @media (max-width: 720px) {
         .discover-gallery {
           padding: 16px;
@@ -259,6 +652,97 @@
         </header>
         <div class="canvas-area">
           <section class="discover-gallery" aria-label="Showcase gallery">
+            <div class="showcase-stack">
+              <a class="hello-widget-link" href="showcase/hello/hello.html" aria-label="Open hello showcase">
+                <div
+                  class="hello-maker hello-maker--widget"
+                  data-hello-maker
+                  data-mode="widget"
+                ></div>
+              </a>
+
+              <a class="sudoku-widget" href="showcase/sudoku/sudoku.html" aria-label="Open sudoku showcase">
+                <div class="sudoku-widget-board" aria-hidden="true">
+                  <span class="is-auto-fill">3</span><span class="is-given">2</span><span class="is-given">4</span><span>5</span><span class="is-given">1</span><span class="is-given">6</span><span>7</span><span>9</span><span class="is-given">8</span>
+                  <span>1</span><span>6</span><span>8</span><span class="is-given">3</span><span>9</span><span class="is-given">7</span><span class="is-given">4</span><span>5</span><span class="is-given">2</span>
+                  <span>7</span><span>5</span><span>9</span><span class="is-given">4</span><span>8</span><span>2</span><span>1</span><span>3</span><span>6</span>
+                  <span class="is-given">5</span><span>8</span><span>3</span><span class="is-given">1</span><span class="is-given">6</span><span>9</span><span class="is-given">2</span><span class="is-given">4</span><span>7</span>
+                  <span>9</span><span class="is-given">4</span><span>6</span><span>2</span><span>7</span><span>3</span><span>8</span><span>1</span><span>5</span>
+                  <span>2</span><span>1</span><span>7</span><span>8</span><span class="is-given">5</span><span>4</span><span class="is-given">3</span><span class="is-given">6</span><span>9</span>
+                  <span class="is-given">6</span><span>7</span><span>1</span><span>9</span><span>3</span><span class="is-given">8</span><span>5</span><span class="is-given">2</span><span>4</span>
+                  <span>4</span><span>9</span><span class="is-given">5</span><span>7</span><span class="is-given">2</span><span>1</span><span>6</span><span class="is-given">8</span><span class="is-given">3</span>
+                  <span>8</span><span class="is-given">3</span><span>2</span><span>6</span><span>4</span><span>5</span><span>9</span><span>7</span><span>1</span>
+                  <div class="sudoku-confetti-loop" aria-hidden="true">
+                    <i style="--x: 4%; --y: 8%; --s: 9px; --c: #2563eb; --tx: 82px; --ty: 80px; --r: 140deg; --d: 0ms;"></i>
+                    <i style="--x: 18%; --y: 18%; --s: 11px; --c: #ef4444; --tx: -56px; --ty: 98px; --r: -110deg; --d: 70ms;"></i>
+                    <i style="--x: 36%; --y: 10%; --s: 8px; --c: #facc15; --tx: 54px; --ty: 112px; --r: 180deg; --d: 140ms;"></i>
+                    <i style="--x: 58%; --y: 14%; --s: 12px; --c: #22c55e; --tx: -72px; --ty: 108px; --r: -160deg; --d: 40ms;"></i>
+                    <i style="--x: 78%; --y: 9%; --s: 10px; --c: #a855f7; --tx: 48px; --ty: 118px; --r: 120deg; --d: 120ms;"></i>
+                    <i style="--x: 94%; --y: 20%; --s: 12px; --c: #f97316; --tx: -96px; --ty: 86px; --r: -150deg; --d: 200ms;"></i>
+                    <i style="--x: 10%; --y: 52%; --s: 10px; --c: #06b6d4; --tx: 90px; --ty: -76px; --r: 200deg; --d: 240ms;"></i>
+                    <i style="--x: 28%; --y: 78%; --s: 13px; --c: #111827; --tx: 46px; --ty: -118px; --r: -220deg; --d: 280ms;"></i>
+                    <i style="--x: 52%; --y: 86%; --s: 9px; --c: #84cc16; --tx: -62px; --ty: -132px; --r: 170deg; --d: 330ms;"></i>
+                    <i style="--x: 74%; --y: 76%; --s: 12px; --c: #ec4899; --tx: 58px; --ty: -104px; --r: -190deg; --d: 370ms;"></i>
+                    <i style="--x: 92%; --y: 88%; --s: 10px; --c: #14b8a6; --tx: -96px; --ty: -128px; --r: 210deg; --d: 410ms;"></i>
+                    <i style="--x: 44%; --y: 48%; --s: 14px; --c: #eab308; --tx: 0px; --ty: -118px; --r: -170deg; --d: 90ms;"></i>
+                  </div>
+                  <div class="sudoku-win-paper" aria-hidden="true">
+                    Solved
+                    <small>nice grid</small>
+                  </div>
+                </div>
+              </a>
+            </div>
+
+            <a class="receipt-widget" href="showcase/receipt/receipt.html" aria-label="Open receipt showcase">
+              <div class="receipt-widget-stage">
+                <div class="receipt-widget-printer" aria-hidden="true"></div>
+                <div class="receipt-widget-paper">
+                  <div class="receipt-widget-mark">=^.^=</div>
+                  <h2 class="receipt-widget-title">receipt</h2>
+                  <p class="receipt-widget-subtitle">One receipt. One reveal. One tiny whimsical proof.</p>
+
+                  <div class="receipt-widget-meta">
+                    <div><span>Order ID</span><strong>R-8041</strong></div>
+                    <div><span>Timestamp</span><strong>2026-04-09 21:41</strong></div>
+                    <div><span>Table</span><strong>07</strong></div>
+                  </div>
+
+                  <table class="receipt-widget-table" aria-label="Receipt sample items">
+                    <thead>
+                      <tr>
+                        <th>ItemDetail</th>
+                        <th>Unit</th>
+                        <th>THB</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      <tr>
+                        <td><strong>1</strong> Iced coffee oat milk no syrup</td>
+                        <td>1</td>
+                        <td>65</td>
+                      </tr>
+                      <tr>
+                        <td><strong>2</strong> Tiramisu</td>
+                        <td>1</td>
+                        <td>90</td>
+                      </tr>
+                      <tr>
+                        <td><strong>3</strong> Kitty tips</td>
+                        <td>1</td>
+                        <td>10</td>
+                      </tr>
+                    </tbody>
+                  </table>
+
+                  <div class="receipt-widget-total">
+                    <span>Total</span>
+                    <strong>165 THB</strong>
+                  </div>
+                </div>
+              </div>
+            </a>
+
           </section>
         </div>
         <div class="canvas-toolbar">
@@ -324,5 +808,6 @@
         });
       })();
     </script>
+    <script src="showcase/hello/hello.js?v=20"></script>
   </body>
 </html>
