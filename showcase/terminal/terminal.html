@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>terminal</title>
+    <link rel="icon" type="image/png" href="../../favicon/logo.png" />
+    <link rel="stylesheet" href="terminal.css" />
+  </head>
+  <body>
+    <div class="terminal-page">
+      <nav class="terminal-nav" aria-label="Showcase navigation">
+        <a class="terminal-nav-back" href="../../discover.html">Back to discover</a>
+        <div class="terminal-nav-status">terminal / showcase html</div>
+      </nav>
+
+      <main class="terminal-layout">
+        <section class="terminal-stage-column" aria-label="Terminal simulator">
+          <div class="terminal-window" id="terminalWindow">
+            <div class="terminal-header">
+              <div class="terminal-buttons">
+                <span class="terminal-button terminal-button--close"></span>
+                <span class="terminal-button terminal-button--minimize"></span>
+                <span class="terminal-button terminal-button--maximize"></span>
+              </div>
+              <div class="terminal-title">Terminal - op4n.link</div>
+            </div>
+            <div class="terminal-body" id="terminalBody" tabindex="0">
+              <div class="terminal-output">
+                <div class="terminal-line">
+                  <span class="terminal-prompt">user@op4n:~</span>
+                  <span class="terminal-command">ls -la</span>
+                </div>
+                <div class="terminal-line">
+                  <span class="terminal-output-text">total 24</span>
+                </div>
+                <div class="terminal-line">
+                  <span class="terminal-output-text">drwxr-xr-x  6 user staff  192 Apr 19 10:30 .</span>
+                </div>
+                <div class="terminal-line">
+                  <span class="terminal-output-text">drwxr-xr-x  3 user staff   96 Apr 19 10:25 ..</span>
+                </div>
+                <div class="terminal-line">
+                  <span class="terminal-line-gap"></span>
+                </div>
+                <div class="terminal-line">
+                  <span class="terminal-prompt">user@op4n:~</span>
+                  <span class="terminal-cursor">_</span>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        <aside class="terminal-detail">
+          <p class="terminal-eyebrow">Showcase widget</p>
+          <h1>A coding terminal simulator.</h1>
+          <p>
+            A realistic terminal panel for the Discover canvas. Type commands, see responses,
+            and experience the look and feel of coding in a terminal-like interface.
+          </p>
+          <div class="terminal-detail-list">
+            <span>Compact terminal header</span>
+            <span>Interactive command style</span>
+            <span>Modern dark interface</span>
+            <span>Designed for showcase</span>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="terminal.js"></script>
+  </body>
+</html>

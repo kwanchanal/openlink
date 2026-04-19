@@ -17,7 +17,7 @@
 
       .discover-gallery {
         display: grid;
-        grid-template-columns: repeat(auto-fit, minmax(min(100%, 432px), 448px));
+        grid-template-columns: repeat(auto-fit, minmax(min(100%, 432px), max-content));
         gap: 24px;
         align-content: start;
         justify-content: start;
@@ -178,15 +178,21 @@
       .showcase-stack {
         display: grid;
         gap: 24px;
-        width: min(100%, 448px);
+        width: min(100%, 606px);
         align-content: start;
         margin-top: -12px;
+      }
+
+      .showcase-widget-row {
+        display: flex;
+        align-items: flex-start;
+        gap: 24px;
       }
 
       .receipt-widget {
         display: block;
         width: min(100%, 403px);
-        margin-left: -36px;
+        margin-left: -132px;
         color: #252525;
         text-decoration: none;
       }
@@ -247,6 +253,117 @@
         font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
         animation: receiptPaperPulse 4.8s ease-in-out infinite;
         transform-origin: top center;
+      }
+
+      .terminal-widget {
+        display: block;
+        width: min(100%, 300px);
+        color: #f0f0f0;
+        text-decoration: none;
+      }
+
+      .terminal-widget-window {
+        display: grid;
+        grid-template-rows: 34px 148px;
+        width: 100%;
+        max-width: 300px;
+        background: #151515;
+        border-radius: 12px;
+        border: 1px solid #272727;
+        box-shadow: 0 20px 44px rgba(0, 0, 0, 0.22);
+        overflow: hidden;
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .terminal-widget:hover .terminal-widget-window {
+        transform: translateY(-2px);
+        box-shadow: 0 24px 50px rgba(0, 0, 0, 0.24);
+      }
+
+      .terminal-widget-header {
+        position: relative;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        padding: 0 11px;
+        background: linear-gradient(180deg, #2d2d2f 0%, #232326 100%);
+        border-bottom: 1px solid #2f2f31;
+      }
+
+      .terminal-widget-buttons {
+        display: flex;
+        gap: 3px;
+      }
+
+      .terminal-widget-button {
+        width: 7px;
+        height: 7px;
+        border-radius: 50%;
+      }
+
+      .terminal-widget-button--close {
+        background: #ff5f57;
+      }
+
+      .terminal-widget-button--minimize {
+        background: #ffbd2e;
+      }
+
+      .terminal-widget-button--maximize {
+        background: #28ca42;
+      }
+
+      .terminal-widget-title {
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+        color: #d4d4d8;
+        font-size: 9px;
+        line-height: 1;
+        font-weight: 500;
+        white-space: nowrap;
+      }
+
+      .terminal-widget-body {
+        padding: 10px;
+        min-height: 0;
+        background: #0a0a0a;
+        font-family: 'SF Mono', 'Monaco', 'Inconsolata', 'Roboto Mono', monospace;
+        font-size: 10px;
+        line-height: 1.3;
+        overflow: hidden;
+      }
+
+      .terminal-widget-output {
+        display: grid;
+        gap: 1px;
+      }
+
+      .terminal-widget-line {
+        display: flex;
+        align-items: center;
+        min-height: 14px;
+      }
+
+      .terminal-widget-prompt {
+        color: #4ade80;
+        margin-right: 6px;
+        font-weight: 600;
+      }
+
+      .terminal-widget-command,
+      .terminal-widget-output-text,
+      .terminal-widget-cursor {
+        color: #e5e7eb;
+      }
+
+      .terminal-widget-cursor {
+        animation: terminalBlink 1s step-start infinite;
+      }
+
+      @keyframes terminalBlink {
+        0%, 50% { opacity: 1; }
+        51%, 100% { opacity: 0; }
       }
 
       @keyframes receiptPaperPulse {
@@ -554,6 +671,10 @@
           gap: 16px;
         }
 
+        .showcase-widget-row {
+          flex-wrap: wrap;
+        }
+
         .showcase-card {
           border-radius: 20px;
           padding: 12px;
@@ -661,37 +782,70 @@
                 ></div>
               </a>
 
-              <a class="sudoku-widget" href="showcase/sudoku/sudoku.html" aria-label="Open sudoku showcase">
-                <div class="sudoku-widget-board" aria-hidden="true">
-                  <span class="is-auto-fill">3</span><span class="is-given">2</span><span class="is-given">4</span><span>5</span><span class="is-given">1</span><span class="is-given">6</span><span>7</span><span>9</span><span class="is-given">8</span>
-                  <span>1</span><span>6</span><span>8</span><span class="is-given">3</span><span>9</span><span class="is-given">7</span><span class="is-given">4</span><span>5</span><span class="is-given">2</span>
-                  <span>7</span><span>5</span><span>9</span><span class="is-given">4</span><span>8</span><span>2</span><span>1</span><span>3</span><span>6</span>
-                  <span class="is-given">5</span><span>8</span><span>3</span><span class="is-given">1</span><span class="is-given">6</span><span>9</span><span class="is-given">2</span><span class="is-given">4</span><span>7</span>
-                  <span>9</span><span class="is-given">4</span><span>6</span><span>2</span><span>7</span><span>3</span><span>8</span><span>1</span><span>5</span>
-                  <span>2</span><span>1</span><span>7</span><span>8</span><span class="is-given">5</span><span>4</span><span class="is-given">3</span><span class="is-given">6</span><span>9</span>
-                  <span class="is-given">6</span><span>7</span><span>1</span><span>9</span><span>3</span><span class="is-given">8</span><span>5</span><span class="is-given">2</span><span>4</span>
-                  <span>4</span><span>9</span><span class="is-given">5</span><span>7</span><span class="is-given">2</span><span>1</span><span>6</span><span class="is-given">8</span><span class="is-given">3</span>
-                  <span>8</span><span class="is-given">3</span><span>2</span><span>6</span><span>4</span><span>5</span><span>9</span><span>7</span><span>1</span>
-                  <div class="sudoku-confetti-loop" aria-hidden="true">
-                    <i style="--x: 4%; --y: 8%; --s: 9px; --c: #2563eb; --tx: 82px; --ty: 80px; --r: 140deg; --d: 0ms;"></i>
-                    <i style="--x: 18%; --y: 18%; --s: 11px; --c: #ef4444; --tx: -56px; --ty: 98px; --r: -110deg; --d: 70ms;"></i>
-                    <i style="--x: 36%; --y: 10%; --s: 8px; --c: #facc15; --tx: 54px; --ty: 112px; --r: 180deg; --d: 140ms;"></i>
-                    <i style="--x: 58%; --y: 14%; --s: 12px; --c: #22c55e; --tx: -72px; --ty: 108px; --r: -160deg; --d: 40ms;"></i>
-                    <i style="--x: 78%; --y: 9%; --s: 10px; --c: #a855f7; --tx: 48px; --ty: 118px; --r: 120deg; --d: 120ms;"></i>
-                    <i style="--x: 94%; --y: 20%; --s: 12px; --c: #f97316; --tx: -96px; --ty: 86px; --r: -150deg; --d: 200ms;"></i>
-                    <i style="--x: 10%; --y: 52%; --s: 10px; --c: #06b6d4; --tx: 90px; --ty: -76px; --r: 200deg; --d: 240ms;"></i>
-                    <i style="--x: 28%; --y: 78%; --s: 13px; --c: #111827; --tx: 46px; --ty: -118px; --r: -220deg; --d: 280ms;"></i>
-                    <i style="--x: 52%; --y: 86%; --s: 9px; --c: #84cc16; --tx: -62px; --ty: -132px; --r: 170deg; --d: 330ms;"></i>
-                    <i style="--x: 74%; --y: 76%; --s: 12px; --c: #ec4899; --tx: 58px; --ty: -104px; --r: -190deg; --d: 370ms;"></i>
-                    <i style="--x: 92%; --y: 88%; --s: 10px; --c: #14b8a6; --tx: -96px; --ty: -128px; --r: 210deg; --d: 410ms;"></i>
-                    <i style="--x: 44%; --y: 48%; --s: 14px; --c: #eab308; --tx: 0px; --ty: -118px; --r: -170deg; --d: 90ms;"></i>
+              <div class="showcase-widget-row">
+                <a class="sudoku-widget" href="showcase/sudoku/sudoku.html" aria-label="Open sudoku showcase">
+                  <div class="sudoku-widget-board" aria-hidden="true">
+                    <span class="is-auto-fill">3</span><span class="is-given">2</span><span class="is-given">4</span><span>5</span><span class="is-given">1</span><span class="is-given">6</span><span>7</span><span>9</span><span class="is-given">8</span>
+                    <span>1</span><span>6</span><span>8</span><span class="is-given">3</span><span>9</span><span class="is-given">7</span><span class="is-given">4</span><span>5</span><span class="is-given">2</span>
+                    <span>7</span><span>5</span><span>9</span><span class="is-given">4</span><span>8</span><span>2</span><span>1</span><span>3</span><span>6</span>
+                    <span class="is-given">5</span><span>8</span><span>3</span><span class="is-given">1</span><span class="is-given">6</span><span>9</span><span class="is-given">2</span><span class="is-given">4</span><span>7</span>
+                    <span>9</span><span class="is-given">4</span><span>6</span><span>2</span><span>7</span><span>3</span><span>8</span><span>1</span><span>5</span>
+                    <span>2</span><span>1</span><span>7</span><span>8</span><span class="is-given">5</span><span>4</span><span class="is-given">3</span><span class="is-given">6</span><span>9</span>
+                    <span class="is-given">6</span><span>7</span><span>1</span><span>9</span><span>3</span><span class="is-given">8</span><span>5</span><span class="is-given">2</span><span>4</span>
+                    <span>4</span><span>9</span><span class="is-given">5</span><span>7</span><span class="is-given">2</span><span>1</span><span>6</span><span class="is-given">8</span><span class="is-given">3</span>
+                    <span>8</span><span class="is-given">3</span><span>2</span><span>6</span><span>4</span><span>5</span><span>9</span><span>7</span><span>1</span>
+                    <div class="sudoku-confetti-loop" aria-hidden="true">
+                      <i style="--x: 4%; --y: 8%; --s: 9px; --c: #2563eb; --tx: 82px; --ty: 80px; --r: 140deg; --d: 0ms;"></i>
+                      <i style="--x: 18%; --y: 18%; --s: 11px; --c: #ef4444; --tx: -56px; --ty: 98px; --r: -110deg; --d: 70ms;"></i>
+                      <i style="--x: 36%; --y: 10%; --s: 8px; --c: #facc15; --tx: 54px; --ty: 112px; --r: 180deg; --d: 140ms;"></i>
+                      <i style="--x: 58%; --y: 14%; --s: 12px; --c: #22c55e; --tx: -72px; --ty: 108px; --r: -160deg; --d: 40ms;"></i>
+                      <i style="--x: 78%; --y: 9%; --s: 10px; --c: #a855f7; --tx: 48px; --ty: 118px; --r: 120deg; --d: 120ms;"></i>
+                      <i style="--x: 94%; --y: 20%; --s: 12px; --c: #f97316; --tx: -96px; --ty: 86px; --r: -150deg; --d: 200ms;"></i>
+                      <i style="--x: 10%; --y: 52%; --s: 10px; --c: #06b6d4; --tx: 90px; --ty: -76px; --r: 200deg; --d: 240ms;"></i>
+                      <i style="--x: 28%; --y: 78%; --s: 13px; --c: #111827; --tx: 46px; --ty: -118px; --r: -220deg; --d: 280ms;"></i>
+                      <i style="--x: 52%; --y: 86%; --s: 9px; --c: #84cc16; --tx: -62px; --ty: -132px; --r: 170deg; --d: 330ms;"></i>
+                      <i style="--x: 74%; --y: 76%; --s: 12px; --c: #ec4899; --tx: 58px; --ty: -104px; --r: -190deg; --d: 370ms;"></i>
+                      <i style="--x: 92%; --y: 88%; --s: 10px; --c: #14b8a6; --tx: -96px; --ty: -128px; --r: 210deg; --d: 410ms;"></i>
+                      <i style="--x: 44%; --y: 48%; --s: 14px; --c: #eab308; --tx: 0px; --ty: -118px; --r: -170deg; --d: 90ms;"></i>
+                    </div>
+                    <div class="sudoku-win-paper" aria-hidden="true">
+                      Solved
+                      <small>nice grid</small>
+                    </div>
                   </div>
-                  <div class="sudoku-win-paper" aria-hidden="true">
-                    Solved
-                    <small>nice grid</small>
+                </a>
+
+                <a class="terminal-widget" href="showcase/terminal/terminal.html" aria-label="Open terminal showcase">
+                  <div class="terminal-widget-window">
+                    <div class="terminal-widget-header">
+                      <div class="terminal-widget-buttons">
+                        <span class="terminal-widget-button terminal-widget-button--close"></span>
+                        <span class="terminal-widget-button terminal-widget-button--minimize"></span>
+                        <span class="terminal-widget-button terminal-widget-button--maximize"></span>
+                      </div>
+                      <div class="terminal-widget-title">Terminal - op4n.link</div>
+                    </div>
+                    <div class="terminal-widget-body" aria-hidden="true">
+                      <div class="terminal-widget-output">
+                        <div class="terminal-widget-line">
+                          <span class="terminal-widget-prompt">user@op4n:~</span>
+                          <span class="terminal-widget-command">ls -la</span>
+                        </div>
+                        <div class="terminal-widget-line">
+                          <span class="terminal-widget-output-text">total 24</span>
+                        </div>
+                        <div class="terminal-widget-line">
+                          <span class="terminal-widget-output-text">drwxr-xr-x  6 user staff  192 Apr 19 10:30 .</span>
+                        </div>
+                        <div class="terminal-widget-line">
+                          <span class="terminal-widget-prompt">user@op4n:~</span>
+                          <span class="terminal-widget-cursor">_</span>
+                        </div>
+                      </div>
+                    </div>
                   </div>
-                </div>
-              </a>
+                </a>
+              </div>
             </div>
 
             <a class="receipt-widget" href="showcase/receipt/receipt.html" aria-label="Open receipt showcase">
@@ -746,7 +900,7 @@
           </section>
         </div>
         <div class="canvas-toolbar">
-          <span class="canvas-toolbar-tag">DISCOVER WHAT WE CAN DO TO MAKE LINKS FUN AND YOURS > CONTACT US</span>
+          <span class="canvas-toolbar-tag">DISCOVER WHAT WE CAN DO TO MAKE LINKS FUN AND YOURS</span>
           <div class="canvas-toolbar-group">
             <button class="canvas-tool-btn is-active" data-tool="select" title="Select">
               <span class="material-symbols-outlined">near_me</span>

@@ -1,0 +1,62 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>sudoku</title>
+    <link rel="icon" type="image/png" href="../../favicon/logo.png" />
+    <link rel="stylesheet" href="sudoku.css" />
+  </head>
+  <body>
+    <div class="sudoku-page">
+      <nav class="sudoku-nav" aria-label="Showcase navigation">
+        <a class="sudoku-nav-back" href="../../discover.html">Back to discover</a>
+        <div class="sudoku-nav-status">sudoku / showcase html</div>
+      </nav>
+
+      <main class="sudoku-layout">
+        <section class="sudoku-game-card" aria-label="Playable sudoku">
+          <div class="sudoku-board" id="sudokuBoard" role="grid" aria-label="Sudoku puzzle"></div>
+
+          <div class="sudoku-keypad" aria-label="Number pad">
+            <button type="button" data-number="1">1</button>
+            <button type="button" data-number="2">2</button>
+            <button type="button" data-number="3">3</button>
+            <button type="button" data-number="4">4</button>
+            <button type="button" data-number="5">5</button>
+            <button type="button" data-number="6">6</button>
+            <button type="button" data-number="7">7</button>
+            <button type="button" data-number="8">8</button>
+            <button type="button" data-number="9">9</button>
+            <button type="button" data-action="clear">Clear</button>
+          </div>
+
+          <div class="sudoku-actions">
+            <button class="sudoku-action" type="button" data-action="check">Check</button>
+            <button class="sudoku-action" type="button" data-action="reset">Reset</button>
+            <button class="sudoku-action sudoku-action--primary" type="button" data-action="new">New puzzle</button>
+          </div>
+
+          <p class="sudoku-message" id="sudokuMessage" aria-live="polite">Pick a square, then type a number.</p>
+        </section>
+
+        <aside class="sudoku-detail">
+          <p class="sudoku-eyebrow">Showcase widget</p>
+          <h1>A tiny daily Sudoku board.</h1>
+          <p>
+            A calm puzzle widget for the Discover canvas. Open it, select a square, enter numbers,
+            check mistakes, and finish the grid.
+          </p>
+          <div class="sudoku-detail-list">
+            <span>Keyboard friendly</span>
+            <span>Validated answers</span>
+            <span>Reset and new puzzle</span>
+            <span>Completion burst</span>
+          </div>
+        </aside>
+      </main>
+    </div>
+
+    <script src="sudoku.js"></script>
+  </body>
+</html>
