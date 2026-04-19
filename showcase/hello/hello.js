@@ -545,11 +545,12 @@
       mode: root.dataset.mode || overrides.mode || defaultOptions.mode,
       saveVideo: root.dataset.saveVideo === "true" || overrides.saveVideo,
     };
+    const defaultPreviewScale = options.mode === "widget" ? 1.28 : 1.22;
     const state = {
       ...defaultOptions,
       ...overrides,
       mode: options.mode,
-      previewScale: options.mode === "widget" ? 1.28 : 1.22,
+      previewScale: defaultPreviewScale,
       progress: 1,
     };
     root.classList.add("hello-maker");
@@ -567,6 +568,11 @@
     const readMore = root.querySelector('[data-action="read-more"]');
     const saveImage = root.querySelector('[data-action="save-image"]');
     const saveVideo = root.querySelector('[data-action="save-video"]');
+
+    function getPreviewScale() {
+      const value = Number.parseFloat(getComputedStyle(root).getPropertyValue("--hello-preview-scale"));
+      return Number.isFinite(value) && value > 0 ? value : defaultPreviewScale;
+    }
     let animationFrame = 0;
     let startedAt = 0;
 
@@ -591,6 +597,7 @@
     }
 
     function resize() {
+      state.previewScale = getPreviewScale();
       const rect = canvas.getBoundingClientRect();
       const ratio = window.devicePixelRatio || 1;
       const width = Math.max(320, Math.round(rect.width * ratio));

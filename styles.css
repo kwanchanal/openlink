@@ -4118,6 +4118,20 @@ textarea {
     scrollbar-width: none;
   }
 
+  .discover-layout .canvas-toolbar-tag {
+    position: fixed;
+    left: 16px;
+    right: 16px;
+    top: auto;
+    bottom: 78px;
+    transform: none;
+    width: max-content;
+    max-width: calc(100vw - 32px);
+    margin: 0 auto;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+
   .discover-layout .canvas-toolbar::-webkit-scrollbar {
     display: none;
   }

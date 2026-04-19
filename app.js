@@ -2722,7 +2722,9 @@ function initNavAccordion() {
 
 function initBannerCycle() {
   const messages = [
-    "OP4N.LINK/YOU",
+    "OP4N.COM",
+    "OP4N.LINK/MAKE LINKS SHARABLE",
+    "OP4N.ME/MAKE THEM OPEN YOURS",
     "OPEN FOR BESPOKE LINK DESIGN",
   ];
   const el = elements.bannerText;

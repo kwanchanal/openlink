@@ -9,7 +9,7 @@
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200"
     />
-    <link rel="stylesheet" href="showcase/hello/hello.css?v=20" />
+    <link rel="stylesheet" href="showcase/hello/hello.css?v=21" />
     <style>
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
@@ -671,8 +671,48 @@
           gap: 16px;
         }
 
+        .showcase-stack,
+        .hello-widget-link,
+        .receipt-widget,
+        .sudoku-widget,
+        .terminal-widget {
+          width: 100%;
+          max-width: none;
+          margin-left: 0;
+        }
+
+        .showcase-stack {
+          margin-top: 8px;
+        }
+
+        .hello-maker--widget {
+          --hello-preview-scale: 1.41;
+          font-size: 10px;
+        }
+
         .showcase-widget-row {
-          flex-wrap: wrap;
+          flex-direction: column;
+          gap: 16px;
+          width: 100%;
+        }
+
+        .sudoku-widget-board,
+        .terminal-widget-window {
+          width: 100%;
+          max-width: none;
+        }
+
+        .receipt-widget-stage {
+          min-height: 0;
+          padding-inline: 0;
+        }
+
+        .receipt-widget-printer {
+          width: 100%;
+        }
+
+        .receipt-widget-paper {
+          width: calc(100% - 32px);
         }
 
         .showcase-card {
@@ -704,7 +744,7 @@
   </head>
   <body class="dashboard">
     <div class="top-banner">
-      <span class="banner-text" id="bannerText">OP4N.LINK/YOU</span>
+      <span class="banner-text" id="bannerText">OP4N.COM</span>
     </div>
 
     <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
@@ -719,24 +759,23 @@
             </a>
           </div>
           <div class="nav-section">
-            <button class="nav-title" type="button">Home</button>
             <div class="nav-items">
               <a class="nav-link" href="index.html">
                 <span class="material-symbols-outlined nav-icon">badge</span>
-                Links
+                OP4N.LINKS/YOURS
               </a>
-            </div>
-          </div>
-          <div class="nav-section">
-            <div class="nav-items">
               <button class="nav-link">
                 <span class="material-symbols-outlined nav-icon">insights</span>
                 Trackings
                 <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
               </button>
+            </div>
+          </div>
+          <div class="nav-section">
+            <div class="nav-items">
               <button class="nav-link is-locked">
                 <span class="material-symbols-outlined nav-icon">chat</span>
-                Design
+                OP4N.ME
                 <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
               </button>
             </div>
@@ -900,7 +939,7 @@
           </section>
         </div>
         <div class="canvas-toolbar">
-          <span class="canvas-toolbar-tag">DISCOVER WHAT WE CAN DO TO MAKE LINKS FUN AND YOURS</span>
+          <span class="canvas-toolbar-tag">WHAT WE CAN DO TO MAKE LINKS FUN AND YOURS</span>
           <div class="canvas-toolbar-group">
             <button class="canvas-tool-btn is-active" data-tool="select" title="Select">
               <span class="material-symbols-outlined">near_me</span>
@@ -963,6 +1002,6 @@
         });
       })();
     </script>
-    <script src="showcase/hello/hello.js?v=20"></script>
+    <script src="showcase/hello/hello.js?v=21"></script>
   </body>
 </html>
