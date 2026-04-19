@@ -759,10 +759,11 @@
             </a>
           </div>
           <div class="nav-section">
+            <button class="nav-title" type="button">Main</button>
             <div class="nav-items">
               <a class="nav-link" href="index.html">
                 <span class="material-symbols-outlined nav-icon">badge</span>
-                OP4N.LINKS/YOURS
+                OP4N.LINKS
               </a>
               <button class="nav-link is-locked">
                 <span class="material-symbols-outlined nav-icon">chat</span>
@@ -999,5 +1000,408 @@
       })();
     </script>
     <script src="showcase/hello/hello.js?v=21"></script>
+    <script>
+      (function () {
+        'use strict';
+
+        const canvasMain = document.querySelector('.canvas-main');
+        if (!canvasMain) return;
+
+        const cv = document.createElement('canvas');
+        cv.setAttribute('aria-hidden', 'true');
+        Object.assign(cv.style, {
+          position: 'absolute',
+          inset: '0',
+          width: '100%',
+          height: '100%',
+          pointerEvents: 'none',
+          zIndex: '2',
+        });
+
+        const toolbar = canvasMain.querySelector('.canvas-toolbar');
+        canvasMain.insertBefore(cv, toolbar);
+
+        const ctx = cv.getContext('2d');
+        ctx.imageSmoothingEnabled = false;
+
+        function drawPixelSprite(rows, palette, cx, cy, px, frame, dir, bob = 0) {
+          ctx.save();
+          ctx.translate(cx, cy);
+          if (dir < 0) ctx.scale(-1, 1);
+          const cols = Math.max(...rows.map((row) => row.length));
+          const startX = -cols * px * 0.5;
+          const startY = -rows.length * px * 0.5 + bob;
+          rows.forEach((row, y) => {
+            for (let x = 0; x < cols; x += 1) {
+              const color = palette[row[x]];
+              if (!color) continue;
+              ctx.fillStyle = color;
+              ctx.fillRect(startX + x * px, startY + y * px, px, px);
+            }
+          });
+          ctx.restore();
+        }
+
+        const bunnyPalette = {
+          K: '#d7ddff',
+          W: '#fff9fb',
+          N: '#f3dce9',
+          P: '#f59ebd',
+          E: '#6571a8',
+          G: '#9de8ff',
+          S: '#69cde8',
+        };
+
+        const bunnySpriteA = [
+          '....KKK.....KKK....',
+          '...KWWWK...KWWWK...',
+          '...KWWWK...KWWWK...',
+          '...KWWWK...KWWWK...',
+          '...KWWWK...KWWWK...',
+          '....KWWWKKKWWWK....',
+          '.....KWWWWWWWK.....',
+          '...KKKWWWWWWWKKK...',
+          '..KWWWWWWWWWWWWWK..',
+          '.KWWWWWWWWWWWWWWWK.',
+          '.KWWWWWEWWWWEWWWWK.',
+          'KWWWNWWWWPWWWWNWWWK',
+          'KWWWWWWWWWWWWWWWWWK',
+          'KWWWWKKWWWWWKKWWWWK',
+          '.KWWWKWWWWWWWKWWWK.',
+          '..KWWKWWWWWWWKWWK..',
+          '...KWWWWWWWWWWWK...',
+          '....KWWKWWWKWWK....',
+          '....KWWK...KWWK....',
+          '.....KK.....KK.....',
+        ];
+
+        const bunnySpriteB = [
+          '....KKK.....KKK....',
+          '...KWWWK...KWWWK...',
+          '...KWWWK...KWWWK...',
+          '...KWWWK...KWWWK...',
+          '....KWWWK.KWWWK....',
+          '.....KWWWKWWWK.....',
+          '.....KWWWWWWWK.....',
+          '...KKKWWWWWWWKKK...',
+          '..KWWWWWWWWWWWWWK..',
+          '.KWWWWWWWWWWWWWWWK.',
+          '.KWWWWWEWWWWEWWWWK.',
+          'KWWWNWWWWPWWWWNWWWK',
+          'KWWWWWWWWWWWWWWWWWK',
+          '.KWWWKKWWWWWKKWWWK.',
+          '..KWWKWWWWWKWWK....',
+          '...KWWWWWWWWWK.....',
+          '......KWWWK........',
+          '.....KWWK.KWWK.....',
+          '....KWWK...KWWK....',
+          '.....KK.....KK.....',
+        ];
+
+        function drawBunny(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.15));
+          drawPixelSprite(frame === 0 ? bunnySpriteA : bunnySpriteB, bunnyPalette, cx, cy, px, frame, dir, frame === 0 ? -px : px);
+        }
+
+        const fishPalette = {
+          K: '#ffb8cf',
+          O: '#ff8fb8',
+          Y: '#ffe58f',
+          E: '#7b74b8',
+        };
+
+        const fishSpriteA = [
+          '.....KKK......',
+          '..KKKYYYKK....',
+          '.KYYYYYYYYK...',
+          'KYYYEYYYYYYKK.',
+          '.KYYYYYYYYKOKK',
+          '..KKKYYYKKOK..',
+          '.....KKK......',
+        ];
+
+        const fishSpriteB = [
+          '.....KKK......',
+          '..KKKYYYKK....',
+          '.KYYYYYYYYKOK.',
+          'KYYYEYYYYYYKKK',
+          '.KYYYYYYYYKOK.',
+          '..KKKYYYKK....',
+          '.....KKK......',
+        ];
+
+        const blueFishPalette = {
+          K: '#ffb6d5',
+          B: '#ff8fbd',
+          L: '#ffe1ee',
+          E: '#9b5b89',
+        };
+
+        const oceanFishPalette = {
+          K: '#92ddff',
+          B: '#54c3f1',
+          L: '#def8ff',
+          E: '#5b78a9',
+        };
+
+        const orangeFishPalette = {
+          K: '#ffc36f',
+          B: '#ff9f43',
+          L: '#ffe6b8',
+          E: '#9b6a39',
+        };
+
+        const blueFishSpriteA = [
+          '.....KKK.....',
+          '..KKKBBKK....',
+          '.KBBBBBBBK...',
+          'KBBBEBBBBBKK.',
+          '.KBBLLLBBKKK.',
+          '..KKKBBKK....',
+          '.....KKK.....',
+        ];
+
+        const blueFishSpriteB = [
+          '.....KKK.....',
+          '..KKKBBKK....',
+          '.KBBBBBBBKK..',
+          'KBBBEBBBBBKKK',
+          '.KBBLLLBBKK..',
+          '..KKKBBKK....',
+          '.....KKK.....',
+        ];
+
+        const jellyPalette = {
+          K: '#cab8ff',
+          J: '#e7dcff',
+          P: '#ffbee3',
+          E: '#8277bd',
+        };
+
+        const jellySpriteA = [
+          '...KKKKK...',
+          '..KJJJJJK..',
+          '.KJJEJJJJK.',
+          '.KJJJJJEJK.',
+          '..KJJJJJK..',
+          '...KPKPK...',
+          '..P.P.P.P..',
+          '.P...P...P.',
+        ];
+
+        const jellySpriteB = [
+          '...KKKKK...',
+          '..KJJJJJK..',
+          '.KJJEJJJJK.',
+          '.KJJJJJEJK.',
+          '..KJJJJJK..',
+          '...PKPKP...',
+          '.P.P.P.P...',
+          '..P...P..P.',
+        ];
+
+        const starPalette = {
+          K: '#ffe6a8',
+          Y: '#ffd266',
+          E: '#c89d55',
+        };
+
+        const starSprite = [
+          '....K....',
+          '...KYK...',
+          'KKKYYYKKK',
+          '.KYYYYYK.',
+          '..KYYYK..',
+          '.KYEYYK.',
+          'KYY.KYYK',
+          'KK...KK.',
+        ];
+
+        const turtlePalette = {
+          K: '#87d37c',
+          G: '#58b96a',
+          S: '#b7e986',
+          L: '#d8f7a8',
+          E: '#527f62',
+        };
+
+        const turtleSpriteA = [
+          '......KKK.....',
+          '.....KLLLK....',
+          '..K..KLELK....',
+          '.KGKKSSSSKK...',
+          'KGGSSGGGSSGK..',
+          'KGGSGSGSGGGGK.',
+          '.KGGSSGGGSSK..',
+          '..KKSSSSKK....',
+          '.KGK.KKK.KGK..',
+          'KGK.......KGK.',
+        ];
+
+        const turtleSpriteB = [
+          '......KKK.....',
+          '.....KLLLK....',
+          '..K..KLELK....',
+          '..KKKSSSSKK...',
+          '.KGGSSGGGSSGK.',
+          'KGGSGSGSGGGGK.',
+          '.KGGSSGGGSSK..',
+          '..KKSSSSKK....',
+          'KGK..KKK..KGK.',
+          '.KGK.....KGK..',
+        ];
+
+        function drawFish(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.15));
+          drawPixelSprite(frame === 0 ? fishSpriteA : fishSpriteB, fishPalette, cx, cy, px, frame, dir, frame === 0 ? 0 : px * 0.5);
+        }
+
+        function drawBlueFish(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.14));
+          drawPixelSprite(frame === 0 ? blueFishSpriteA : blueFishSpriteB, blueFishPalette, cx, cy, px, frame, dir, frame === 0 ? -px * 0.3 : px * 0.3);
+        }
+
+        function drawOceanFish(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.14));
+          drawPixelSprite(frame === 0 ? blueFishSpriteA : blueFishSpriteB, oceanFishPalette, cx, cy, px, frame, dir, frame === 0 ? -px * 0.3 : px * 0.3);
+        }
+
+        function drawOrangeFish(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.14));
+          drawPixelSprite(frame === 0 ? blueFishSpriteA : blueFishSpriteB, orangeFishPalette, cx, cy, px, frame, dir, frame === 0 ? -px * 0.3 : px * 0.3);
+        }
+
+        function drawJelly(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.14));
+          drawPixelSprite(frame === 0 ? jellySpriteA : jellySpriteB, jellyPalette, cx, cy, px, frame, dir, frame === 0 ? -px : px);
+        }
+
+        function drawStar(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.15));
+          drawPixelSprite(starSprite, starPalette, cx, cy, px, frame, dir, frame === 0 ? -px * 0.5 : px * 0.5);
+        }
+
+        function drawTurtle(cx, cy, s, frame, dir) {
+          const px = Math.max(3, Math.round(s * 0.13));
+          drawPixelSprite(frame === 0 ? turtleSpriteA : turtleSpriteB, turtlePalette, cx, cy, px, frame, dir, frame === 0 ? -px * 0.4 : px * 0.4);
+        }
+
+        let CW = 0, CH = 0;
+
+        function resize() {
+          CW = cv.width = canvasMain.clientWidth;
+          CH = cv.height = canvasMain.clientHeight;
+          ctx.imageSmoothingEnabled = false;
+        }
+        resize();
+        new ResizeObserver(resize).observe(canvasMain);
+
+        const BS = 22; // bunny unit size
+        const DS = 20; // dolphin unit size
+
+        // sw/sh = bounding box for bounce detection
+        // draw origin is offset from top-left of bounding box
+        const pets = [
+          {
+            draw(x, y, fr, d) { drawBunny(x + BS * 1.65, y + BS * 1.7, BS, fr, d); },
+            sw: BS * 3.3, sh: BS * 3.4,
+            x: 70, y: 80,
+            vx: 0.82, vy: 0.28,
+            dir: 1, frame: 0, ftimer: 0, fdur: 340,
+            wtimer: 0, wdur: 3200 + Math.random() * 2000,
+          },
+          {
+            draw(x, y, fr, d) { drawJelly(x + DS * 0.9, y + DS * 0.95, DS, fr, d); },
+            sw: DS * 1.8, sh: DS * 1.9,
+            x: 620, y: 310,
+            vx: -0.22, vy: -0.56,
+            dir: 1, frame: 0, ftimer: 0, fdur: 420,
+            wtimer: 0, wdur: 2200 + Math.random() * 1800,
+          },
+          {
+            draw(x, y, fr, d) { drawStar(x + DS * 0.75, y + DS * 0.75, DS, fr, d); },
+            sw: DS * 1.5, sh: DS * 1.5,
+            x: 150, y: 420,
+            vx: 0.34, vy: -0.16,
+            dir: 1, frame: 0, ftimer: 0, fdur: 520,
+            wtimer: 0, wdur: 3000 + Math.random() * 2200,
+          },
+          {
+            draw(x, y, fr, d) { drawBlueFish(x + DS * 1.15, y + DS * 0.7, DS, fr, d); },
+            sw: DS * 2.3, sh: DS * 1.4,
+            x: 310, y: 250,
+            vx: 0.9, vy: -0.22,
+            dir: -1, frame: 0, ftimer: 0, fdur: 300,
+            wtimer: 0, wdur: 2500 + Math.random() * 1700,
+          },
+          {
+            draw(x, y, fr, d) { drawOceanFish(x + DS * 1.15, y + DS * 0.7, DS, fr, d); },
+            sw: DS * 2.3, sh: DS * 1.4,
+            x: 700, y: 95,
+            vx: -0.72, vy: 0.2,
+            dir: 1, frame: 0, ftimer: 0, fdur: 310,
+            wtimer: 0, wdur: 2700 + Math.random() * 1700,
+          },
+          {
+            draw(x, y, fr, d) { drawOrangeFish(x + DS * 1.15, y + DS * 0.7, DS, fr, d); },
+            sw: DS * 2.3, sh: DS * 1.4,
+            x: 760, y: 300,
+            vx: -0.64, vy: -0.18,
+            dir: 1, frame: 0, ftimer: 0, fdur: 340,
+            wtimer: 0, wdur: 2900 + Math.random() * 1700,
+          },
+          {
+            draw(x, y, fr, d) { drawTurtle(x + DS * 1.15, y + DS * 0.85, DS, fr, d); },
+            sw: DS * 2.3, sh: DS * 1.7,
+            x: 430, y: 380,
+            vx: -0.42, vy: 0.2,
+            dir: -1, frame: 0, ftimer: 0, fdur: 460,
+            wtimer: 0, wdur: 2800 + Math.random() * 2100,
+          },
+        ];
+
+        let lastTs = 0;
+
+        function tick(ts) {
+          const dt = lastTs ? Math.min(ts - lastTs, 80) : 16;
+          lastTs = ts;
+
+          if (CW > 0 && CH > 0) {
+            ctx.clearRect(0, 0, CW, CH);
+
+            for (const pet of pets) {
+              pet.x += pet.vx * dt * 0.05;
+              pet.y += pet.vy * dt * 0.05;
+
+              if (pet.x <= 0) { pet.x = 0; pet.vx = Math.abs(pet.vx); pet.dir = 1; }
+              if (pet.x + pet.sw >= CW) { pet.x = CW - pet.sw; pet.vx = -Math.abs(pet.vx); pet.dir = -1; }
+              if (pet.y <= 0) { pet.y = 0; pet.vy = Math.abs(pet.vy); }
+              if (pet.y + pet.sh >= CH) { pet.y = CH - pet.sh; pet.vy = -Math.abs(pet.vy); }
+              pet.dir = pet.vx >= 0 ? -1 : 1;
+
+              pet.wtimer += dt;
+              if (pet.wtimer >= pet.wdur) {
+                pet.wtimer = 0;
+                pet.wdur = 2500 + Math.random() * 2500;
+                pet.vy += (Math.random() - 0.5) * 0.7;
+                pet.vy = Math.max(-1.4, Math.min(1.4, pet.vy));
+              }
+
+              pet.ftimer += dt;
+              if (pet.ftimer >= pet.fdur) {
+                pet.ftimer -= pet.fdur;
+                pet.frame ^= 1;
+              }
+
+              pet.draw(pet.x, pet.y, pet.frame, pet.dir);
+            }
+          }
+
+          requestAnimationFrame(tick);
+        }
+
+        requestAnimationFrame(tick);
+      })();
+    </script>
   </body>
 </html>
