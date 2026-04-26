@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>brain gym</title>
+    <link rel="icon" type="image/png" href="../../favicon/logo.png" />
+    <link rel="stylesheet" href="brain-gym.css" />
+  </head>
+  <body class="brain-gym-page">
+    <main class="brain-gym-shell">
+      <section class="brain-gym-gate" id="brainGymGate" aria-labelledby="brainGymTitle">
+        <div class="brain-gym-gate-card">
+          <p class="brain-gym-eyebrow">brain gym</p>
+          <h1 id="brainGymTitle">Enter password</h1>
+          <p class="brain-gym-copy">Unlock this space to view the content inside.</p>
+
+          <form class="brain-gym-form" id="brainGymForm" novalidate>
+            <div class="brain-gym-label-row">
+              <label class="brain-gym-label" for="brainGymDigit0">Password</label>
+              <span class="brain-gym-badge">8 digits</span>
+            </div>
+            <div class="brain-gym-code-grid" id="brainGymCodeGrid" aria-describedby="brainGymHint brainGymError">
+              <input class="brain-gym-digit" id="brainGymDigit0" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" autocomplete="one-time-code" aria-label="Password digit 1" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 2" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 3" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 4" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 5" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 6" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 7" />
+              <input class="brain-gym-digit" type="password" inputmode="numeric" pattern="[0-9]*" maxlength="1" aria-label="Password digit 8" />
+            </div>
+            <p class="brain-gym-hint" id="brainGymHint">Enter the 8-digit password to continue.</p>
+            <p class="brain-gym-error" id="brainGymError" hidden>Wrong password. Try again.</p>
+            <button class="brain-gym-button" type="submit">Unlock</button>
+          </form>
+        </div>
+      </section>
+
+      <section class="brain-gym-content" id="brainGymContent" hidden aria-label="Brain gym content">
+        <div class="brain-gym-content-card">
+          <p class="brain-gym-eyebrow">brain gym</p>
+          <h2>Welcome inside</h2>
+          <p>This content is now unlocked.</p>
+        </div>
+      </section>
+    </main>
+
+    <script src="brain-gym.js"></script>
+  </body>
+</html>

@@ -16,6 +16,7 @@
       }
 
       .discover-gallery {
+        position: relative;
         display: grid;
         grid-template-columns: repeat(auto-fit, minmax(min(100%, 432px), max-content));
         gap: 24px;
@@ -187,6 +188,50 @@
         display: flex;
         align-items: flex-start;
         gap: 24px;
+      }
+
+      .brain-gym-widget {
+        position: absolute;
+        top: 286px;
+        left: 510px;
+        z-index: 3;
+        display: inline-flex;
+        color: #222222;
+        text-decoration: none;
+      }
+
+      .brain-gym-widget-folder {
+        display: grid;
+        justify-items: center;
+        gap: 14px;
+        justify-items: center;
+        padding: 0;
+        background: transparent;
+        transition: transform 180ms ease;
+      }
+
+      .brain-gym-widget:hover .brain-gym-widget-folder {
+        transform: translateY(-4px);
+      }
+
+      .brain-gym-widget-image {
+        display: block;
+        width: 100%;
+        max-width: 96px;
+        height: auto;
+        object-fit: contain;
+        filter: drop-shadow(0 6px 8px rgba(46, 129, 214, 0.24));
+      }
+
+      .brain-gym-widget-label {
+        display: block;
+        color: #303030;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 1.2;
+        letter-spacing: -0.02em;
+        text-align: center;
+        text-transform: none;
       }
 
       .receipt-widget {
@@ -675,10 +720,16 @@
         .hello-widget-link,
         .receipt-widget,
         .sudoku-widget,
-        .terminal-widget {
+        .terminal-widget,
+        .brain-gym-widget {
           width: 100%;
           max-width: none;
           margin-left: 0;
+        }
+
+        .brain-gym-widget {
+          position: static;
+          justify-content: flex-start;
         }
 
         .showcase-stack {
@@ -697,7 +748,8 @@
         }
 
         .sudoku-widget-board,
-        .terminal-widget-window {
+        .terminal-widget-window,
+        .brain-gym-widget-image {
           width: 100%;
           max-width: none;
         }
@@ -882,7 +934,15 @@
                   </div>
                 </a>
               </div>
+
             </div>
+
+            <a class="brain-gym-widget" href="showcase/brain-gym/brain-gym.html" aria-label="Open brain gym showcase">
+              <div class="brain-gym-widget-folder">
+                <img class="brain-gym-widget-image" src="discover-icon/folder.png" alt="" aria-hidden="true" />
+                <span class="brain-gym-widget-label">brain gym</span>
+              </div>
+            </a>
 
             <a class="receipt-widget" href="showcase/receipt/receipt.html" aria-label="Open receipt showcase">
               <div class="receipt-widget-stage">
