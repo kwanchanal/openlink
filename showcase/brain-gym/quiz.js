@@ -6479,6 +6479,7 @@ function collapseBrainHud() {
 
   isHudCollapsed = true;
   brainHudEl.classList.add("is-collapsed");
+  document.body.classList.add("brain-hud-collapsed");
   const button = brainHudEl.querySelector("[data-hud-collapse]");
   if (button) button.textContent = "▲";
 }
@@ -6565,6 +6566,7 @@ function renderBrainHud(state = {}) {
   }).join("");
 
   brainHudEl.className = `brain-score-hud is-${status} is-profile-open${collapsedClass}`;
+  document.body.classList.toggle("brain-hud-collapsed", isHudCollapsed);
   brainHudEl.innerHTML = `
     <div class="brain-hud-top">
       <div class="brain-hud-user">
@@ -6594,6 +6596,7 @@ function renderBrainHud(state = {}) {
   brainHudEl.querySelector("[data-hud-collapse]")?.addEventListener("click", () => {
     isHudCollapsed = !isHudCollapsed;
     brainHudEl.classList.toggle("is-collapsed", isHudCollapsed);
+    document.body.classList.toggle("brain-hud-collapsed", isHudCollapsed);
     brainHudEl.querySelector("[data-hud-collapse]").textContent = isHudCollapsed ? "▲" : "▼";
   });
   brainHudEl.querySelector("[data-score-reset]")?.addEventListener("click", resetBrainScore);

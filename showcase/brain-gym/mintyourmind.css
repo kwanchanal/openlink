@@ -4293,9 +4293,22 @@ html[data-openmind-lang="en"] input {
   padding-bottom: calc(210px + env(safe-area-inset-bottom));
 }
 
+.openmind-page.brain-hud-collapsed:not(.openmind-is-landing) {
+  scroll-padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
+.openmind-page.brain-hud-collapsed:not(.openmind-is-landing) .openmind-shell {
+  padding-bottom: calc(88px + env(safe-area-inset-bottom));
+}
+
 .quiz-actions,
 .quiz-answer-block {
   scroll-margin-bottom: calc(190px + env(safe-area-inset-bottom));
+}
+
+.brain-hud-collapsed .quiz-actions,
+.brain-hud-collapsed .quiz-answer-block {
+  scroll-margin-bottom: calc(88px + env(safe-area-inset-bottom));
 }
 
 @media (max-width: 520px) {
@@ -4303,8 +4316,17 @@ html[data-openmind-lang="en"] input {
     padding-bottom: calc(230px + env(safe-area-inset-bottom));
   }
 
+  .openmind-page.brain-hud-collapsed:not(.openmind-is-landing) .openmind-shell {
+    padding-bottom: calc(92px + env(safe-area-inset-bottom));
+  }
+
   .quiz-actions,
   .quiz-answer-block {
     scroll-margin-bottom: calc(210px + env(safe-area-inset-bottom));
+  }
+
+  .brain-hud-collapsed .quiz-actions,
+  .brain-hud-collapsed .quiz-answer-block {
+    scroll-margin-bottom: calc(92px + env(safe-area-inset-bottom));
   }
 }
