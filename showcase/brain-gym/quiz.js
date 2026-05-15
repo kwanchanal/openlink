@@ -1,5 +1,5 @@
-const BRAIN_GYM_LANGUAGE_KEY = "brain-gym-language";
-const BRAIN_GYM_DICTIONARY = {
+const OPENMIND_LANGUAGE_KEY = "openmind-language";
+const OPENMIND_DICTIONARY = {
   th: {
     ui: {
       toggleLabel: "สลับภาษา"
@@ -21,6 +21,25 @@ const BRAIN_GYM_DICTIONARY = {
       feedbackWrong: "ยังไม่ถูก",
       feedbackCorrectCopy: "คุณจับ logic ของโจทย์ข้อนี้ได้ถูกทางแล้ว",
       feedbackWrongCopy: "ลองเทียบตัวเลือกที่เลือกกับ constraint ในโจทย์ แล้วดูเฉลยด้านล่างต่อ",
+      scoreNoPoints: "ยังไม่มีคะแนนเพิ่ม",
+      scoreFallbackReason: "ข้อนี้ใช้คะแนนตรรกะพื้นฐาน",
+      scoreStrong: "ผลงานการคิดแข็งแรงมาก",
+      scoreGood: "ได้ฝึกสมองดีมาก",
+      scoreKeepTraining: "ฝึกต่ออีกนิด คะแนนจะเริ่มชัดขึ้น",
+      scoreStrongest: "จุดแข็งตอนนี้คือ {dimension}",
+      scoreWeakest: "พื้นที่ฝึกต่อไปคือ {dimension}",
+      scoreEmpty: "ตอบคำถามเพื่อเริ่มสร้าง Brain Score",
+      sessionScore: "Session Score",
+      brainScore: "Brain Score",
+      resetScore: "Reset",
+      answered: "ตอบแล้ว",
+      correct: "ถูก",
+      dimensions: {
+        logic: "Logic",
+        pattern: "Pattern",
+        attention: "Attention",
+        bias: "Bias"
+      },
       yourAnswer: "คุณตอบ",
       correctAnswer: "คำตอบที่ถูก",
       answerLabel: "✅ เฉลย",
@@ -58,6 +77,25 @@ const BRAIN_GYM_DICTIONARY = {
       feedbackWrong: "Not quite",
       feedbackCorrectCopy: "You followed the logic in the right direction.",
       feedbackWrongCopy: "Compare your choice with the puzzle constraints, then review the solution below.",
+      scoreNoPoints: "No score added",
+      scoreFallbackReason: "This puzzle uses baseline logic scoring.",
+      scoreStrong: "Strong thinking performance.",
+      scoreGood: "Good cognitive workout.",
+      scoreKeepTraining: "Keep training your thinking.",
+      scoreStrongest: "Your strongest area is {dimension}.",
+      scoreWeakest: "Your next training area is {dimension}.",
+      scoreEmpty: "Answer questions to start building your Brain Score.",
+      sessionScore: "Session Score",
+      brainScore: "Brain Score",
+      resetScore: "Reset",
+      answered: "Answered",
+      correct: "Correct",
+      dimensions: {
+        logic: "Logic",
+        pattern: "Pattern",
+        attention: "Attention",
+        bias: "Bias"
+      },
       yourAnswer: "Your answer",
       correctAnswer: "Correct answer",
       answerLabel: "✅ Answer",
@@ -76,35 +114,42 @@ const BRAIN_GYM_DICTIONARY = {
   }
 };
 
-const brainGymLanguageListeners = new Set();
+const openmindLanguageListeners = new Set();
 
-function getBrainGymLanguage() {
-  const saved = localStorage.getItem(BRAIN_GYM_LANGUAGE_KEY);
-  return saved === "en" ? "en" : "th";
+function getOpenmindLanguage() {
+  const saved = localStorage.getItem(OPENMIND_LANGUAGE_KEY);
+  return saved === "th" ? "th" : "en";
 }
 
-function applyBrainGymLanguage(lang) {
+function applyOpenmindLanguage(lang) {
   document.documentElement.lang = lang === "en" ? "en" : "th";
-  document.documentElement.setAttribute("data-brain-gym-lang", lang);
+  document.documentElement.setAttribute("data-openmind-lang", lang);
 }
 
-function brainGymTranslate(path, vars = {}) {
-  const lang = getBrainGymLanguage();
-  const source = BRAIN_GYM_DICTIONARY[lang] || BRAIN_GYM_DICTIONARY.th;
+function stripEmoji(value) {
+  return String(value ?? "")
+    .replace(/[\p{Emoji_Presentation}\p{Extended_Pictographic}\uFE0F]/gu, "")
+    .replace(/[ \t]{2,}/g, " ")
+    .trim();
+}
+
+function openmindTranslate(path, vars = {}) {
+  const lang = getOpenmindLanguage();
+  const source = OPENMIND_DICTIONARY[lang] || OPENMIND_DICTIONARY.th;
   const template = path.split(".").reduce((current, key) => current?.[key], source) || path;
-  return String(template).replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? "");
+  return stripEmoji(String(template).replace(/\{(\w+)\}/g, (_, key) => vars[key] ?? ""));
 }
 
-function setBrainGymLanguage(lang) {
+function setOpenmindLanguage(lang) {
   const nextLang = lang === "en" ? "en" : "th";
-  localStorage.setItem(BRAIN_GYM_LANGUAGE_KEY, nextLang);
-  applyBrainGymLanguage(nextLang);
-  brainGymLanguageListeners.forEach((listener) => listener(nextLang));
+  localStorage.setItem(OPENMIND_LANGUAGE_KEY, nextLang);
+  applyOpenmindLanguage(nextLang);
+  openmindLanguageListeners.forEach((listener) => listener(nextLang));
 }
 
-function onBrainGymLanguageChange(listener) {
-  brainGymLanguageListeners.add(listener);
-  return () => brainGymLanguageListeners.delete(listener);
+function onOpenmindLanguageChange(listener) {
+  openmindLanguageListeners.add(listener);
+  return () => openmindLanguageListeners.delete(listener);
 }
 
 function localizeValue(value) {
@@ -114,20 +159,20 @@ function localizeValue(value) {
     !Array.isArray(value) &&
     ("th" in value || "en" in value)
   ) {
-    const lang = getBrainGymLanguage();
-    return value[lang] ?? value.th ?? value.en ?? "";
+    const lang = getOpenmindLanguage();
+    return stripEmoji(value[lang] ?? value.th ?? value.en ?? "");
   }
 
-  return value;
+  return typeof value === "string" ? stripEmoji(value) : value;
 }
 
-applyBrainGymLanguage(getBrainGymLanguage());
+applyOpenmindLanguage(getOpenmindLanguage());
 
-window.brainGymI18n = {
-  getLanguage: getBrainGymLanguage,
-  setLanguage: setBrainGymLanguage,
-  t: brainGymTranslate,
-  onChange: onBrainGymLanguageChange,
+window.openmindI18n = {
+  getLanguage: getOpenmindLanguage,
+  setLanguage: setOpenmindLanguage,
+  t: openmindTranslate,
+  onChange: onOpenmindLanguageChange,
   localizeValue
 };
 
@@ -156,8 +201,8 @@ const QUIZ_SECTIONS = [
   {
     id: "ทดลอง",
     label: {
-      th: "บททดลอง",
-      en: "Warm-Up"
+      th: "Warmup",
+      en: "Warmup"
     },
     title: {
       th: "บททดลอง: อุ่นเครื่องสมอง",
@@ -304,8 +349,8 @@ At what minute is the shelf <strong>half full</strong>?`
   {
     id: 1,
     label: {
-      th: "บทที่ 1",
-      en: "Chapter 1"
+      th: "Reasoning",
+      en: "Reasoning"
     },
     title: {
       th: "บทที่ 1: การคิดเชิงตรรกะ",
@@ -1069,8 +1114,8 @@ At what minute is the shelf <strong>half full</strong>?`
   {
     id: 2,
     label: {
-      th: "บทที่ 2",
-      en: "Chapter 2"
+      th: "Pattern",
+      en: "Pattern"
     },
     title: {
       th: "บทที่ 2: การคิดอย่างมีวิจารณญาณ",
@@ -1428,8 +1473,8 @@ C พูดว่า: "ฉันบริสุทธิ์" / "A เป็น�
   {
     id: 3,
     label: {
-      th: "บทที่ 3",
-      en: "Chapter 3"
+      th: "Bias",
+      en: "Bias"
     },
     title: {
       th: "บทที่ 3: การคิดนอกกรอบ",
@@ -1735,8 +1780,8 @@ C พูดว่า: "ฉันบริสุทธิ์" / "A เป็น�
   {
     id: 4,
     label: {
-      th: "บทที่ 4",
-      en: "Chapter 4"
+      th: "Decision",
+      en: "Decision"
     },
     title: {
       th: "บทที่ 4: คิดจากภาพรวม",
@@ -2105,8 +2150,8 @@ G: ใช่, 2, 2
   {
     id: 5,
     label: {
-      th: "บทที่ 5",
-      en: "Chapter 5"
+      th: "Strategy",
+      en: "Strategy"
     },
     title: {
       th: "บทที่ 5: คิดหลายแง่มุมให้เป็น",
@@ -5316,6 +5361,249 @@ const ADDITIONAL_EXPLANATION_OVERRIDES = {
   }
 };
 
+const QUESTION_SCORING = {
+  64: {
+    dimensions: { logic: 0.45, pattern: 0, attention: 0.15, bias: 0.4 },
+    difficulty: 1,
+    trapType: "intuitive_wrong_answer",
+    estimatedTimeSec: 45,
+    scoreReason: {
+      th: {
+        correct: "คุณไม่ติดคำตอบเร็ว 10 เยน และตั้งสมการจากเงื่อนไขจริง",
+        wrong: "ข้อนี้ดักคำตอบเร็วจาก intuition ก่อนตรวจส่วนต่างราคา"
+      },
+      en: {
+        correct: "You avoided the quick 10-yen answer and used the real price gap.",
+        wrong: "This puzzle catches the first intuitive answer before checking the price gap."
+      }
+    }
+  },
+  65: {
+    dimensions: { logic: 0.4, pattern: 0.25, attention: 0.25, bias: 0.1 },
+    difficulty: 1,
+    trapType: "rate_misread",
+    estimatedTimeSec: 50,
+    scoreReason: {
+      th: {
+        correct: "คุณแปลงข้อมูลเป็นอัตราการทำงานต่อวันได้ถูกต้อง",
+        wrong: "ข้อนี้ทดสอบการอ่านอัตราส่วน ไม่ใช่การคูณตัวเลขตามขนาดโจทย์"
+      },
+      en: {
+        correct: "You converted the setup into the correct work rate per day.",
+        wrong: "This tests rate reasoning, not scaling every number upward."
+      }
+    }
+  },
+  66: {
+    dimensions: { logic: 0.3, pattern: 0.45, attention: 0.1, bias: 0.15 },
+    difficulty: 1,
+    trapType: "exponential_growth",
+    estimatedTimeSec: 40,
+    scoreReason: {
+      th: {
+        correct: "คุณเห็นรูปแบบการเพิ่มเป็นสองเท่าและย้อนกลับหนึ่งนาทีได้ถูกต้อง",
+        wrong: "ข้อนี้ดักการคิดแบบเส้นตรง ทั้งที่จำนวนเพิ่มแบบทวีคูณ"
+      },
+      en: {
+        correct: "You saw the doubling pattern and stepped back one minute correctly.",
+        wrong: "This catches linear thinking in a doubling pattern."
+      }
+    }
+  },
+  1: {
+    dimensions: { logic: 0.75, pattern: 0, attention: 0.2, bias: 0.05 },
+    difficulty: 1,
+    trapType: "role_consistency",
+    estimatedTimeSec: 75,
+    scoreReason: {
+      th: {
+        correct: "คุณตรวจความสอดคล้องของแต่ละบทบาทได้เป็นระบบ",
+        wrong: "ข้อนี้ต้องกันสมมติฐานที่ขัดแย้งออกทีละกรณี"
+      },
+      en: {
+        correct: "You checked each role for consistency in a structured way.",
+        wrong: "This puzzle requires eliminating contradictory role assignments one by one."
+      }
+    }
+  },
+  2: {
+    dimensions: { logic: 0.65, pattern: 0.05, attention: 0.25, bias: 0.05 },
+    difficulty: 2,
+    trapType: "constraint_tracking",
+    estimatedTimeSec: 110,
+    scoreReason: {
+      th: {
+        correct: "คุณตาม constraint หลายชั้นโดยไม่สลับคนกับของ",
+        wrong: "ข้อนี้วัดการตามรายละเอียดหลายเงื่อนไขพร้อมกัน"
+      },
+      en: {
+        correct: "You tracked layered constraints without mixing up people and items.",
+        wrong: "This tests careful tracking across several conditions at once."
+      }
+    }
+  },
+  3: {
+    dimensions: { logic: 0.75, pattern: 0, attention: 0.15, bias: 0.1 },
+    difficulty: 2,
+    trapType: "single_statement_deduction",
+    estimatedTimeSec: 90,
+    scoreReason: {
+      th: {
+        correct: "คุณทดสอบกรณี A/B/C และเก็บกรณีที่ไม่ขัดแย้งไว้ได้",
+        wrong: "ข้อนี้ดักการเชื่อคำกล่าวเดียวโดยไม่เช็คผลย้อนกลับ"
+      },
+      en: {
+        correct: "You tested A/B/C and kept the only non-contradictory case.",
+        wrong: "This catches trusting one statement before checking its consequences."
+      }
+    }
+  },
+  4: {
+    dimensions: { logic: 0.55, pattern: 0.3, attention: 0.15, bias: 0 },
+    difficulty: 2,
+    trapType: "outcome_matching",
+    estimatedTimeSec: 120,
+    scoreReason: {
+      th: {
+        correct: "คุณจับคู่ผลลัพธ์จากจำนวนค้อน กรรไกร กระดาษได้ถูกต้อง",
+        wrong: "ข้อนี้ต้องจัดโครงข้อมูลก่อนสรุปว่าใครชนะมากกว่า"
+      },
+      en: {
+        correct: "You matched the rock-paper-scissors counts into valid outcomes.",
+        wrong: "This requires structuring the counts before comparing winners."
+      }
+    }
+  },
+  5: {
+    dimensions: { logic: 0.55, pattern: 0.25, attention: 0.15, bias: 0.05 },
+    difficulty: 3,
+    trapType: "truth_counting",
+    estimatedTimeSec: 130,
+    scoreReason: {
+      th: {
+        correct: "คุณทดสอบจำนวนคำจริงกับแต่ละวันจนเจอเงื่อนไขพอดี",
+        wrong: "ข้อนี้ต้องตรวจทุก candidate ไม่ใช่เลือกวันที่ดูน่าเป็นไปได้"
+      },
+      en: {
+        correct: "You tested truth counts across candidate days until exactly one worked.",
+        wrong: "This needs checking candidates, not picking the day that feels plausible."
+      }
+    }
+  },
+  6: {
+    dimensions: { logic: 0.65, pattern: 0.15, attention: 0.2, bias: 0 },
+    difficulty: 3,
+    trapType: "equation_from_constraints",
+    estimatedTimeSec: 130,
+    scoreReason: {
+      th: {
+        correct: "คุณแปลงอันดับและจำนวนคนเป็นสมการได้ถูกต้อง",
+        wrong: "ข้อนี้ทดสอบการสร้างสมการจาก wording ที่ซ่อนจำนวนทั้งหมด"
+      },
+      en: {
+        correct: "You translated ranking constraints into the right equation.",
+        wrong: "This tests turning wording into the hidden total count."
+      }
+    }
+  },
+  7: {
+    dimensions: { logic: 0.6, pattern: 0.2, attention: 0.2, bias: 0 },
+    difficulty: 3,
+    trapType: "turn_sequence",
+    estimatedTimeSec: 130,
+    scoreReason: {
+      th: {
+        correct: "คุณตามลำดับการเล่นและจำนวนรอบที่แต่ละคนพักได้แม่น",
+        wrong: "ข้อนี้วัดการตาม sequence หลายรอบโดยไม่หลุดเงื่อนไข"
+      },
+      en: {
+        correct: "You tracked the play order and rest counts accurately.",
+        wrong: "This tests following a multi-round sequence without dropping constraints."
+      }
+    }
+  },
+  8: {
+    dimensions: { logic: 0.7, pattern: 0.05, attention: 0.1, bias: 0.15 },
+    difficulty: 4,
+    trapType: "double_negation",
+    estimatedTimeSec: 150,
+    scoreReason: {
+      th: {
+        correct: "คุณใช้คำถามสองชั้นเพื่อล็อกคำตอบของคนพูดจริงและโกหกให้ตรงกัน",
+        wrong: "ข้อนี้ดักการถามตรง ๆ ซึ่งยังแยกคนพูดจริงกับโกหกไม่ได้"
+      },
+      en: {
+        correct: "You used a two-layer question to align truth-teller and liar answers.",
+        wrong: "This catches direct questions that still cannot separate truth from lies."
+      }
+    }
+  },
+  9: {
+    dimensions: { logic: 0.55, pattern: 0.3, attention: 0.05, bias: 0.1 },
+    difficulty: 4,
+    trapType: "coverage_strategy",
+    estimatedTimeSec: 150,
+    scoreReason: {
+      th: {
+        correct: "คุณแบ่งกลยุทธ์ให้คำตอบครอบคลุมทุกกรณีของหมวกสองสี",
+        wrong: "ข้อนี้ไม่ได้ต้องให้ทุกคนถูก แต่ต้องรับประกันว่ามีอย่างน้อยหนึ่งคนถูก"
+      },
+      en: {
+        correct: "You split the strategy so two-color hat cases are fully covered.",
+        wrong: "This does not need everyone correct, only a guarantee that one person is."
+      }
+    }
+  },
+  10: {
+    dimensions: { logic: 0.45, pattern: 0.45, attention: 0.05, bias: 0.05 },
+    difficulty: 5,
+    trapType: "modular_strategy",
+    estimatedTimeSec: 180,
+    scoreReason: {
+      th: {
+        correct: "คุณเห็น pattern แบบ mod 3 และแบ่งบทบาทให้ครอบคลุมทุกผลรวม",
+        wrong: "ข้อนี้ต้องคิดเป็นระบบครอบคลุมทุก remainder ไม่ใช่เดาสีทีละคน"
+      },
+      en: {
+        correct: "You used a mod-3 pattern to cover every possible total.",
+        wrong: "This requires covering every remainder, not guessing colors independently."
+      }
+    }
+  },
+  11: {
+    dimensions: { logic: 0.45, pattern: 0.4, attention: 0.1, bias: 0.05 },
+    difficulty: 5,
+    trapType: "moving_target_search",
+    estimatedTimeSec: 180,
+    scoreReason: {
+      th: {
+        correct: "คุณใช้ pattern กวาดกลับเพื่อบีบเป้าหมายที่เคลื่อนที่ได้",
+        wrong: "ข้อนี้ดักการกวาดทางเดียว ซึ่งเป้าหมายสามารถหลบตามจังหวะได้"
+      },
+      en: {
+        correct: "You used a return sweep pattern to trap a moving target.",
+        wrong: "This catches one-way sweeps that a moving target can evade."
+      }
+    }
+  },
+  12: {
+    dimensions: { logic: 0.75, pattern: 0.05, attention: 0.1, bias: 0.1 },
+    difficulty: 5,
+    trapType: "unreliable_source_filter",
+    estimatedTimeSec: 180,
+    scoreReason: {
+      th: {
+        correct: "คุณแยกปัญหาคนที่เชื่อถือไม่ได้ออกก่อน แล้วค่อยถามทาง",
+        wrong: "ข้อนี้ต้องคัดมนุษย์ออกก่อน ไม่ใช่เริ่มจากถามเรื่องทางทันที"
+      },
+      en: {
+        correct: "You filtered the unreliable person before asking about the path.",
+        wrong: "This requires isolating the human first, not asking about the path immediately."
+      }
+    }
+  }
+};
+
 QUIZ_SECTIONS.forEach((section) => {
   section.questions.forEach((question) => {
     const choiceMeta = QUESTION_CHOICES[question.id];
@@ -5323,6 +5611,9 @@ QUIZ_SECTIONS.forEach((section) => {
       question.choices = choiceMeta.choices;
       question.choicesI18n = choiceMeta.choicesI18n;
       question.correctChoice = choiceMeta.correctChoice;
+    }
+    if (QUESTION_SCORING[question.id]) {
+      question.scoring = QUESTION_SCORING[question.id];
     }
   });
 });
@@ -5337,24 +5628,24 @@ function getLocalizedSection(section) {
 }
 
 function getLocalizedQuestion(question) {
-  const lang = getBrainGymLanguage();
+  const lang = getOpenmindLanguage();
   const translatedQuestion = QUESTION_TRANSLATIONS[lang]?.[question.id] || {};
   const explanationOverride =
     ADDITIONAL_EXPLANATION_OVERRIDES[lang]?.[question.id] ||
     QUESTION_EXPLANATION_OVERRIDES[lang]?.[question.id];
   const localizedChoices =
     translatedQuestion.choices ||
-    question.choicesI18n?.[getBrainGymLanguage()] ||
+    question.choicesI18n?.[getOpenmindLanguage()] ||
     question.choices;
   return {
     ...question,
-    title: translatedQuestion.title || localizeValue(question.title),
-    question: translatedQuestion.question || localizeValue(question.question),
-    answer: translatedQuestion.answer || localizeValue(question.answer),
-    explanation: explanationOverride || translatedQuestion.explanation || localizeValue(question.explanation),
+    title: stripEmoji(translatedQuestion.title || localizeValue(question.title)),
+    question: stripEmoji(translatedQuestion.question || localizeValue(question.question)),
+    answer: stripEmoji(translatedQuestion.answer || localizeValue(question.answer)),
+    explanation: stripEmoji(explanationOverride || translatedQuestion.explanation || localizeValue(question.explanation)),
     diagram: localizeValue(question.diagram),
     answerDiagram: localizeValue(question.answerDiagram),
-    choices: localizedChoices
+    choices: Array.isArray(localizedChoices) ? localizedChoices.map(stripEmoji) : localizedChoices
   };
 }
 
@@ -5363,11 +5654,39 @@ const quizState = {
   currentSection: 0,
   currentQuestion: 0,
   answeredBySection: {},
+  scoreVersion: 0,
   revealed: false,
 };
 
 // DOM references
-let questionEl, progressEl, progressTextEl, revealBtn, nextBtn, prevBtn, sectionHeaderEl;
+let questionEl, progressEl, progressTextEl, revealBtn, nextBtn, prevBtn, sectionHeaderEl, brainHudEl;
+let isHudCollapsed = false;
+let hasHudScrollListener = false;
+
+const BRAIN_DIMENSIONS = ["logic", "pattern", "attention", "bias"];
+const DEFAULT_SCORING = {
+  dimensions: {
+    logic: 1,
+    pattern: 0,
+    attention: 0,
+    bias: 0
+  },
+  difficulty: 1,
+  trapType: "general_reasoning",
+  estimatedTimeSec: 60,
+  scoreReason: {
+    th: {
+      correct: "คุณแก้โจทย์ด้วยตรรกะพื้นฐานได้ถูกต้อง",
+      wrong: "ข้อนี้ใช้เป็นคะแนนตรรกะพื้นฐานจนกว่าจะเพิ่ม metadata เฉพาะข้อ"
+    },
+    en: {
+      correct: "You solved this with baseline logic reasoning.",
+      wrong: "This uses baseline logic scoring until the puzzle receives specific metadata."
+    }
+  }
+};
+
+let brainScoreSession = createEmptyBrainScoreSession();
 
 function getQuestionState() {
   return getCurrentAnswers()[quizState.currentQuestion] || null;
@@ -5388,26 +5707,815 @@ function getCurrentAnswers() {
   return quizState.answeredBySection[quizState.currentSection];
 }
 
-function initQuiz() {
-  const content = document.getElementById("brainGymContent");
-  content.innerHTML = `
-    <div class="brain-gym-content-card quiz-shell">
-      <div class="quiz-topbar">
-        <div id="brainGymLangMount" class="brain-gym-lang-mount"></div>
+function getDimensionLabel(dimension) {
+  return openmindTranslate(`quiz.dimensions.${dimension}`);
+}
+
+function getQuestionScoring(question) {
+  const source = question?.scoring || DEFAULT_SCORING;
+  const sourceDimensions = source.dimensions || DEFAULT_SCORING.dimensions;
+  const dimensionTotal = BRAIN_DIMENSIONS.reduce(
+    (sum, dimension) => sum + Number(sourceDimensions[dimension] || 0),
+    0
+  );
+  const normalizedDimensions = BRAIN_DIMENSIONS.reduce((next, dimension) => {
+    const rawValue = Number(sourceDimensions[dimension] || 0);
+    next[dimension] = dimensionTotal ? rawValue / dimensionTotal : DEFAULT_SCORING.dimensions[dimension];
+    return next;
+  }, {});
+
+  return {
+    ...DEFAULT_SCORING,
+    ...source,
+    dimensions: normalizedDimensions,
+    difficulty: Number(source.difficulty || question?.difficulty || DEFAULT_SCORING.difficulty)
+  };
+}
+
+function getQuestionScore(isCorrect, difficulty) {
+  if (!isCorrect) return 0;
+  return 100 * difficulty;
+}
+
+function calculateQuestionContribution(question, isCorrect) {
+  const scoring = getQuestionScoring(question);
+  const baseScore = getQuestionScore(isCorrect, scoring.difficulty);
+  const maxScore = getQuestionScore(true, scoring.difficulty);
+
+  return BRAIN_DIMENSIONS.reduce(
+    (result, dimension) => {
+      result.dimensions[dimension] = baseScore * scoring.dimensions[dimension];
+      result.maxDimensions[dimension] = maxScore * scoring.dimensions[dimension];
+      return result;
+    },
+    {
+      rawPoints: baseScore,
+      maxPoints: maxScore,
+      dimensions: {},
+      maxDimensions: {}
+    }
+  );
+}
+
+function normalizeScore(value, maxValue) {
+  if (!maxValue) return 0;
+  return Math.round((value / maxValue) * 100);
+}
+
+function createEmptyBrainScoreSession() {
+  return {
+    totalAnswered: 0,
+    totalCorrect: 0,
+    rawPoints: 0,
+    maxPoints: 0,
+    totalPossible: 0,
+    dimensions: { logic: 0, pattern: 0, attention: 0, bias: 0 },
+    maxDimensions: { logic: 0, pattern: 0, attention: 0, bias: 0 },
+    answeredQuestionIds: new Set()
+  };
+}
+
+function getScoreQuestionId(question) {
+  return String(question?.id ?? "");
+}
+
+function addQuestionToScoreSession(session, question, isCorrect) {
+  const questionId = getScoreQuestionId(question);
+  if (!questionId || session.answeredQuestionIds.has(questionId)) {
+    return null;
+  }
+
+  const contribution = calculateQuestionContribution(question, isCorrect);
+  session.answeredQuestionIds.add(questionId);
+  session.totalAnswered += 1;
+  session.totalCorrect += isCorrect ? 1 : 0;
+  session.rawPoints += contribution.rawPoints;
+  session.maxPoints += contribution.maxPoints;
+  session.totalPossible += contribution.maxPoints;
+  BRAIN_DIMENSIONS.forEach((dimension) => {
+    session.dimensions[dimension] += contribution.dimensions[dimension] || 0;
+    session.maxDimensions[dimension] += contribution.maxDimensions[dimension] || 0;
+  });
+
+  return contribution;
+}
+
+function getBrainScoreSnapshot(session) {
+  const normalizedDimensions = BRAIN_DIMENSIONS.reduce((result, dimension) => {
+    result[dimension] = normalizeScore(session.dimensions[dimension], session.maxPoints);
+    return result;
+  }, {});
+  const sessionScore = normalizeScore(session.rawPoints, session.maxPoints);
+
+  return {
+    ...session,
+    normalizedDimensions,
+    sessionScore,
+    brainScore: sessionScore
+  };
+}
+
+function updateBrainScoreSession(question, isCorrect) {
+  addQuestionToScoreSession(brainScoreSession, question, isCorrect);
+  return getBrainScoreSnapshot(brainScoreSession);
+}
+
+function calculateBrainScoreSession(sectionIndex = null) {
+  if (sectionIndex === null) {
+    return getBrainScoreSnapshot(brainScoreSession);
+  }
+
+  const session = createEmptyBrainScoreSession();
+  const sections = [{ section: QUIZ_SECTIONS[sectionIndex], index: sectionIndex }];
+
+  sections.forEach(({ section, index }) => {
+    if (!section) return;
+    const answers = quizState.answeredBySection[index] || [];
+    answers.forEach((answerState, questionIndex) => {
+      if (!answerState?.checked || answerState.scoreVersion !== quizState.scoreVersion) return;
+      const question = section.questions[questionIndex];
+      if (!question) return;
+      addQuestionToScoreSession(session, question, Boolean(answerState.isCorrect));
+    });
+  });
+
+  return getBrainScoreSnapshot(session);
+}
+
+function getScoreMessage(brainScore) {
+  if (brainScore >= 80) return openmindTranslate("quiz.scoreStrong");
+  if (brainScore >= 60) return openmindTranslate("quiz.scoreGood");
+  return openmindTranslate("quiz.scoreKeepTraining");
+}
+
+function getDimensionInsight(normalizedDimensions) {
+  const ranked = BRAIN_DIMENSIONS
+    .map((dimension) => ({ dimension, score: normalizedDimensions[dimension] || 0 }))
+    .sort((a, b) => b.score - a.score);
+
+  return {
+    strongest: ranked[0]?.dimension || "logic",
+    weakest: ranked[ranked.length - 1]?.dimension || "attention"
+  };
+}
+
+function getScoreReason(scoring, isCorrect) {
+  const key = isCorrect ? "correct" : "wrong";
+  const lang = getOpenmindLanguage();
+
+  return scoring.scoreReason?.[key] ||
+    scoring.scoreReason?.[lang]?.[key] ||
+    scoring.scoreReason?.en?.[key] ||
+    openmindTranslate("quiz.scoreFallbackReason");
+}
+
+function buildScoreFeedback(question, isCorrect) {
+  const scoring = getQuestionScoring(question);
+  const contribution = calculateQuestionContribution(question, isCorrect);
+  const mainDimension = BRAIN_DIMENSIONS
+    .map((dimension) => ({
+      dimension,
+      points: Math.round(contribution.dimensions[dimension] || 0),
+      weight: scoring.dimensions[dimension] || 0
+    }))
+    .sort((a, b) => b.points - a.points || b.weight - a.weight)[0];
+  const reason = getScoreReason(scoring, isCorrect);
+
+  return {
+    rawPoints: Math.round(contribution.rawPoints),
+    mainDimension: mainDimension?.dimension || "logic",
+    mainDimensionPoints: mainDimension?.points || 0,
+    dimensions: BRAIN_DIMENSIONS
+      .map((dimension) => ({
+        dimension,
+        points: Math.round(contribution.dimensions[dimension] || 0)
+      }))
+      .filter((item) => item.points > 0),
+    reason
+  };
+}
+
+function pixelizeDiagramMarkup(markup) {
+  if (!markup) return "";
+
+  return stripEmoji(String(markup))
+    .replace(/\s(?:rx|ry)="[^"]*"/g, "")
+    .replace(/font-size="9"/g, 'font-size="10"')
+    .replace(/font-size="10"/g, 'font-size="11"')
+    .replace(/font-size="11"/g, 'font-size="12"')
+    .replace(/stroke-width="1(?:\.0)?"/g, 'stroke-width="2"')
+    .replace(/stroke-width="1\.5"/g, 'stroke-width="2"')
+    .replace(/<svg\b([^>]*)class="([^"]*\bquiz-diagram\b[^"]*)"([^>]*)>/, '<svg$1class="$2"$3 data-pixel-diagram="true">');
+}
+
+function escapeAttribute(value) {
+  return String(value ?? "")
+    .replace(/&/g, "&amp;")
+    .replace(/"/g, "&quot;")
+    .replace(/</g, "&lt;")
+    .replace(/>/g, "&gt;");
+}
+
+const QUESTION_PIXEL_SCENES = {
+  1: "villagers",
+  2: "seasoning",
+  3: "testimony",
+  4: "rps",
+  5: "calendar",
+  6: "companies",
+  7: "pingpong",
+  8: "heaven-road",
+  9: "two-hats",
+  10: "three-hats",
+  11: "cat-boxes",
+  12: "stairway",
+  13: "hotel-money",
+  14: "married-question",
+  15: "runner",
+  16: "plane-wind",
+  17: "passing-ships",
+  18: "products",
+  19: "population",
+  20: "salary-plan",
+  21: "white-ball",
+  22: "three-cards",
+  23: "racehorses",
+  24: "four-cards",
+  25: "election",
+  26: "truth-island",
+  27: "bear-color",
+  28: "two-ropes",
+  29: "four-boats",
+  30: "slow-horse",
+  31: "desert-crossing",
+  32: "scale-coins",
+  33: "banknotes",
+  34: "black-white-stones",
+  35: "cows",
+  36: "ten-coins",
+  37: "fake-coin-piles",
+  38: "postal-lock",
+  39: "vote-count",
+  40: "fruit-boxes",
+  41: "ages",
+  42: "book-errors",
+  43: "restaurant-menu",
+  44: "two-cards",
+  45: "business-cards",
+  46: "red-blue-stickers",
+  47: "apples",
+  48: "code-room",
+  49: "suspects",
+  50: "round-robin",
+  51: "sports-rank",
+  52: "muddy-people",
+  53: "messy-hair",
+  54: "stair-hats",
+  55: "truel",
+  56: "bar-seats",
+  57: "pirate-coins",
+  58: "king-salary",
+  59: "stamps",
+  60: "birthday",
+  61: "dragons",
+  62: "impossible-number",
+  63: "cookie-game",
+  64: "notebook-sticker",
+  65: "bakers",
+  66: "bottles"
+};
+
+function getQuestionSceneType(question) {
+  const mappedScene = QUESTION_PIXEL_SCENES[Number(question.id)];
+  if (mappedScene) return mappedScene;
+
+  const source = `${question.title || ""} ${question.question || ""}`.toLowerCase();
+  if (/angel|demon|human|liar|truth|เทวดา|ปีศาจ|มนุษย์|โกหก|จริง/.test(source)) return "people";
+  if (/path|stair|heaven|left|right|ทาง|ซ้าย|ขวา|สวรรค์/.test(source)) return "path";
+  if (/yen|coin|money|hotel|pirate|เยน|เหรียญ|เงิน|โรงแรม/.test(source)) return "money";
+  if (/hat|card|stamp|color|red|blue|หมวก|ไพ่|แสตมป์|สี|แดง|น้ำเงิน/.test(source)) return "cards";
+  if (/baker|cookie|shelf|bottle|box|cow|rope|ขนม|คุกกี้|ชั้น|ขวด|กล่อง|วัว|เชือก/.test(source)) return "objects";
+  if (/number|sum|mod|weigh|logic|จำนวน|ผลรวม|เลข|ชั่ง|ตรรกะ/.test(source)) return "numbers";
+  return `abstract scene-${Number(question.id || 0) % 6}`;
+}
+
+const WARMUP_PIXEL_ART = {
+  1: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...YYY...RRR...BBB",
+      "...YCY...RCR...BCB",
+      "...YYY...RRR...BBB",
+      "....C.....C.....C.",
+      "...CCC...CCC...CCC",
+      "..CCCC.CCCCC.CCCCC",
+      "...CCC...CCC...CCC",
+      "...C.C...C.C...C.C",
+      "..CC.CC.CC.CC.CC.C",
+      "..................",
+      ".................."
+    ]
+  },
+  2: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...RRR....GGG....Y",
+      "..RYYYR.GCCCG..YYY",
+      "..RYYYR.GCCCG..YYY",
+      "...RRR....GGG....Y",
+      "..................",
+      "..BBBB..BBBB..BBBB",
+      "..BSSB..BSSB..BSSB",
+      "..BSSB..BSSB..BSSB",
+      "..BBBB..BBBB..BBBB",
+      "..................",
+      ".................."
+    ]
+  },
+  3: {
+    cols: 18,
+    rows: [
+      "..................",
+      "....BBBBBBBBBB....",
+      "...BSSSSSSSSSSB...",
+      "...BSSCCCCCCSSB...",
+      "...BSSSSSSSSSSB...",
+      "...BSSCCCCCCSSB...",
+      "...BSSSSSSSSSSB...",
+      "...BBBBBBBBBBBB...",
+      ".......RRRR.......",
+      "......RYYYYR......",
+      ".......RRRR.......",
+      ".................."
+    ]
+  },
+  4: {
+    cols: 18,
+    rows: [
+      "..................",
+      "..GGG........RRR..",
+      ".GCCCG......RCCCR.",
+      ".GCCCG..YYY.RCCCR.",
+      "..GGG..YYYYY.RRR..",
+      ".......YYYYY......",
+      "..BBBB..YYY..BBBB.",
+      "..BSSB......BSSB..",
+      "..BBBB......BBBB..",
+      "..................",
+      "..................",
+      ".................."
+    ]
+  },
+  5: {
+    cols: 18,
+    rows: [
+      "..................",
+      "..BBBBBBBBBBBBBB..",
+      "..BSSBSSBSSBSSBB..",
+      "..BRRBYYBGGBRRBB..",
+      "..BSSBSSBSSBSSBB..",
+      "..BYYBGGBRRBYYBB..",
+      "..BSSBSSBSSBSSBB..",
+      "..BGGBRRBYYBGGBB..",
+      "..BSSBSSBSSBSSBB..",
+      "..BBBBBBBBBBBBBB..",
+      "..................",
+      ".................."
+    ]
+  },
+  6: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...BBBB...BBBB....",
+      "...BSSB...BSSB....",
+      "...BBBB...BBBB....",
+      ".....B.....B......",
+      "..BBBBBBBBBBBBBB..",
+      "..BYYBYYBYYBYYBB..",
+      "..BBBBBBBBBBBBBB..",
+      ".....B.....B......",
+      "...BBBB...BBBB....",
+      "...BBBB...BBBB....",
+      ".................."
+    ]
+  },
+  7: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...RRR........BBB.",
+      "..RCCCR......BCCCB",
+      "...RRR........BBB.",
+      "....C..........C..",
+      "..CCCCCCCCCCCCCC..",
+      "....C..........C..",
+      "...RRR........BBB.",
+      "..RCCCR......BCCCB",
+      "...RRR........BBB.",
+      "......YYYYYY......",
+      ".................."
+    ]
+  },
+  8: {
+    cols: 18,
+    rows: [
+      "..................",
+      "....YYY.....RRR...",
+      "...YYYYY...RCCCR..",
+      "....YYY.....RRR...",
+      ".....C.......C....",
+      "..BBBBB...BBBBB...",
+      "..BSSSB...BSSSB...",
+      "..BBBBB...BBBBB...",
+      ".....B.....B......",
+      "......BBBBB.......",
+      ".......BBB........",
+      ".................."
+    ]
+  },
+  9: {
+    cols: 18,
+    rows: [
+      "..................",
+      "....RRR.....BBB...",
+      "...RCCCR...BCCCB..",
+      "....RRR.....BBB...",
+      ".....C.......C....",
+      "....CCC.....CCC...",
+      "...CCCCC...CCCCC..",
+      "....C.C.....C.C...",
+      "..................",
+      "......YYYYYY......",
+      ".......YYYY.......",
+      ".................."
+    ]
+  },
+  10: {
+    cols: 18,
+    rows: [
+      "..................",
+      "..RRR...BBB....YYY",
+      ".RCCCR.BCCCB..YCCY",
+      "..RRR...BBB....YYY",
+      "...C.....C......C.",
+      "..CCC...CCC....CCC",
+      ".CCCC..CCCCC..CCCC",
+      "..C.C...C.C....C.C",
+      "..................",
+      "....BBBBBBBBBB....",
+      "......BBBBBB......",
+      ".................."
+    ]
+  },
+  11: {
+    cols: 18,
+    rows: [
+      "..................",
+      "..BBBBBBBBBBBBBB..",
+      "..BSSBSSBSSBSSBB..",
+      "..BSSBSSBSSBSSBB..",
+      "..BBBBBBBBBBBBBB..",
+      ".....GGG..........",
+      "....GCCCG.........",
+      "....GCCCG...RRR...",
+      ".....GGG...RYYR...",
+      "...........RRR....",
+      "..................",
+      ".................."
+    ]
+  },
+  12: {
+    cols: 18,
+    rows: [
+      "..................",
+      "........YYY.......",
+      ".......YYYYY......",
+      "........YYY.......",
+      ".........B........",
+      "........BBB.......",
+      ".......BBBBB......",
+      "......BBBBBBB.....",
+      ".....BBBBBBBBB....",
+      "....BBBBBBBBBBB...",
+      "...BBBBBBBBBBBBB..",
+      ".................."
+    ]
+  },
+  64: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...BBBBBBB........",
+      "...BSSSSSB...YYY..",
+      "...BSSSSSB..YYYYY.",
+      "...BSSSSSB.YYYYYYY",
+      "...BSSSSSB..YYYYY.",
+      "...BBBBBBB...YYY..",
+      "...........RRRR...",
+      "....SSSSSS.RYYR...",
+      "....SYYYYS.RRRR...",
+      "....SSSSSS........",
+      ".................."
+    ]
+  },
+  65: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...WWWW....WWWW...",
+      "..WCCCCW..WCCCCW..",
+      "..WCCCCW..WCCCCW..",
+      "..WWWWWW..WWWWWW..",
+      "..................",
+      ".TTTTTTTTTTTTTTTT.",
+      ".TYYTYYTYYTYYTYYT.",
+      ".TTTTTTTTTTTTTTTT.",
+      ".....PP....PP.....",
+      "....PPPP..PPPP....",
+      ".................."
+    ]
+  },
+  66: {
+    cols: 18,
+    rows: [
+      "..................",
+      "..P...............",
+      "..PP..............",
+      "..PPPP............",
+      "..PPPPPP..........",
+      "..PPPPPPPP........",
+      "..PPPPPPPPPP......",
+      "..PPPPPPPPPPPP....",
+      "..PPPPPPPPPPPPPP..",
+      "..PPPPPPPPPPPPPP..",
+      "....BBBBBBBBBB....",
+      ".................."
+    ]
+  }
+};
+
+const DEFAULT_PIXEL_ART = {
+  people: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...YYY....RRR.....",
+      "...YCY....RCR..BBB",
+      "...YYY....RRR..BCB",
+      "....C......C...BBB",
+      "...CCC....CCC...C.",
+      "..CCCCC..CCCCC.CCC",
+      "...C.C....C.C..C.C",
+      "..................",
+      "....BBBBBBBBBB....",
+      "......BBBBBB......",
+      ".................."
+    ]
+  },
+  path: {
+    cols: 18,
+    rows: [
+      "..................",
+      ".....YYY....RRR...",
+      "....YYYYY..RCCCR..",
+      ".....YYY....RRR...",
+      "......C......C....",
+      "..BBBBBB..BBBBBB..",
+      "..BSSSSB..BSSSSB..",
+      "..BBBBBB..BBBBBB..",
+      "......B....B......",
+      ".......BBBB.......",
+      "........BB........",
+      ".................."
+    ]
+  },
+  money: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...YYYY..YYYY.....",
+      "..YOOOY.YOOOY.....",
+      "...YYYY..YYYY.....",
+      "..................",
+      "..GGGGGGGGGGGGGG..",
+      "..GYYYYYYYYYYYYG..",
+      "..GYYGGYYYYGGYYG..",
+      "..GYYYYYYYYYYYYG..",
+      "..GGGGGGGGGGGGGG..",
+      "..................",
+      ".................."
+    ]
+  },
+  cards: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...RRRR....BBBB...",
+      "..RSSSR...BSSSB...",
+      "..RSYSR...BSYSB...",
+      "..RSSSR...BSSSB...",
+      "...RRRR....BBBB...",
+      "..................",
+      "....YYYYYYYYYY....",
+      "...YSSYSSYSSYY....",
+      "....YYYYYYYYYY....",
+      "..................",
+      ".................."
+    ]
+  },
+  objects: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...BBBB..BBBB.....",
+      "..BSSSB.BSSSB.....",
+      "..BYYB..BYYB......",
+      "...BBBB..BBBB.....",
+      "..................",
+      "..GGGGGGGGGGGGGG..",
+      "..GDDDDDDDDDDDDG..",
+      "..GYYYYYYYYYYYYG..",
+      "..GGGGGGGGGGGGGG..",
+      "..................",
+      ".................."
+    ]
+  },
+  numbers: {
+    cols: 18,
+    rows: [
+      "..................",
+      "...BBBBBBBBBBBB...",
+      "..BSSBSSBSSBSSB...",
+      "..BYYBGGBRRBYYB...",
+      "..BSSBSSBSSBSSB...",
+      "..BGGBRRBYYBGGB...",
+      "..BSSBSSBSSBSSB...",
+      "...BBBBBBBBBBBB...",
+      "......YYYYYY......",
+      ".......YYYY.......",
+      "..................",
+      ".................."
+    ]
+  },
+  transport: {
+    cols: 18,
+    rows: [
+      "..................",
+      "........BBB.......",
+      ".......BBBBB......",
+      "...BBBBBBBBBBBB...",
+      "..BSSSSSSSSSSSB...",
+      "...BBBBBBBBBBBB...",
+      ".....B......B.....",
+      "....BB......BB....",
+      "..................",
+      "..YYYYYYYYYYYYYY..",
+      "...YYYYYYYYYYYY...",
+      ".................."
+    ]
+  },
+  race: {
+    cols: 18,
+    rows: [
+      "..................",
+      "..RRR........BBB..",
+      ".RCCCR......BCCCB.",
+      "..RRR........BBB..",
+      "..CCC........CCC..",
+      ".CCCCC......CCCCC.",
+      "..C.C........C.C..",
+      "..................",
+      "..BBBBBBBBBBBBBB..",
+      "...YYYYYYYYYYYY...",
+      "..................",
+      ".................."
+    ]
+  },
+  nature: {
+    cols: 18,
+    rows: [
+      "..................",
+      ".......BBBB.......",
+      "......BCCCCB......",
+      ".....BCCCCCCB.....",
+      "......BCCCCB......",
+      ".......BBBB.......",
+      "..................",
+      "..YYYYYYYYYYYYYY..",
+      "...YYYYYYYYYYYY...",
+      "....GGGGGGGGGG....",
+      "..................",
+      ".................."
+    ]
+  },
+  abstract: {
+    cols: 18,
+    rows: [
+      "..................",
+      "....BBB....YYY....",
+      "...BSSB...YSSY....",
+      "....BBB....YYY....",
+      "......B....Y......",
+      "..RRRRRRRRRRRRRR..",
+      "..RYYRYYRYYRYYRR..",
+      "..RRRRRRRRRRRRRR..",
+      "......G....G......",
+      "....GGG....GGG....",
+      "..................",
+      ".................."
+    ]
+  }
+};
+
+function getDefaultPixelArt(sceneType) {
+  if (/money|coin|salary|banknote|pirate|hotel/.test(sceneType)) return DEFAULT_PIXEL_ART.money;
+  if (/card|stamp|sticker|hat|birthday|ball/.test(sceneType)) return DEFAULT_PIXEL_ART.cards;
+  if (/people|villager|suspect|island|dragon|bar|muddy|messy/.test(sceneType)) return DEFAULT_PIXEL_ART.people;
+  if (/path|road|stair|heaven|lock/.test(sceneType)) return DEFAULT_PIXEL_ART.path;
+  if (/boat|ship|plane/.test(sceneType)) return DEFAULT_PIXEL_ART.transport;
+  if (/horse|race|runner|sport|pingpong|truel/.test(sceneType)) return DEFAULT_PIXEL_ART.race;
+  if (/box|fruit|apple|restaurant|product|baker|bottle|cookie|cow|rope/.test(sceneType)) return DEFAULT_PIXEL_ART.objects;
+  if (/number|code|age|weigh|scale|vote|election|round|companies|calendar|book|error|stone/.test(sceneType)) return DEFAULT_PIXEL_ART.numbers;
+  if (/bear|desert/.test(sceneType)) return DEFAULT_PIXEL_ART.nature;
+  return DEFAULT_PIXEL_ART.abstract;
+}
+
+function buildWarmupPixelArt(question, sceneType) {
+  const art = WARMUP_PIXEL_ART[Number(question.id)] || getDefaultPixelArt(sceneType);
+  if (!art) return "";
+
+  return art.rows.flatMap((row, rowIndex) =>
+    Array.from(row).map((token, colIndex) => {
+      const className = token === "." ? "empty" : token.toLowerCase();
+      return `<span class="pixel-art-cell ${className}" style="--row:${rowIndex};--col:${colIndex};"></span>`;
+    })
+  ).join("");
+}
+
+function buildQuestionPixelScene(question, questionNumber) {
+  const sceneType = getQuestionSceneType(question);
+  const warmupArt = buildWarmupPixelArt(question, sceneType);
+  const warmupConfig = WARMUP_PIXEL_ART[Number(question.id)] || getDefaultPixelArt(sceneType);
+  const tiles = warmupArt ? "" : Array.from({ length: 24 }, (_, index) => `<span class="pixel-scene-tile tile-${index + 1}"></span>`).join("");
+  const pieces = warmupArt ? "" : Array.from({ length: 8 }, (_, index) => `<span class="pixel-scene-piece piece-${index + 1}"></span>`).join("");
+  const label = escapeAttribute(`${openmindTranslate("quiz.questionNumber", { num: questionNumber })}: ${question.title}`);
+
+  return `
+    <div class="quiz-pixel-scene ${sceneType}${warmupArt ? " has-mosaic" : ""}" role="img" aria-label="${label}">
+      <div class="pixel-scene-grid" ${warmupConfig ? `style="--cols:${warmupConfig.cols};--rows:${warmupConfig.rows.length};"` : ""} aria-hidden="true">
+        ${tiles}
+        ${pieces}
+        ${warmupArt}
       </div>
+    </div>
+  `;
+}
+
+function collapseBrainHud() {
+  if (!brainHudEl || isHudCollapsed) return;
+
+  isHudCollapsed = true;
+  brainHudEl.classList.add("is-collapsed");
+  const button = brainHudEl.querySelector("[data-hud-collapse]");
+  if (button) button.textContent = "▲";
+}
+
+function ensureHudScrollCollapse() {
+  if (hasHudScrollListener) return;
+
+  hasHudScrollListener = true;
+  let lastScrollY = window.scrollY;
+
+  window.addEventListener("scroll", () => {
+    const moved = Math.abs(window.scrollY - lastScrollY);
+    if (moved > 8 && !document.body.classList.contains("openmind-is-landing")) {
+      collapseBrainHud();
+    }
+    lastScrollY = window.scrollY;
+  }, { passive: true });
+}
+
+function initQuiz() {
+  const content = document.getElementById("openmindContent");
+  content.innerHTML = `
+    <div class="openmind-content-card quiz-shell">
       <div id="quizSectionHeader" class="quiz-section-header"></div>
       <div class="quiz-progress-wrap">
-        <div class="quiz-jump-nav" id="quizJumpNav" aria-label="${brainGymTranslate("quiz.questionPicker")}"></div>
+        <div class="quiz-jump-nav" id="quizJumpNav" aria-label="${openmindTranslate("quiz.questionPicker")}"></div>
       </div>
       <div id="quizQuestion" class="quiz-question-block"></div>
       <div id="quizFeedback" class="quiz-feedback" hidden></div>
       <div id="quizAnswer" class="quiz-answer-block" hidden></div>
       <div class="quiz-actions">
-        <button class="quiz-btn-secondary" id="quizPrevBtn" hidden>${brainGymTranslate("quiz.previous")}</button>
-        <button class="brain-gym-button quiz-btn-reveal" id="quizRevealBtn" disabled>${brainGymTranslate("quiz.revealCheck")}</button>
-        <button class="brain-gym-button quiz-btn-next" id="quizNextBtn" hidden>${brainGymTranslate("quiz.next")}</button>
+        <button class="quiz-btn-secondary" id="quizPrevBtn" hidden>${openmindTranslate("quiz.previous")}</button>
+        <button class="openmind-button quiz-btn-reveal" id="quizRevealBtn" disabled>${openmindTranslate("quiz.revealCheck")}</button>
+        <button class="openmind-button quiz-btn-next" id="quizNextBtn" hidden>${openmindTranslate("quiz.next")}</button>
       </div>
     </div>
+    <aside class="brain-score-hud" id="brainScoreHud" aria-live="polite"></aside>
   `;
 
   questionEl = document.getElementById("quizQuestion");
@@ -5416,16 +6524,113 @@ function initQuiz() {
   nextBtn = document.getElementById("quizNextBtn");
   prevBtn = document.getElementById("quizPrevBtn");
   sectionHeaderEl = document.getElementById("quizSectionHeader");
+  brainHudEl = document.getElementById("brainScoreHud");
 
   revealBtn.addEventListener("click", revealAnswer);
   nextBtn.addEventListener("click", nextQuestion);
   prevBtn.addEventListener("click", prevQuestion);
 
-  if (typeof window.mountBrainGymLanguageToggle === "function") {
-    window.mountBrainGymLanguageToggle();
-  }
+  ensureHudScrollCollapse();
 
+  renderBrainHud();
   renderQuestion();
+}
+
+function renderBrainHud(state = {}) {
+  if (!brainHudEl) return;
+
+  const session = calculateBrainScoreSession();
+  const status = state.status || "idle";
+  const score = state.score ?? session.brainScore;
+  const delta = state.delta ?? "+0";
+  const accuracy = session.totalAnswered
+    ? Math.round((session.totalCorrect / session.totalAnswered) * 100)
+    : 0;
+  const message = state.message || (session.totalAnswered
+    ? getScoreMessage(score)
+    : openmindTranslate("quiz.scoreEmpty"));
+  const collapsedClass = isHudCollapsed ? " is-collapsed" : "";
+  const dimensionRows = BRAIN_DIMENSIONS.map((dimension) => {
+    const value = session.normalizedDimensions[dimension] || 0;
+    const displayValue = (value / 10).toFixed(1);
+    return `
+      <div class="brain-profile-row">
+        <span>${getDimensionLabel(dimension)}</span>
+        <div class="brain-profile-bar" aria-hidden="true">
+          <span style="--score-fill:${value}%;"></span>
+        </div>
+        <em>${displayValue}</em>
+      </div>
+    `;
+  }).join("");
+
+  brainHudEl.className = `brain-score-hud is-${status} is-profile-open${collapsedClass}`;
+  brainHudEl.innerHTML = `
+    <div class="brain-hud-top">
+      <div class="brain-hud-user">
+        <span class="brain-hud-welcome">Welcome,</span>
+        <button type="button" class="brain-hud-signin-btn">[ Guest ]</button>
+        <button type="button" class="brain-hud-collapse-btn" data-hud-collapse aria-label="Toggle HUD">${isHudCollapsed ? "▲" : "▼"}</button>
+      </div>
+    </div>
+    <div class="brain-hud-main">
+      <div class="brain-hud-score">
+        <span class="brain-hud-label">${openmindTranslate("quiz.brainScore")}</span>
+        <strong>${score}</strong>
+        <span class="brain-hud-delta">${delta}</span>
+      </div>
+      <p class="brain-hud-percentile">${openmindTranslate("quiz.answered")}: ${session.totalAnswered} · ${openmindTranslate("quiz.correct")}: ${session.totalCorrect} · ${accuracy}%</p>
+    </div>
+    <div class="brain-hud-profile" id="brainHudProfile">
+      ${dimensionRows}
+      <p class="brain-profile-insight">${message}</p>
+      <div class="brain-profile-actions">
+        <button type="button" class="brain-hud-profile-btn" data-score-reset>${openmindTranslate("quiz.resetScore")}</button>
+        <button type="button" class="brain-hud-profile-btn">Sign in to save your progress</button>
+      </div>
+    </div>
+  `;
+
+  brainHudEl.querySelector("[data-hud-collapse]")?.addEventListener("click", () => {
+    isHudCollapsed = !isHudCollapsed;
+    brainHudEl.classList.toggle("is-collapsed", isHudCollapsed);
+    brainHudEl.querySelector("[data-hud-collapse]").textContent = isHudCollapsed ? "▲" : "▼";
+  });
+  brainHudEl.querySelector("[data-score-reset]")?.addEventListener("click", resetBrainScore);
+}
+
+function resetBrainScore() {
+  quizState.scoreVersion += 1;
+  brainScoreSession = createEmptyBrainScoreSession();
+  renderBrainHud({
+    status: "idle",
+    score: 0,
+    delta: "+0",
+    message: openmindTranslate("quiz.scoreEmpty")
+  });
+}
+
+function updateBrainHudAfterAnswer(isCorrect, scoreFeedback) {
+  const session = calculateBrainScoreSession();
+  const delta = isCorrect && scoreFeedback?.mainDimensionPoints
+    ? `+${scoreFeedback.mainDimensionPoints} ${getDimensionLabel(scoreFeedback.mainDimension)}`
+    : "+0";
+  renderBrainHud({
+    status: isCorrect ? "correct" : "wrong",
+    score: session.brainScore,
+    delta,
+    message: scoreFeedback?.reason || (isCorrect ? getScoreMessage(session.brainScore) : openmindTranslate("quiz.scoreNoPoints"))
+  });
+}
+
+function updateBrainHudForCompletion() {
+  const session = calculateBrainScoreSession();
+  renderBrainHud({
+    status: "complete",
+    score: session.brainScore,
+    delta: "+0",
+    message: getScoreMessage(session.brainScore)
+  });
 }
 
 function renderQuestion() {
@@ -5436,12 +6641,12 @@ function renderQuestion() {
   const savedState = getQuestionState();
   const selectedChoice = savedState?.selectedChoice;
   const checked = Boolean(savedState?.checked);
+  const counterText = `${String(qNum).padStart(2, "0")} / ${String(totalQ).padStart(2, "0")}`;
 
   sectionHeaderEl.innerHTML = `
-    <p class="brain-gym-eyebrow" aria-hidden="true">&nbsp;</p>
-    <h2 class="quiz-section-title">${section.title}</h2>
+    <h2 class="quiz-section-title">${section.title.split(": ").slice(1).join(": ") || section.title}</h2>
     <p class="quiz-section-desc">${section.description}</p>
-    <div class="quiz-section-switcher" id="quizSectionSwitcher" aria-label="${brainGymTranslate("quiz.sectionPicker")}"></div>
+    <div class="quiz-section-switcher" id="quizSectionSwitcher" aria-label="${openmindTranslate("quiz.sectionPicker")}"></div>
   `;
 
   renderSectionSwitcher();
@@ -5450,12 +6655,12 @@ function renderQuestion() {
   const stars = Array.from({ length: 5 }, (_, i) =>
     `<span class="${i < q.difficulty ? "star filled" : "star"}">★</span>`
   ).join("");
-  const difficultyLabel = brainGymTranslate("quiz.difficulty", { value: q.difficulty });
+  const difficultyLabel = openmindTranslate("quiz.difficulty", { value: q.difficulty });
 
-  const diagramHtml = q.diagram ? `<div class="quiz-diagram-wrap">${q.diagram}</div>` : "";
+  const pixelSceneHtml = buildQuestionPixelScene(q, qNum);
   const choicesHtml = Array.isArray(q.choices)
     ? `
-      <div class="quiz-choice-list" role="list" aria-label="${brainGymTranslate("quiz.answerChoices")}">
+      <div class="quiz-choice-list" role="list" aria-label="${openmindTranslate("quiz.answerChoices")}">
         ${q.choices
           .map((choice, index) => {
             const isSelected = selectedChoice === index;
@@ -5471,7 +6676,7 @@ function renderQuestion() {
             return `
               <button
                 type="button"
-                class="brain-gym-option quiz-choice${stateClass}"
+                class="openmind-option quiz-choice${stateClass}"
                 data-choice-index="${index}"
                 aria-pressed="${isSelected ? "true" : "false"}"
                 ${checked ? "disabled" : ""}
@@ -5488,14 +6693,14 @@ function renderQuestion() {
   questionEl.innerHTML = `
     <div class="quiz-q-header">
       <div class="quiz-q-meta">
-        <span class="quiz-q-num">${brainGymTranslate("quiz.questionNumber", { num: qNum })}</span>
+        <span class="quiz-q-num">${openmindTranslate("quiz.questionNumber", { num: qNum })}</span>
         <div class="quiz-q-difficulty">
           <span class="quiz-q-stars" aria-label="${difficultyLabel}">${stars}</span>
         </div>
       </div>
       <h3 class="quiz-q-title">${q.title}</h3>
     </div>
-    ${diagramHtml}
+    ${pixelSceneHtml}
     <div class="quiz-q-text">${q.question}</div>
     ${choicesHtml}
   `;
@@ -5512,19 +6717,19 @@ function renderQuestion() {
   });
 
   prevBtn.hidden = quizState.currentQuestion === 0;
-  prevBtn.textContent = brainGymTranslate("quiz.previous");
+  prevBtn.textContent = openmindTranslate("quiz.previous");
   revealBtn.hidden = false;
   const hasChoices = Array.isArray(q.choices) && q.choices.length > 0;
   revealBtn.disabled = hasChoices ? selectedChoice === undefined || checked : checked;
   revealBtn.textContent = checked
-    ? brainGymTranslate("quiz.revealOpened")
+    ? openmindTranslate("quiz.revealOpened")
     : hasChoices
-      ? brainGymTranslate("quiz.revealCheck")
-      : brainGymTranslate("quiz.revealOpen");
+      ? openmindTranslate("quiz.revealCheck")
+      : openmindTranslate("quiz.revealOpen");
   nextBtn.hidden = !checked;
   nextBtn.textContent = quizState.currentQuestion < totalQ - 1
-    ? brainGymTranslate("quiz.next")
-    : brainGymTranslate("quiz.finishSection", { section: section.title });
+    ? openmindTranslate("quiz.next")
+    : openmindTranslate("quiz.finishSection", { section: section.title });
   quizState.revealed = checked;
 
   renderFeedback(q, savedState);
@@ -5557,7 +6762,6 @@ function renderSectionSwitcher() {
         aria-current="${isCurrent ? "true" : "false"}"
       >
         <span class="quiz-section-chip-label">${chipLabel}</span>
-        <span class="quiz-section-chip-meta">${completedCount}/${section.questions.length}</span>
       </button>
     `;
   }).join("");
@@ -5590,8 +6794,8 @@ function renderJumpNav(totalQ) {
       .filter(Boolean)
       .join(" ");
     const label = isCompleted
-      ? brainGymTranslate("quiz.questionDone", { num: index + 1 })
-      : brainGymTranslate("quiz.questionNumber", { num: index + 1 });
+      ? openmindTranslate("quiz.questionDone", { num: index + 1 })
+      : openmindTranslate("quiz.questionNumber", { num: index + 1 });
 
     return `
       <button
@@ -5614,15 +6818,8 @@ function renderJumpNav(totalQ) {
 }
 
 function jumpToQuestion(index) {
-  const currentAnswers = getCurrentAnswers();
-  const currentState = currentAnswers[index];
   quizState.currentQuestion = index;
 
-  if (currentState?.checked) {
-    currentAnswers[index] = {
-      completedOnce: true
-    };
-  }
 
   renderQuestion();
   window.scrollTo({ top: 0, behavior: "smooth" });
@@ -5637,14 +6834,19 @@ function revealAnswer() {
   if (selectedState?.checked) return;
   if (hasChoices && selectedState.selectedChoice === undefined) return;
   const isCorrect = hasChoices ? selectedState.selectedChoice === q.correctChoice : true;
+  const scoreFeedback = buildScoreFeedback(q, isCorrect);
 
   setQuestionState({
     checked: true,
     isCorrect,
-    completedOnce: true
+    completedOnce: true,
+    scoreVersion: quizState.scoreVersion,
+    scoreFeedback
   });
   quizState.revealed = true;
+  updateBrainScoreSession(q, isCorrect);
 
+  updateBrainHudAfterAnswer(isCorrect, scoreFeedback);
   renderQuestion();
   document.getElementById("quizAnswer").scrollIntoView({ behavior: "smooth", block: "nearest" });
 }
@@ -5661,23 +6863,33 @@ function renderFeedback(q, savedState) {
   const correctText = q.choices?.[q.correctChoice] || q.answer;
   const statusClass = savedState.isCorrect ? "is-correct" : "is-wrong";
   const title = savedState.isCorrect
-    ? brainGymTranslate("quiz.feedbackCorrect")
-    : brainGymTranslate("quiz.feedbackWrong");
+    ? openmindTranslate("quiz.feedbackCorrect")
+    : openmindTranslate("quiz.feedbackWrong");
   const copy = savedState.isCorrect
-    ? brainGymTranslate("quiz.feedbackCorrectCopy")
-    : brainGymTranslate("quiz.feedbackWrongCopy");
+    ? openmindTranslate("quiz.feedbackCorrectCopy")
+    : openmindTranslate("quiz.feedbackWrongCopy");
+  const scoreFeedback = savedState.scoreFeedback || buildScoreFeedback(q, savedState.isCorrect);
+  const scoreItems = savedState.isCorrect && scoreFeedback.dimensions.length
+    ? scoreFeedback.dimensions
+      .map((item) => `<span class="quiz-score-pill">+${item.points} ${getDimensionLabel(item.dimension)}</span>`)
+      .join("")
+    : `<span class="quiz-score-pill is-empty">${openmindTranslate("quiz.scoreNoPoints")}</span>`;
 
   feedbackEl.innerHTML = `
     <div class="quiz-feedback-card ${statusClass}">
       <div class="quiz-feedback-title">${title}</div>
       <p class="quiz-feedback-copy">${copy}</p>
+      <div class="quiz-score-feedback">
+        <div class="quiz-score-pills">${scoreItems}</div>
+        <p>${scoreFeedback.reason}</p>
+      </div>
       <div class="quiz-feedback-rows">
         <div class="quiz-feedback-row">
-          <span class="quiz-feedback-label">${brainGymTranslate("quiz.yourAnswer")}</span>
+          <span class="quiz-feedback-label">${openmindTranslate("quiz.yourAnswer")}</span>
           <span class="quiz-feedback-value">${chosenText}</span>
         </div>
         <div class="quiz-feedback-row">
-          <span class="quiz-feedback-label">${brainGymTranslate("quiz.correctAnswer")}</span>
+          <span class="quiz-feedback-label">${openmindTranslate("quiz.correctAnswer")}</span>
           <span class="quiz-feedback-value">${correctText}</span>
         </div>
       </div>
@@ -5687,10 +6899,6 @@ function renderFeedback(q, savedState) {
 }
 
 function renderAnswer(q, savedState) {
-  const answerDiagramHtml = q.answerDiagram
-    ? `<div class="quiz-diagram-wrap">${q.answerDiagram}</div>`
-    : "";
-
   const answerEl = document.getElementById("quizAnswer");
   if (!savedState?.checked) {
     answerEl.hidden = true;
@@ -5700,12 +6908,11 @@ function renderAnswer(q, savedState) {
 
   answerEl.innerHTML = `
     <div class="quiz-answer-box">
-      <div class="quiz-answer-label">${brainGymTranslate("quiz.answerLabel")}</div>
+      <div class="quiz-answer-label">${openmindTranslate("quiz.answerLabel")}</div>
       <div class="quiz-answer-text">${q.answer}</div>
     </div>
-    ${answerDiagramHtml}
     <div class="quiz-explanation">
-      <div class="quiz-explanation-title">${brainGymTranslate("quiz.explanationLabel")}</div>
+      <div class="quiz-explanation-title">${openmindTranslate("quiz.explanationLabel")}</div>
       ${q.explanation}
     </div>
   `;
@@ -5731,9 +6938,39 @@ function prevQuestion() {
   }
 }
 
+function buildCompletionScoreSummary(sectionIndex) {
+  const sectionSession = calculateBrainScoreSession(sectionIndex);
+  const insight = getDimensionInsight(sectionSession.normalizedDimensions);
+  const dimensionRows = BRAIN_DIMENSIONS.map((dimension) => `
+    <div class="quiz-result-dimension">
+      <span>${getDimensionLabel(dimension)}</span>
+      <strong>${sectionSession.normalizedDimensions[dimension] || 0}</strong>
+    </div>
+  `).join("");
+
+  return `
+    <div class="quiz-result-summary">
+      <div class="quiz-result-score">
+        <span>${openmindTranslate("quiz.brainScore")}</span>
+        <strong>${sectionSession.brainScore}</strong>
+      </div>
+      <div class="quiz-result-stats">
+        <span>${openmindTranslate("quiz.answered")}: ${sectionSession.totalAnswered}</span>
+        <span>${openmindTranslate("quiz.correct")}: ${sectionSession.totalCorrect}</span>
+      </div>
+      <div class="quiz-result-dimensions">${dimensionRows}</div>
+      <p class="quiz-result-insight">${getScoreMessage(sectionSession.brainScore)}</p>
+      <p class="quiz-result-insight">${openmindTranslate("quiz.scoreStrongest", { dimension: getDimensionLabel(insight.strongest) })}</p>
+      <p class="quiz-result-insight">${openmindTranslate("quiz.scoreWeakest", { dimension: getDimensionLabel(insight.weakest) })}</p>
+    </div>
+  `;
+}
+
 function showCompletion() {
+  updateBrainHudForCompletion();
   const section = getLocalizedSection(QUIZ_SECTIONS[quizState.currentSection]);
   const hasNextSection = quizState.currentSection < QUIZ_SECTIONS.length - 1;
+  const scoreSummary = buildCompletionScoreSummary(quizState.currentSection);
   const completeNav = section.questions
     .map(
       (_, index) => `
@@ -5741,7 +6978,7 @@ function showCompletion() {
           type="button"
           class="quiz-jump-btn is-completed"
           data-complete-jump="${index}"
-          aria-label="${brainGymTranslate("quiz.replayQuestion", { num: index + 1 })}"
+          aria-label="${openmindTranslate("quiz.replayQuestion", { num: index + 1 })}"
         >
           ${index + 1}
         </button>
@@ -5749,30 +6986,24 @@ function showCompletion() {
     )
     .join("");
 
-  const content = document.getElementById("brainGymContent");
+  const content = document.getElementById("openmindContent");
   content.innerHTML = `
-    <div class="brain-gym-content-card quiz-shell">
+    <div class="openmind-content-card quiz-shell">
       <div class="quiz-complete">
-        <div class="quiz-topbar">
-          <div id="brainGymLangMount" class="brain-gym-lang-mount"></div>
-        </div>
-        <div class="quiz-complete-icon">🧠</div>
-        <p class="brain-gym-eyebrow" aria-hidden="true">&nbsp;</p>
-        <h2>${hasNextSection ? brainGymTranslate("quiz.completionTitle", { section: section.title }) : brainGymTranslate("quiz.completionAllTitle")}</h2>
-        <p class="quiz-complete-text">${hasNextSection ? brainGymTranslate("quiz.completionCopy", { section: section.title, count: section.questions.length }) : brainGymTranslate("quiz.completionAllCopy", { count: QUIZ_SECTIONS.reduce((sum, current) => sum + current.questions.length, 0) })}<br>
-        ${hasNextSection ? brainGymTranslate("quiz.completionNext") : brainGymTranslate("quiz.completionDone")}</p>
+        <div class="quiz-complete-icon" aria-hidden="true"><span class="pixel-brain-mark"></span></div>
+        <h2 class="quiz-complete-title">${hasNextSection ? openmindTranslate("quiz.completionTitle", { section: section.title }) : openmindTranslate("quiz.completionAllTitle")}</h2>
+        <p class="quiz-complete-text">${hasNextSection ? openmindTranslate("quiz.completionCopy", { section: section.title, count: section.questions.length }) : openmindTranslate("quiz.completionAllCopy", { count: QUIZ_SECTIONS.reduce((sum, current) => sum + current.questions.length, 0) })}<br>
+        ${hasNextSection ? openmindTranslate("quiz.completionNext") : openmindTranslate("quiz.completionDone")}</p>
+        ${scoreSummary}
         <div class="quiz-complete-nav">
-          <p class="quiz-complete-nav-label">${brainGymTranslate("quiz.completionReplayLabel")}</p>
+          <p class="quiz-complete-nav-label">${openmindTranslate("quiz.completionReplayLabel")}</p>
           <div class="quiz-jump-nav">${completeNav}</div>
         </div>
-        ${hasNextSection ? `<button class="brain-gym-button" id="quizNextSectionBtn">${brainGymTranslate("quiz.nextSection", { section: getLocalizedSection(QUIZ_SECTIONS[quizState.currentSection + 1]).title })}</button>` : ""}
-        <button class="brain-gym-button" id="quizRestartBtn">${brainGymTranslate("quiz.restart")}</button>
+        ${hasNextSection ? `<button class="openmind-button" id="quizNextSectionBtn">${openmindTranslate("quiz.nextSection", { section: getLocalizedSection(QUIZ_SECTIONS[quizState.currentSection + 1]).title })}</button>` : ""}
+        <button class="openmind-button" id="quizRestartBtn">${openmindTranslate("quiz.restart")}</button>
       </div>
     </div>
   `;
-  if (typeof window.mountBrainGymLanguageToggle === "function") {
-    window.mountBrainGymLanguageToggle();
-  }
   document.getElementById("quizRestartBtn").addEventListener("click", () => {
     quizState.currentQuestion = 0;
     quizState.answeredBySection[quizState.currentSection] = [];
@@ -5796,13 +7027,13 @@ function showCompletion() {
   });
 }
 
-onBrainGymLanguageChange(() => {
+onOpenmindLanguageChange(() => {
   if (document.getElementById("quizRestartBtn")) {
     showCompletion();
     return;
   }
 
-  if (document.getElementById("brainGymContent")) {
+  if (document.getElementById("openmindContent")) {
     initQuiz();
   }
 });
