@@ -192,49 +192,229 @@
 
       .brain-gym-widget {
         position: absolute;
-        top: 286px;
-        left: 510px;
+        top: 258px;
+        left: 478px;
         z-index: 3;
         display: inline-flex;
-        color: #222222;
+        color: #ffffff;
         text-decoration: none;
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
       }
 
-      .brain-gym-widget-folder {
-        display: grid;
-        justify-items: center;
-        gap: 14px;
-        justify-items: center;
-        padding: 0;
-        background: transparent;
-        transition: transform 180ms ease;
+      .brain-gym-widget-window {
+        width: 268px;
+        border: 3px solid #1643d3;
+        background: #ffffff;
+        box-shadow: 7px 7px 0 rgba(14, 31, 88, 0.28);
+        image-rendering: pixelated;
+        transition: transform 180ms ease, box-shadow 180ms ease;
       }
 
-      .brain-gym-widget:hover .brain-gym-widget-folder {
+      .brain-gym-widget:hover .brain-gym-widget-window {
         transform: translateY(-4px);
+        box-shadow: 9px 11px 0 rgba(14, 31, 88, 0.24);
       }
 
-      .brain-gym-widget-image {
-        display: block;
-        width: 100%;
-        max-width: 96px;
-        height: auto;
-        object-fit: contain;
-        filter: drop-shadow(0 6px 8px rgba(46, 129, 214, 0.24));
+      .brain-gym-widget-titlebar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        height: 26px;
+        padding: 0 6px 0 8px;
+        border-bottom: 3px solid #1643d3;
+        background: #ffffff;
+        color: #1643d3;
+        font-size: 14px;
+        font-weight: 800;
+        line-height: 1;
+        letter-spacing: 0;
+        text-transform: uppercase;
+      }
+
+      .brain-gym-widget-close {
+        color: #1643d3;
+        font-size: 20px;
+        line-height: 1;
+      }
+
+      .brain-gym-widget-screen {
+        display: grid;
+        gap: 10px;
+        padding: 16px 14px 14px;
+        background: #2450d7;
+      }
+
+      .brain-gym-widget-kicker {
+        margin: 0;
+        color: rgba(255, 255, 255, 0.74);
+        font-size: 12px;
+        font-weight: 800;
+        line-height: 1;
+      }
+
+      .brain-gym-widget-headline {
+        margin: 0;
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 800;
+        line-height: 0.95;
+        letter-spacing: 0;
+      }
+
+      .brain-gym-widget-board {
+        position: relative;
+        display: grid;
+        grid-template-columns: repeat(2, minmax(0, 1fr));
+        gap: 6px;
+        padding: 8px;
+        border: 2px solid #ffffff;
+        outline: 2px dashed rgba(255, 255, 255, 0.56);
+        outline-offset: -8px;
+        background:
+          linear-gradient(rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(255, 255, 255, 0.16) 1px, transparent 1px),
+          rgba(255, 255, 255, 0.12);
+        background-size: 8px 8px;
+      }
+
+      .brain-gym-widget-board::after {
+        content: "";
+        position: absolute;
+        left: 8px;
+        top: 8px;
+        z-index: 2;
+        box-sizing: border-box;
+        width: calc((100% - 22px) / 2);
+        height: 40px;
+        border: 3px solid #ffffff;
+        box-shadow:
+          0 0 0 2px rgba(36, 80, 215, 0.78),
+          inset 0 0 0 2px rgba(36, 80, 215, 0.34);
+        pointer-events: none;
+        animation: brainGymWidgetScan 3.2s steps(1, end) infinite;
+      }
+
+      @keyframes brainGymWidgetScan {
+        0%,
+        22% {
+          transform: translate(0, 0);
+        }
+
+        25%,
+        47% {
+          transform: translate(calc(100% + 6px), 0);
+        }
+
+        50%,
+        72% {
+          transform: translate(0, calc(100% + 6px));
+        }
+
+        75%,
+        97% {
+          transform: translate(calc(100% + 6px), calc(100% + 6px));
+        }
+
+        100% {
+          transform: translate(0, 0);
+        }
+      }
+
+      .brain-gym-widget-cell,
+      .brain-gym-widget-choice {
+        display: grid;
+        place-items: center;
+        min-height: 40px;
+        border: 2px solid rgba(255, 255, 255, 0.72);
+        background: #ffffff;
+      }
+
+      .brain-gym-widget-cell.is-missing {
+        background: rgba(255, 255, 255, 0.14);
+        color: #ffffff;
+        font-size: 24px;
+        font-weight: 800;
+      }
+
+      .brain-gym-widget-pixel {
+        position: relative;
+        width: 38px;
+        height: 38px;
+        border-right: 5px solid #1643d3;
+        border-bottom: 5px solid #1643d3;
+      }
+
+      .brain-gym-widget-pixel::before,
+      .brain-gym-widget-pixel::after {
+        content: "";
+        position: absolute;
+        background: #dcefff;
+      }
+
+      .brain-gym-widget-pixel::before {
+        left: 5px;
+        top: 6px;
+        width: 12px;
+        height: 28px;
+      }
+
+      .brain-gym-widget-pixel::after {
+        right: 7px;
+        top: 8px;
+        width: 12px;
+        height: 12px;
+        background: #2450d7;
+        box-shadow: -13px 14px 0 #dcefff;
+      }
+
+      .brain-gym-widget-pixel.is-alt::before {
+        height: 20px;
+      }
+
+      .brain-gym-widget-pixel.is-alt::after {
+        right: 4px;
+        top: 6px;
+        box-shadow: -12px 15px 0 #2450d7;
+      }
+
+      .brain-gym-widget-choices {
+        display: grid;
+        grid-template-columns: repeat(3, minmax(0, 1fr));
+        gap: 6px;
+      }
+
+      .brain-gym-widget-choice {
+        min-height: 44px;
+      }
+
+      .brain-gym-widget-choice .brain-gym-widget-pixel {
+        transform: scale(0.72);
+      }
+
+      .brain-gym-widget-go {
+        justify-self: center;
+        min-width: 92px;
+        padding: 9px 18px;
+        border: 0;
+        background: #ffffff;
+        color: #1643d3;
+        box-shadow: 5px 5px 0 #1643d3;
+        font-size: 16px;
+        font-weight: 800;
+        line-height: 1;
+        text-align: center;
       }
 
       .brain-gym-widget-label {
-        display: block;
-        color: #303030;
-        font-size: 14px;
-        font-weight: 400;
-        line-height: 1.2;
-        letter-spacing: -0.02em;
+        margin: 0;
+        color: rgba(255, 255, 255, 0.76);
+        font-size: 11px;
+        line-height: 1.3;
         text-align: center;
-        text-transform: none;
       }
 
       .receipt-widget {
+        --receipt-widget-scale: 0.72;
         display: block;
         width: min(100%, 403px);
         margin-left: -132px;
@@ -246,18 +426,20 @@
         position: relative;
         display: grid;
         justify-items: center;
-        min-height: 549px;
+        min-height: calc(549px * var(--receipt-widget-scale));
         padding: 25px 22px 31px;
         overflow: visible;
         border: 0;
         border-radius: 0;
         background: transparent;
         box-shadow: none;
+        transform: scale(var(--receipt-widget-scale));
+        transform-origin: top center;
         transition: transform 180ms ease, box-shadow 180ms ease;
       }
 
       .receipt-widget:hover .receipt-widget-stage {
-        transform: translateY(-4px);
+        transform: translateY(-4px) scale(var(--receipt-widget-scale));
         box-shadow: none;
       }
 
@@ -727,6 +909,10 @@
           margin-left: 0;
         }
 
+        .receipt-widget {
+          --receipt-widget-scale: 1;
+        }
+
         .brain-gym-widget {
           position: static;
           justify-content: flex-start;
@@ -749,7 +935,7 @@
 
         .sudoku-widget-board,
         .terminal-widget-window,
-        .brain-gym-widget-image {
+        .brain-gym-widget-window {
           width: 100%;
           max-width: none;
         }
@@ -938,9 +1124,28 @@
             </div>
 
             <a class="brain-gym-widget" href="showcase/brain-gym/" aria-label="Open brain gym showcase">
-              <div class="brain-gym-widget-folder">
-                <img class="brain-gym-widget-image" src="discover-icon/folder.png" alt="" aria-hidden="true" />
-                <span class="brain-gym-widget-label">brain gym</span>
+              <div class="brain-gym-widget-window">
+                <div class="brain-gym-widget-titlebar">
+                  <span>your brain gym</span>
+                  <span class="brain-gym-widget-close" aria-hidden="true">x</span>
+                </div>
+                <div class="brain-gym-widget-screen">
+                  <p class="brain-gym-widget-kicker">80% get this wrong</p>
+                  <h2 class="brain-gym-widget-headline">Are you in the 20%?</h2>
+                  <div class="brain-gym-widget-board" aria-hidden="true">
+                    <div class="brain-gym-widget-cell"><span class="brain-gym-widget-pixel"></span></div>
+                    <div class="brain-gym-widget-cell"><span class="brain-gym-widget-pixel is-alt"></span></div>
+                    <div class="brain-gym-widget-cell"><span class="brain-gym-widget-pixel is-alt"></span></div>
+                    <div class="brain-gym-widget-cell is-missing">?</div>
+                  </div>
+                  <div class="brain-gym-widget-choices" aria-hidden="true">
+                    <div class="brain-gym-widget-choice"><span class="brain-gym-widget-pixel"></span></div>
+                    <div class="brain-gym-widget-choice"><span class="brain-gym-widget-pixel is-alt"></span></div>
+                    <div class="brain-gym-widget-choice"><span class="brain-gym-widget-pixel"></span></div>
+                  </div>
+                  <span class="brain-gym-widget-go">GO</span>
+                  <p class="brain-gym-widget-label">Your mind deserves training too.</p>
+                </div>
               </div>
             </a>
 
