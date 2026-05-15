@@ -4283,3 +4283,28 @@ html[data-openmind-lang="en"] input {
   color: var(--brain-accent-strong);
   box-shadow: inset 0 -4px 0 var(--brain-accent-strong);
 }
+
+/* Keep the fixed score HUD from covering the quiz action buttons. */
+.openmind-page:not(.openmind-is-landing) {
+  scroll-padding-bottom: calc(190px + env(safe-area-inset-bottom));
+}
+
+.openmind-page:not(.openmind-is-landing) .openmind-shell {
+  padding-bottom: calc(210px + env(safe-area-inset-bottom));
+}
+
+.quiz-actions,
+.quiz-answer-block {
+  scroll-margin-bottom: calc(190px + env(safe-area-inset-bottom));
+}
+
+@media (max-width: 520px) {
+  .openmind-page:not(.openmind-is-landing) .openmind-shell {
+    padding-bottom: calc(230px + env(safe-area-inset-bottom));
+  }
+
+  .quiz-actions,
+  .quiz-answer-block {
+    scroll-margin-bottom: calc(210px + env(safe-area-inset-bottom));
+  }
+}
