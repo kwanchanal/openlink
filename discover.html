@@ -158,21 +158,25 @@
       }
 
       .hello-widget-link {
+        --hello-widget-scale: 0.8;
         display: block;
         color: inherit;
         text-decoration: none;
         width: min(100%, 403px);
+        min-height: calc(385px * var(--hello-widget-scale));
         margin-left: 18px;
       }
 
       .hello-widget-link .hello-maker {
         min-width: 0;
         box-shadow: 0 22px 48px rgba(15, 23, 42, 0.08);
+        transform: scale(var(--hello-widget-scale));
+        transform-origin: top left;
         transition: transform 180ms ease, box-shadow 180ms ease;
       }
 
       .hello-widget-link:hover .hello-maker {
-        transform: translateY(-4px);
+        transform: translateY(-4px) scale(var(--hello-widget-scale));
         box-shadow: 0 28px 64px rgba(15, 23, 42, 0.12);
       }
 
@@ -188,12 +192,18 @@
         display: flex;
         align-items: flex-start;
         gap: 24px;
+        margin-top: -34px;
+      }
+
+      .showcase-widget-row .sudoku-widget,
+      .showcase-widget-row .terminal-widget {
+        transform: translateY(-34px);
       }
 
       .brain-gym-widget {
         position: absolute;
-        top: 258px;
-        left: 478px;
+        top: 24px;
+        left: 410px;
         z-index: 3;
         display: inline-flex;
         color: #ffffff;
@@ -417,7 +427,7 @@
         --receipt-widget-scale: 0.72;
         display: block;
         width: min(100%, 403px);
-        margin-left: -132px;
+        margin-left: -30px;
         color: #252525;
         text-decoration: none;
       }
@@ -913,6 +923,11 @@
           --receipt-widget-scale: 1;
         }
 
+        .hello-widget-link {
+          --hello-widget-scale: 1;
+          min-height: 0;
+        }
+
         .brain-gym-widget {
           position: static;
           justify-content: flex-start;
@@ -931,6 +946,12 @@
           flex-direction: column;
           gap: 16px;
           width: 100%;
+          margin-top: 0;
+        }
+
+        .showcase-widget-row .sudoku-widget,
+        .showcase-widget-row .terminal-widget {
+          transform: none;
         }
 
         .sudoku-widget-board,
