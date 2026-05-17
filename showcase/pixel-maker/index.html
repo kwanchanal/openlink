@@ -1,0 +1,206 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Open Drawing</title>
+    <link rel="icon" type="image/png" href="logo.png" />
+    <link rel="stylesheet" href="pixel-maker.css" />
+  </head>
+  <body>
+    <main class="pixel-app">
+      <section class="editor-shell" aria-label="Pixel editor workspace">
+        <aside class="panel panel--tools" aria-label="Tools">
+          <div class="control-group">
+            <div class="panel-head panel-head--compact">
+              <h2>Color</h2>
+              <span id="current-color-label">#005BFF</span>
+            </div>
+            <div class="color-bar-container">
+              <input id="color-picker" class="color-bar" type="color" value="#005bff" />
+            </div>
+            <div class="palette" id="palette" aria-label="Brand palette"></div>
+            <div>
+              <h3>Recent</h3>
+              <div class="palette palette--recent" id="recent-colors"></div>
+            </div>
+          </div>
+
+          <div class="panel-divider"></div>
+
+          <div class="panel-head">
+            <h2>Tools</h2>
+            <span id="cursor-readout">x 0, y 0</span>
+          </div>
+
+          <div class="tool-grid" id="tool-grid">
+            <button class="tool-button is-active" type="button" data-tool="brush">Brush</button>
+            <button class="tool-button" type="button" data-tool="eraser">Eraser</button>
+            <button class="tool-button" type="button" data-tool="fill">Fill</button>
+            <button class="tool-button" type="button" data-tool="picker">Picker</button>
+            <button class="tool-button" type="button" data-tool="select">Select</button>
+          </div>
+
+          <div class="panel-divider"></div>
+
+          <div class="control-group">
+            <div class="panel-head panel-head--compact">
+              <h2>Brush size</h2>
+              <span><output id="brush-size-output" for="brush-size">1</output> px</span>
+            </div>
+            <div class="range-card">
+              <input id="brush-size" type="range" min="1" max="6" value="1" />
+            </div>
+          </div>
+
+          <div class="control-grid">
+            <button class="mini-button" type="button" data-action="undo" disabled>Undo</button>
+            <button class="mini-button" type="button" data-action="redo" disabled>Redo</button>
+            <button class="mini-button" type="button" data-action="clear">Clear</button>
+            <button class="mini-button" type="button" data-action="fill-canvas">Fill all</button>
+            <button class="mini-button" type="button" data-action="new-file">New</button>
+          </div>
+
+          <div class="panel-divider"></div>
+
+          <div class="control-group">
+            <div class="panel-head panel-head--compact">
+              <h2>Selection</h2>
+              <span id="selection-readout">No selection</span>
+            </div>
+            <div class="control-grid">
+              <button class="mini-button" type="button" data-action="copy-selection" disabled>Copy</button>
+              <button class="mini-button" type="button" data-action="paste-selection" disabled>Paste</button>
+              <button class="mini-button" type="button" data-action="scale-up-selection" disabled>Scale +</button>
+              <button class="mini-button" type="button" data-action="scale-down-selection" disabled>Scale -</button>
+              <button class="mini-button" type="button" data-action="rotate-left-selection" disabled>Rotate L</button>
+              <button class="mini-button" type="button" data-action="rotate-right-selection" disabled>Rotate R</button>
+              <button class="mini-button" type="button" data-action="flip-h-selection" disabled>Flip H</button>
+              <button class="mini-button" type="button" data-action="flip-v-selection" disabled>Flip V</button>
+            </div>
+          </div>
+
+          <div class="panel-divider"></div>
+
+          <div class="control-group">
+            <div class="panel-head panel-head--compact">
+              <h2>Reference layer</h2>
+              <span id="layer-readout">No file</span>
+            </div>
+            <label class="file-drop" for="layer-image">Choose file</label>
+            <input id="layer-image" class="sr-only" type="file" accept="image/*" />
+            <div class="control-grid">
+              <button class="mini-button" type="button" data-action="toggle-layer-adjust" disabled>Adjust</button>
+              <button class="mini-button" type="button" data-action="toggle-layer" disabled>Hide</button>
+              <button class="mini-button" type="button" data-action="remove-layer" disabled>Remove</button>
+            </div>
+            <label class="control-label" for="layer-opacity">Layer opacity</label>
+            <div class="range-row">
+              <input id="layer-opacity" type="range" min="0" max="100" value="45" />
+              <output id="layer-opacity-output">45%</output>
+            </div>
+            <label class="control-label" for="layer-zoom">Layer zoom</label>
+            <div class="range-row">
+              <input id="layer-zoom" type="range" min="25" max="300" value="100" />
+              <output id="layer-zoom-output">100%</output>
+            </div>
+            <label class="control-label" for="layer-rotate">Layer rotate</label>
+            <div class="range-row">
+              <input id="layer-rotate" type="range" min="-180" max="180" value="0" />
+              <output id="layer-rotate-output">0 deg</output>
+            </div>
+          </div>
+        </aside>
+
+        <section class="canvas-panel" aria-label="Canvas">
+          <div class="canvas-toolbar">
+            <div>
+              <h2>Canvas</h2>
+              <p id="canvas-meta">32 x 32 transparent canvas</p>
+            </div>
+            <div class="canvas-controls">
+              <label class="switch">
+                <input id="grid-toggle" type="checkbox" checked />
+                <span>Grid</span>
+              </label>
+            </div>
+          </div>
+
+          <div class="canvas-workspace">
+            <div class="canvas-stage" id="canvas-stage">
+              <canvas id="pixel-canvas" width="512" height="512" aria-label="Editable pixel canvas"></canvas>
+            </div>
+
+            <div class="zoom-rail" aria-label="Canvas zoom">
+              <button class="mini-button" type="button" data-action="zoom-in">+</button>
+              <input id="zoom-range" type="range" min="4" max="28" value="16" aria-label="Canvas zoom" />
+              <button class="mini-button" type="button" data-action="zoom-out">-</button>
+              <span id="zoom-output">16px</span>
+            </div>
+          </div>
+        </section>
+
+        <aside class="panel panel--right" aria-label="Editor settings">
+          <section class="panel-section panel-section--brand">
+            <div class="pixel-brand">
+              <div>
+                <p class="pixel-kicker">op4n creative tool</p>
+                <h1 class="pixel-mascot-title">𑣲₍ ᐢ. .ᐢ₎</h1>
+                <p class="pixel-subtitle">Let's make something pixelly.</p>
+              </div>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <div class="panel-head">
+              <h2>File / JSON</h2>
+              <span>Reusable data</span>
+            </div>
+            <div class="control-grid">
+              <label class="mini-button" for="import-json">Load JSON</label>
+              <button class="mini-button" type="button" data-action="export-json">Save JSON</button>
+              <button class="mini-button" type="button" data-action="export-png">Export PNG</button>
+              <button class="mini-button" type="button" data-action="export-svg">Export SVG</button>
+              <button class="mini-button" type="button" data-action="save-archive">Save Archive</button>
+            </div>
+            <input id="import-json" class="sr-only" type="file" accept="application/json,.json" />
+            <div class="panel-divider panel-divider--spaced"></div>
+            <div class="preset-control">
+              <div class="panel-head panel-head--compact">
+                <h2>Canvas preset</h2>
+                <span id="canvas-preset-readout">32 x 32</span>
+              </div>
+              <select id="canvas-size">
+                <option value="grid-16">Grid 16 x 16</option>
+                <option value="grid-24">Grid 24 x 24</option>
+                <option value="grid-32" selected>Grid 32 x 32</option>
+                <option value="grid-48">Grid 48 x 48</option>
+                <option value="grid-64">Grid 64 x 64</option>
+                <option value="ig-post">IG Post 1:1</option>
+                <option value="ig-story">IG Story 9:16</option>
+                <option value="ig-reel">IG Reel 9:16</option>
+                <option value="x-post">X Post 16:9</option>
+                <option value="youtube-thumb">YouTube Thumbnail 16:9</option>
+                <option value="linkedin-post">LinkedIn Post 1.91:1</option>
+              </select>
+            </div>
+          </section>
+
+          <section class="panel-section">
+            <div class="panel-head">
+              <h2>Preview</h2>
+              <span id="preview-size">32 x 32</span>
+            </div>
+            <div class="preview-card">
+              <canvas id="mini-preview" width="160" height="160" aria-label="Pixel asset preview"></canvas>
+              <span>Preview</span>
+            </div>
+          </section>
+        </aside>
+      </section>
+    </main>
+
+    <div class="toast" id="toast" role="status" aria-live="polite"></div>
+    <script src="pixel-maker.js"></script>
+  </body>
+</html>

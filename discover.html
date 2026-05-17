@@ -718,6 +718,169 @@
         letter-spacing: -0.04em;
       }
 
+      .pixel-maker-widget {
+        position: absolute;
+        top: 340px;
+        left: 710px;
+        z-index: 2;
+        display: inline-flex;
+        color: #111827;
+        text-decoration: none;
+      }
+
+      .pixel-maker-device {
+        width: 188px;
+        padding: 14px 12px 16px;
+        border: 2px solid #d1d5db;
+        border-radius: 34px;
+        background: linear-gradient(180deg, #ffffff 0%, #f3f5f8 100%);
+        box-shadow:
+          0 20px 44px rgba(15, 23, 42, 0.12),
+          inset 0 -6px 16px rgba(15, 23, 42, 0.05);
+        transition: transform 180ms ease, box-shadow 180ms ease;
+      }
+
+      .pixel-maker-widget:hover .pixel-maker-device {
+        transform: translateY(-4px) rotate(-1deg);
+        box-shadow:
+          0 26px 58px rgba(15, 23, 42, 0.15),
+          inset 0 -6px 16px rgba(15, 23, 42, 0.05);
+      }
+
+      .pixel-maker-screen {
+        display: grid;
+        gap: 8px;
+        min-height: 158px;
+        padding: 12px;
+        border: 2px solid #111827;
+        border-radius: 18px;
+        background:
+          linear-gradient(rgba(0, 91, 255, 0.12) 1px, transparent 1px),
+          linear-gradient(90deg, rgba(0, 91, 255, 0.12) 1px, transparent 1px),
+          #eaf2ff;
+        background-size: 10px 10px;
+        font-family: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, monospace;
+        text-align: center;
+      }
+
+      .pixel-maker-screen-top {
+        display: flex;
+        justify-content: space-between;
+        color: #005bff;
+        font-size: 9px;
+        font-weight: 800;
+        text-transform: uppercase;
+      }
+
+      .pixel-bunny {
+        position: relative;
+        justify-self: center;
+        width: 74px;
+        height: 74px;
+        margin-top: 2px;
+      }
+
+      .pixel-bunny span {
+        position: absolute;
+        display: block;
+        image-rendering: pixelated;
+        background: #111827;
+      }
+
+      .pixel-bunny .ear-left {
+        left: 18px;
+        top: 0;
+        width: 12px;
+        height: 34px;
+        border-radius: 6px 6px 0 0;
+      }
+
+      .pixel-bunny .ear-right {
+        right: 18px;
+        top: 0;
+        width: 12px;
+        height: 34px;
+        border-radius: 6px 6px 0 0;
+        animation: pixelBunnyWave 1.8s steps(2, end) infinite;
+        transform-origin: bottom center;
+      }
+
+      .pixel-bunny .head {
+        left: 12px;
+        top: 26px;
+        width: 50px;
+        height: 38px;
+        border-radius: 16px 16px 13px 13px;
+      }
+
+      .pixel-bunny .eye-left,
+      .pixel-bunny .eye-right {
+        top: 40px;
+        width: 5px;
+        height: 5px;
+        background: #ffffff;
+      }
+
+      .pixel-bunny .eye-left {
+        left: 27px;
+      }
+
+      .pixel-bunny .eye-right {
+        right: 27px;
+      }
+
+      .pixel-bunny .cheek {
+        left: 34px;
+        top: 50px;
+        width: 7px;
+        height: 4px;
+        background: #005bff;
+      }
+
+      @keyframes pixelBunnyWave {
+        0%,
+        100% {
+          transform: rotate(0deg);
+        }
+
+        50% {
+          transform: rotate(10deg) translateY(-2px);
+        }
+      }
+
+      .pixel-maker-label {
+        margin: 0;
+        color: #111827;
+        font-size: 15px;
+        font-weight: 900;
+        line-height: 1;
+      }
+
+      .pixel-maker-sub {
+        margin: 0;
+        color: #6b7280;
+        font-size: 10px;
+        font-weight: 700;
+        line-height: 1.25;
+      }
+
+      .pixel-maker-controls {
+        display: flex;
+        justify-content: center;
+        gap: 10px;
+        margin-top: 13px;
+      }
+
+      .pixel-maker-controls span {
+        display: block;
+        width: 20px;
+        height: 20px;
+        border: 2px solid #d1d5db;
+        border-radius: 50%;
+        background: #ffffff;
+        box-shadow: inset 0 -2px 0 rgba(17, 24, 39, 0.08);
+      }
+
       .sudoku-widget {
         display: block;
         width: min(100%, 282px);
@@ -913,6 +1076,7 @@
         .receipt-widget,
         .sudoku-widget,
         .terminal-widget,
+        .pixel-maker-widget,
         .brain-gym-widget {
           width: 100%;
           max-width: none;
@@ -929,6 +1093,11 @@
         }
 
         .brain-gym-widget {
+          position: static;
+          justify-content: flex-start;
+        }
+
+        .pixel-maker-widget {
           position: static;
           justify-content: flex-start;
         }
@@ -956,6 +1125,7 @@
 
         .sudoku-widget-board,
         .terminal-widget-window,
+        .pixel-maker-device,
         .brain-gym-widget-window {
           width: 100%;
           max-width: none;
@@ -1166,6 +1336,32 @@
                   </div>
                   <span class="brain-gym-widget-go">GO</span>
                   <p class="brain-gym-widget-label">Your mind deserves training too.</p>
+                </div>
+              </div>
+            </a>
+
+            <a class="pixel-maker-widget" href="showcase/pixel-maker/" aria-label="Open Pixel Maker showcase">
+              <div class="pixel-maker-device">
+                <div class="pixel-maker-screen">
+                  <div class="pixel-maker-screen-top">
+                    <span>pixel</span>
+                    <span>op4n</span>
+                  </div>
+                  <div class="pixel-bunny" aria-hidden="true">
+                    <span class="ear-left"></span>
+                    <span class="ear-right"></span>
+                    <span class="head"></span>
+                    <span class="eye-left"></span>
+                    <span class="eye-right"></span>
+                    <span class="cheek"></span>
+                  </div>
+                  <p class="pixel-maker-label">Pixel Maker</p>
+                  <p class="pixel-maker-sub">Feed pixels. Export JSON.</p>
+                </div>
+                <div class="pixel-maker-controls" aria-hidden="true">
+                  <span></span>
+                  <span></span>
+                  <span></span>
                 </div>
               </div>
             </a>
