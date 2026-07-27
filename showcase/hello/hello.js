@@ -19,6 +19,9 @@
     previewScale: 1,
   };
 
+  const handwritingFontFamily = '"Playwrite TZ", "Bradley Hand", "Segoe Script", cursive';
+  const handwritingFontSize = 96;
+
   const easings = {
     linear: (t) => t,
     easeInOut: (t) => (t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2),
@@ -115,6 +118,40 @@
       }
     }
     return appleStops[appleStops.length - 1].color;
+  }
+
+  function getFontWeight(strokeWidth) {
+    return Math.round(clamp(190 + strokeWidth * 28, 220, 400));
+  }
+
+  function getHandwritingFont(strokeWidth, size = handwritingFontSize) {
+    return `${getFontWeight(strokeWidth)} ${size}px ${handwritingFontFamily}`;
+  }
+
+  function buildFontTextSource(ctx, text, strokeWidth) {
+    const clean = sanitizeEnglishText(text) || "hello";
+    ctx.save();
+    ctx.font = getHandwritingFont(strokeWidth);
+    ctx.textBaseline = "alphabetic";
+    const metrics = ctx.measureText(clean);
+    const left = Math.min(0, metrics.actualBoundingBoxLeft || 0);
+    const right = Math.max(metrics.width, metrics.actualBoundingBoxRight || metrics.width);
+    const ascent = metrics.actualBoundingBoxAscent || handwritingFontSize * 0.78;
+    const descent = metrics.actualBoundingBoxDescent || handwritingFontSize * 0.24;
+    ctx.restore();
+
+    const padding = handwritingFontSize * 0.16;
+    return {
+      type: "fontText",
+      text: clean,
+      font: getHandwritingFont(strokeWidth),
+      width: right - left + padding * 2,
+      height: ascent + descent + padding * 2,
+      baseline: padding + ascent,
+      textX: padding - left,
+      revealWidth: right - left + padding * 1.2,
+      total: right - left + padding * 1.2,
+    };
   }
 
   function cubicPoint(p0, p1, p2, p3, t) {
@@ -402,11 +439,13 @@
     drawBackground(ctx, width, height, state.background);
     const text = sanitizeEnglishText(state.text) || "hello";
     const eased = easings[state.easing](state.progress);
-    const source = text.toLowerCase() === "hello" ? sampleAppleHello(state.overlap) : buildWordSegments(text, state.overlap);
+    const source = text.toLowerCase() === "hello" ? sampleAppleHello(state.overlap) : buildFontTextSource(ctx, text, state.strokeWidth);
     const sourceWidth = source.width;
     const sourceHeight = source.height;
     const previewScale = state.previewScale || 1;
-    const scale = Math.min((width * 0.31 * previewScale) / sourceWidth, (height * 0.32 * previewScale) / sourceHeight);
+    const widthRatio = source.type === "fontText" ? 0.38 : 0.31;
+    const heightRatio = source.type === "fontText" ? 0.36 : 0.32;
+    const scale = Math.min((width * widthRatio * previewScale) / sourceWidth, (height * heightRatio * previewScale) / sourceHeight);
     const wordWidth = sourceWidth * scale;
     const wordHeight = sourceHeight * scale;
     const offsetX = (width - wordWidth) / 2;
@@ -423,7 +462,37 @@
     const sx = (x) => offsetX + x * scale;
     const sy = (y) => offsetY + y * scale;
 
-    if (source.segments) {
+    if (source.type === "fontText") {
+      const revealWidth = source.revealWidth * eased * scale;
+      const textX = sx(source.textX);
+      const baseline = sy(source.baseline);
+      const isPhoto = state.background === "photo";
+      ctx.save();
+      ctx.beginPath();
+      ctx.rect(offsetX, offsetY, revealWidth, wordHeight);
+      ctx.clip();
+      ctx.font = `${getFontWeight(state.strokeWidth)} ${handwritingFontSize * scale}px ${handwritingFontFamily}`;
+      ctx.textBaseline = "alphabetic";
+      ctx.lineJoin = "round";
+      ctx.lineWidth = Math.max(0.35, state.strokeWidth * scale * 0.16);
+      if (isPhoto) {
+        ctx.fillStyle = "rgba(255, 255, 255, 0.96)";
+        ctx.strokeStyle = "rgba(255, 255, 255, 0.96)";
+      } else {
+        const gradient = ctx.createLinearGradient(offsetX, 0, offsetX + wordWidth, 0);
+        appleStops.forEach((stop) => gradient.addColorStop(stop.at, stop.color));
+        ctx.fillStyle = gradient;
+        ctx.strokeStyle = gradient;
+      }
+      ctx.strokeText(source.text, textX, baseline);
+      ctx.fillText(source.text, textX, baseline);
+      ctx.restore();
+      if (state.progress > 0 && state.progress < 1) {
+        tipX = offsetX + revealWidth;
+        tipY = baseline - wordHeight * 0.4;
+        tipColor = isPhoto ? "rgba(255, 255, 255, 0.96)" : colorAt(eased);
+      }
+    } else if (source.segments) {
       // Bezier path drawing — smooth native canvas curves
       for (const seg of source.segments) {
         if (seg.type === "gap") continue;
@@ -726,6 +795,7 @@
     observer.observe(canvas);
     if (document.fonts?.ready) {
       document.fonts.ready.then(resize).catch(() => {});
+      document.fonts.load(getHandwritingFont(state.strokeWidth)).then(resize).catch(() => {});
     }
     updateValues();
     resize();

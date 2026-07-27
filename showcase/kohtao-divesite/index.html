@@ -1,0 +1,81 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Koh Tao Dive Sites</title>
+    <link rel="stylesheet" href="./kohtao-divesite.css" />
+  </head>
+  <body>
+    <main class="dive-sim" aria-label="Koh Tao dive site simulation">
+      <aside class="site-rail" aria-label="Dive sites">
+        <div class="site-rail__header">
+          <p class="site-rail__eyebrow">Koh Tao</p>
+          <h1>Dive sites</h1>
+        </div>
+
+        <button class="site-tab is-active" type="button" data-site="southwest" aria-current="page">
+          <span class="site-tab__name">Southwest</span>
+          <span class="site-tab__meta">Pinnacle · 5-30m</span>
+        </button>
+
+        <button class="site-tab" type="button" data-site="chumphon">
+          <span class="site-tab__name">Chumphon</span>
+          <span class="site-tab__meta">Pinnacle · 12-35m</span>
+        </button>
+      </aside>
+
+      <section class="sim-workspace" aria-label="Southwest dive site model">
+        <header class="sim-toolbar">
+          <div class="toolbar-group" aria-label="View mode">
+            <button class="tool-button is-active" type="button" data-view-mode="plan">Plan</button>
+            <button class="tool-button" type="button" data-view-mode="top">Top</button>
+            <button class="tool-button" type="button" data-view-mode="side">Side</button>
+            <button class="tool-button" type="button" data-view-mode="isometric">Isometric</button>
+          </div>
+
+          <div class="toolbar-group toolbar-group--zoom" aria-label="Zoom controls">
+            <button class="icon-button" type="button" data-zoom="out" aria-label="Zoom out">-</button>
+            <output class="zoom-readout" data-zoom-readout>100%</output>
+            <button class="icon-button" type="button" data-zoom="in" aria-label="Zoom in">+</button>
+          </div>
+        </header>
+
+        <div class="sim-viewport" id="simViewport" aria-label="3D simulation viewport">
+          <button class="iso-crank" type="button" data-iso-crank aria-label="Hand rotate isometric view">
+            <span class="iso-crank__label">Hand rotate</span>
+            <span class="iso-crank__dial" aria-hidden="true">
+              <span class="iso-crank__axis"></span>
+              <span class="iso-crank__arm">
+                <span class="iso-crank__handle"></span>
+              </span>
+              <span class="iso-crank__hand"></span>
+            </span>
+            <span class="iso-crank__hint">drag x/y</span>
+          </button>
+
+          <nav class="orientation-widget" aria-label="Compass direction control" data-orientation-widget>
+            <span class="compass-ring" aria-hidden="true"></span>
+            <span class="compass-needle" aria-hidden="true" data-compass-needle></span>
+            <span class="view-axis" aria-hidden="true"></span>
+            <button class="compass-button compass-button--n is-active" type="button" data-direction="N" aria-label="Face north">N</button>
+            <button class="compass-button compass-button--e" type="button" data-direction="E" aria-label="Face east">E</button>
+            <button class="compass-button compass-button--s" type="button" data-direction="S" aria-label="Face south">S</button>
+            <button class="compass-button compass-button--w" type="button" data-direction="W" aria-label="Face west">W</button>
+            <output class="compass-mode" data-compass-mode>Plan</output>
+          </nav>
+        </div>
+
+        <footer class="sim-status" aria-live="polite" data-sim-status>
+          <span>Southwest Pinnacle</span>
+          <span>Traced plan · extruded by marked depth</span>
+          <span>Secret Pinnacle · route 120°</span>
+          <span>Scale reference: 20m</span>
+        </footer>
+      </section>
+    </main>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="./kohtao-divesite.js"></script>
+  </body>
+</html>

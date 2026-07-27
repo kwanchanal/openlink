@@ -5,14 +5,31 @@
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>link making...</title>
     <link rel="icon" type="image/png" href="favicon/logo-open.png" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link
       rel="stylesheet"
       href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,300..700,0..1,-50..200"
     />
-    <link rel="stylesheet" href="showcase/hello/hello.css?v=21" />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Playwrite+TZ:wght@220..400&display=swap"
+    />
+    <link rel="stylesheet" href="showcase/hello/hello.css?v=22" />
     <style>
       .material-symbols-outlined {
         font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 24;
+      }
+
+      .banner-word {
+        display: inline-block;
+        opacity: 1;
+        transition: opacity 320ms ease, transform 320ms ease;
+      }
+
+      .banner-word.is-fading {
+        opacity: 0;
+        transform: translateY(-6px);
       }
 
       .discover-gallery {
@@ -1173,7 +1190,7 @@
   </head>
   <body class="dashboard">
     <div class="top-banner">
-      <span class="banner-text" id="bannerText">OP4N.COM</span>
+      <span class="banner-text" id="bannerText">WE MINT <span class="banner-word" id="bannerWord">THINGS</span></span>
     </div>
 
     <div class="sidebar-overlay" id="sidebarOverlay" aria-hidden="true"></div>
@@ -1182,21 +1199,24 @@
       <aside class="sidebar" id="sidebar">
         <nav class="nav">
           <div class="nav-section">
+            <button class="nav-title" type="button">About</button>
+          </div>
+          <div class="nav-section">
             <a class="nav-link is-active" href="discover.html" aria-current="page">
               <span class="material-symbols-outlined nav-icon">explore</span>
               Discover
             </a>
           </div>
           <div class="nav-section">
-            <button class="nav-title" type="button">Main</button>
+            <button class="nav-title" type="button">Our Product</button>
             <div class="nav-items">
               <a class="nav-link" href="index.html">
                 <span class="material-symbols-outlined nav-icon">badge</span>
-                Links
+                op4n.link
               </a>
               <button class="nav-link is-locked">
                 <span class="material-symbols-outlined nav-icon">chat</span>
-                Pages
+                op4n.me
                 <span class="material-symbols-outlined lock-icon" aria-hidden="true">lock</span>
               </button>
             </div>
@@ -1481,7 +1501,31 @@
         });
       })();
     </script>
-    <script src="showcase/hello/hello.js?v=21"></script>
+    <script src="showcase/hello/hello.js?v=22"></script>
+    <script>
+      (function () {
+        const words = ['THINGS', 'APPS', 'WEB', 'ART', 'FUN', 'STUFF'];
+        const bannerWord = document.getElementById('bannerWord');
+        let wordIndex = 0;
+        const intervalMs = 2000;
+        const fadeDuration = 320;
+
+        function rotateBannerWord() {
+          if (!bannerWord) return;
+          bannerWord.classList.add('is-fading');
+          setTimeout(() => {
+            wordIndex = (wordIndex + 1) % words.length;
+            bannerWord.textContent = words[wordIndex];
+            bannerWord.classList.remove('is-fading');
+          }, fadeDuration);
+        }
+
+        if (bannerWord) {
+          bannerWord.textContent = words[wordIndex];
+          setInterval(rotateBannerWord, intervalMs);
+        }
+      })();
+    </script>
     <script>
       (function () {
         'use strict';

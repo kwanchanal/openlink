@@ -1257,16 +1257,35 @@ function seedCanvas() {
   state.pixels = createPixels(state.width, state.height);
   const centerX = Math.floor(state.width / 2);
   const centerY = Math.floor(state.height / 2);
-  const blue = "#005BFF";
-  const dark = "#111111";
-  const light = "#EAF2FF";
-  for (let y = centerY - 7; y <= centerY + 7; y += 1) {
-    for (let x = centerX - 7; x <= centerX + 7; x += 1) {
-      if (x === centerX - 7 || y === centerY + 7 || x === centerX + 7) setPixel(x, y, blue);
-      if (x > centerX - 6 && x < centerX + 5 && y > centerY - 6 && y < centerY + 5) setPixel(x, y, light);
-      if (x >= centerX - 2 && x <= centerX + 2 && y >= centerY - 3 && y <= centerY + 1) setPixel(x, y, dark);
-    }
-  }
+  const dark = "#111827";
+  const white = "#FFFFFF";
+  const originX = centerX - 8;
+  const originY = centerY - 10;
+  const rows = [
+    "0000111000111000",
+    "0011111001111100",
+    "0011111001111100",
+    "0011111001111100",
+    "0011111001111100",
+    "0011111001111100",
+    "0011111001111100",
+    "0011111001111100",
+    "0111111111111110",
+    "1111111111111111",
+    "1111211111211111",
+    "1111211111211111",
+    "1111111211111111",
+    "0111111111111110",
+    "0011111111111100",
+    "0011111111111100"
+  ];
+
+  rows.forEach((row, y) => {
+    [...row].forEach((cell, x) => {
+      if (cell === "1") setPixel(originX + x, originY + y, dark);
+      if (cell === "2") setPixel(originX + x, originY + y, white);
+    });
+  });
 }
 
 function init() {

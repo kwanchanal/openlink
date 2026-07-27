@@ -266,6 +266,11 @@ button {
   outline: none;
 }
 
+.hello-input {
+  font-family: "Playwrite TZ", "Bradley Hand", "Segoe Script", cursive;
+  font-weight: 320;
+}
+
 .hello-select {
   appearance: none;
   background-image:
