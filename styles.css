@@ -181,20 +181,21 @@ textarea {
 
 /* ── App shell ── */
 .app-shell {
+  --shell-sidebar-width: 260px;
+  --shell-gap: 24px;
   display: grid;
-  grid-template-columns: 260px 1fr 340px;
-  gap: 24px;
+  grid-template-columns: var(--shell-sidebar-width) 1fr 340px;
+  gap: var(--shell-gap);
   padding: 20px 24px 24px;
   height: calc(100vh - 44px);
 }
 
 .app-shell.is-ad-dismissed {
-  grid-template-columns: 260px 1fr;
+  grid-template-columns: var(--shell-sidebar-width) 1fr;
 }
 
 .app-shell.discover-layout {
-  grid-template-columns: 260px 1fr;
-  gap: 20px;
+  grid-template-columns: var(--shell-sidebar-width) 1fr;
 }
 
 .discover-main {
